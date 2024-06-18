@@ -1,5 +1,5 @@
 .custom-flex {
-  @apply flex flex-row justify-between px-6 py-4 items-center;
+  @apply flex flex-row justify-between items-center;
 }
 
 .nav {
@@ -8,4 +8,8 @@
 
 .menu {
   @apply px-3 py-2;
+}
+
+.custom-button {
+  @apply bg-blue-700 text-white px-4 py-2 rounded-md;
 }

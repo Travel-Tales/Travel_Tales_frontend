@@ -5,7 +5,7 @@ import mainLogo from "../../public/main-logo.jpg";
 
 export default function Footer() {
   return (
-    <footer className="custom-flex">
+    <footer className="custom-flex px-6 py-8 border-t ">
       <div className="footer-logo">
         <Image src={mainLogo} alt="Website Logo" width={120} />
         <p className="text-sm text-neutral-700">

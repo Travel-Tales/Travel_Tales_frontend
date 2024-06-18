@@ -5,7 +5,7 @@ import mainLogo from "../../public/main-logo.jpg";
 
 export default function Header() {
   return (
-    <header className="custom-flex">
+    <header className="custom-flex px-6 py-4">
       <h1 className="main-logo">
         {/* <Link href={"/"}>Travel Tales</Link> */}
         <Image src={mainLogo} alt="Website Logo" width={180} />

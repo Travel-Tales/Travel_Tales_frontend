@@ -19,7 +19,7 @@ export default function Header() {
         <nav>
           <ul className="nav">
             <li className="menu">
-              <Link href={"/reviews"}>Reviews</Link>
+              <Link href={"/travel/reviews"}>Reviews</Link>
             </li>
             <li className="menu">
               <Link href={"/travel/plans"}>Travel Plans</Link>

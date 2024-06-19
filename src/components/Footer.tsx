@@ -1,11 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import mainLogo from "../../public/main-logo.jpg";
+import mainLogo from "../../public/main-logo.png";
 
 export default function Footer() {
   return (
-    <footer className="custom-flex px-6 py-8 border-t ">
+    <footer className="custom-flex px-6 border-t">
       <div className="footer-logo">
         <Image src={mainLogo} alt="Website Logo" width={120} />
         <p className="text-sm text-neutral-700">

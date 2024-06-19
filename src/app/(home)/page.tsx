@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import useStore from "@/store/store";
-import recommandPlan from "../../../public/recommand-plan.jpg";
 import { recommandPlans } from "../../data/temporary.js";
 import { introduction } from "../../data/fixed";
 

@@ -6,6 +6,24 @@
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
+html,
+body {
+  height: 100%;
+}
+
+main {
+  padding-top: 70px;
+  height: auto;
+  min-height: 100%;
+  padding-bottom: 120px;
+}
+
+footer {
+  height: 120px;
+  position: relative;
+  transform: translateY(-100%);
+}
+
 .a11y-hidden {
   position: absolute;
   width: 1px;
@@ -32,19 +50,28 @@ img.object-fit {
     height: 100%;
   }
 }
+/* 
 .recommand-list {
   width: calc(100% / 4 - 20px);
+
+  @media all and (max-width: 1024px) {
+    width: calc(100% / 3 - 20px);
+  }
 
   @media all and (max-width: 768px) {
     width: calc(100% / 2 - 20px);
   }
-}
 
-.recommand-list {
   @media all and (max-width: 640px) {
     width: 100%;
   }
 }
+
+.recommand-list:last-child {
+  @media all and (max-width: 640px) {
+    margin-bottom: 0;
+  }
+} */
 
 .introduce {
   width: calc(100% / 3 - 30px);

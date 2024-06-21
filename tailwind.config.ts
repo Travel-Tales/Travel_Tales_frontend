@@ -35,6 +35,9 @@ const config: Config = {
       padding: {
         "c-padding": "0 1.5rem 0 1.5rem",
       },
+      colors: {
+        "border-color": "#e5e7eb",
+      },
     },
   },
   plugins: [],

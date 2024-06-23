@@ -37,6 +37,7 @@ const config: Config = {
       },
       colors: {
         "main-color": "#000e76",
+        "border-color": "#e5e7eb",
       },
     },
   },

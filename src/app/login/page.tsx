@@ -1,10 +1,17 @@
+"use client";
+
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import kakaoLogin from "../../../public/kakao_login_large_wide.png";
 import googleLogin from "../../../public/web_light_sq_ctn@3x.png";
 import logo from "../../../public/main-logo.png";
+import Head from "next/head";
 
 export default function LoginPage() {
+  const clickKakaoLogin = () => {
+    window.location.href = "http://localhost:9502/api/auth/kakao";
+  };
+
   return (
     <>
       <main className="relative">
@@ -19,7 +26,11 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <button aria-label="카카오 로그인" className="block">
+          <button
+            aria-label="카카오 로그인"
+            className="block"
+            onClick={clickKakaoLogin}
+          >
             <Image
               src={kakaoLogin}
               alt="카카오 로그인 버튼 이미지"

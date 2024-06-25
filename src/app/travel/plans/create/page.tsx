@@ -1,19 +1,19 @@
 "use client";
-import React, { useState, ChangeEvent, useRef, useCallback } from "react";
+
+import React, {
+  useState,
+  ChangeEvent,
+  useRef,
+  useCallback,
+  useEffect,
+} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
-import { MDEditorProps } from "@uiw/react-md-editor";
-import dynamic from "next/dynamic";
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
 import testImg from "../../../../../public/camera_icon.svg";
 import noImg from "../../../../../public/no-img.jpg";
-
-const MDEditor = dynamic(
-  () => import("@uiw/react-md-editor").then((mod) => mod.default),
-  { ssr: false }
-);
+import MarkdownEditor from "@/components/MarkdownEditor";
+import Toolbar from "@/components/Toolbar";
 
 export default function TravelPlanCreatePage() {
   const [title, setTitle] = useState("");
@@ -28,11 +28,39 @@ export default function TravelPlanCreatePage() {
   const [imgUrl, setImgUrl] = useState<string>("");
   const [fileObj, setFileObj] = useState<File | null>(null);
 
-  const [value, setValue] = useState("**Hello world!!!**");
+  const [markdown, setMarkdown] = useState("# Header");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
   };
+
+  const insertAtCursor = (text: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    if (markdown) {
+      const length = markdown.length;
+      textareaRef.current.setSelectionRange(length, length);
+    }
+    // 포커스 주기
+    textareaRef.current.focus();
+
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+
+    setMarkdown(
+      (prev) =>
+        prev.substring(0, startPos) + text + prev.substring(endPos, prev.length)
+    );
+  };
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      console.error("Textarea element not found");
+    }
+  }, []);
 
   const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     //: 이미지를 교체했을 때
@@ -46,11 +74,9 @@ export default function TravelPlanCreatePage() {
     }
   };
 
-  type DraftPageProps = {};
-
-  const handleChange = useCallback((value: any) => {
-    setValue(value);
-  }, []);
+  const handleChange = (event: any) => {
+    setMarkdown(event.target.value);
+  };
 
   return (
     <main>
@@ -166,9 +192,29 @@ export default function TravelPlanCreatePage() {
               height={100}
             />
           </div>
-          <div>
-            <MDEditor value={value} onChange={handleChange} />
-          </div>
+          <>
+            <Toolbar
+              onBold={() => insertAtCursor("**bold text**")}
+              onItalic={() => insertAtCursor("*italic text*")}
+              onHeading={() => insertAtCursor("# Heading")}
+              onBlockquote={() => insertAtCursor("> Blockquote")}
+              onOrderedList={() => insertAtCursor("1. Item")}
+              onUnorderedList={() => insertAtCursor("- Item")}
+              onLink={() => insertAtCursor("[link](url)")}
+              onImage={() => insertAtCursor("![alt text](url)")}
+            />
+            <div className="preview flex flex-row w-full border">
+              <textarea
+                ref={textareaRef}
+                className="editor min-h-48 w-1/2 border-r p-2"
+                value={markdown}
+                onChange={handleChange}
+                placeholder="계획이나 후기를 작성해주세요!"
+              />
+              <MarkdownEditor markdown={markdown} />
+            </div>
+          </>
+
           <div className="flex justify-end">
             <button
               type="submit"

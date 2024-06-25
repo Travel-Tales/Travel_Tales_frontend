@@ -94,3 +94,53 @@ img.object-fit {
   background-color: rgb(29, 78, 216);
   border-color: rgb(29, 78, 216);
 }
+.preview h1 {
+  font-size: 32px;
+  font-weight: bold;
+}
+.preview h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+.preview h3 {
+  font-size: 18.7333px;
+  font-weight: bold;
+}
+.preview h4 {
+  font-size: 16px;
+  font-weight: bold;
+}
+.preview h5 {
+  font-size: 13.2667px;
+  font-weight: bold;
+}
+.preview h6 {
+  font-size: 10.7333px;
+  font-weight: bold;
+}
+.preview p,
+.preview span {
+  font-size: 16px;
+}
+
+.preview ul {
+  list-style: disc;
+}
+.preview ol {
+  list-style: decimal;
+}
+.toolbar {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.toolbar button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 10px;
+}

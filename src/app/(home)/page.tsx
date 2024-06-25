@@ -9,12 +9,15 @@ import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";
 
 export default function Home() {
-  const cookieStore = cookies();
-  const refreshToken = cookieStore.get("refresh")?.value || null;
+  function getRefreshToken() {
+    const cookieStore = cookies();
+    const refreshToken = cookieStore.get("refresh")?.value;
+    return refreshToken;
+  }
 
   return (
     <>
-      <AccessToken refreshToken={refreshToken} />
+      <AccessToken refreshToken={getRefreshToken()} />
       <main>
         <section
           className="banner-section text-center bg-main-banner bg-cover 

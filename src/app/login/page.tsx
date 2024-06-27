@@ -12,6 +12,10 @@ export default function LoginPage() {
     window.location.href = "http://localhost:9502/api/auth/kakao";
   };
 
+  const clickGoogleLogin = () => {
+    window.location.href = "http://localhost:9502/api/auth/google";
+  };
+
   return (
     <>
       <main className="relative">
@@ -41,6 +45,7 @@ export default function LoginPage() {
             aria-label="구글 로그인"
             className="block mt-4"
             id="my-signin2"
+            onClick={clickGoogleLogin}
           >
             <Image
               src={googleLogin}

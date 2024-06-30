@@ -13,3 +13,11 @@
 .custom-button {
   @apply bg-blue-700 text-white px-4 py-2 rounded-md;
 }
+
+.page-section {
+  @apply px-10 sm:px-12 lg:px-20;
+}
+
+.input-border {
+  @apply border border-gray-300;
+}

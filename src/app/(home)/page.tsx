@@ -7,6 +7,8 @@ import TripCard from "../../components/TripCard";
 import Head from "next/head.js";
 import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";
+import Link from "next/link.js";
+import Banner from "@/components/Banner";
 
 export default function Home() {
   function getRefreshToken() {
@@ -19,14 +21,7 @@ export default function Home() {
     <>
       <AccessToken refreshToken={getRefreshToken()} />
       <main>
-        <section
-          className="banner-section text-center bg-main-banner bg-cover 
-      bg-bottom md:bg-bottom-1 p-20 text-white"
-        >
-          <h2 className="text-h2 font-bold">Your Travel Plans</h2>
-          <p className="my-5">Plan your next adventure with ease</p>
-          <button className="custom-button">Create New Travel Plan</button>
-        </section>
+        <Banner />
         <section className="page-section py-20">
           <h2 className="h2 a11y-hidden">페이지 소개</h2>
           <ul className="flex flex-row justify-between items-center">

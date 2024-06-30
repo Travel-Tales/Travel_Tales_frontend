@@ -1,9 +1,18 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "../../public/main-logo.png";
+import LocalStorage from "@/service/localstorage";
 
 export default function Header() {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAccessToken(LocalStorage.getItem("accessToken"));
+  }, []);
+
   return (
     <header
       className="w-full fixed top-0 left-0 
@@ -24,18 +33,15 @@ export default function Header() {
             <li className="menu">
               <Link href={"/travel/plans"}>Travel Plans</Link>
             </li>
-            <li className="menu">
-              <Link href={"/login"}>Login</Link>
-            </li>
-            {/* {token ? (
-            <li>
-              <Link href={"/mypage"}>MyPage</Link>
-            </li>
-          ) : (
-            <li>
-              <Link href={"/login"}>Login</Link>
-            </li>
-          )} */}
+            {accessToken ? (
+              <li className="menu">
+                <Link href={"/mypage"}>MyPage</Link>
+              </li>
+            ) : (
+              <li className="menu">
+                <Link href={"/login"}>Login</Link>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

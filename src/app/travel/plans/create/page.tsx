@@ -14,22 +14,99 @@ import testImg from "../../../../../public/camera_icon.svg";
 import noImg from "../../../../../public/no-img.jpg";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Toolbar from "@/components/Toolbar";
+import useStore from "@/store/store";
+
+interface DefaultData {
+  title: string;
+  content: string;
+  travelArea: string;
+  travelerCount: string;
+  budget: string;
+  thumnail: string;
+  startDate: Date;
+  endDate: Date;
+  visibilityStatus: string;
+}
 
 export default function TravelPlanCreatePage() {
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [members, setMembers] = useState("");
-  const [budget, setBudget] = useState("");
-
+  const [visibility, setVisibility] = useState<string>("Public");
+  const [title, setTitle] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [members, setMembers] = useState<string>("1");
+  const [budget, setBudget] = useState<string>("1");
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-
   const imageRef = useRef(null);
   const [imgUrl, setImgUrl] = useState<string>("");
+  const [markdown, setMarkdown] = useState<string>("# Header");
+
   const [fileObj, setFileObj] = useState<File | null>(null);
 
-  const [markdown, setMarkdown] = useState("# Header");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const planId = useStore((state) => state.planId);
+  const access = useStore((state) => state.accessToken);
+
+  useEffect(() => {
+    const handleSaveShortcut = (e: {
+      ctrlKey: any;
+      metaKey: any;
+      key: string;
+      preventDefault: () => void;
+    }) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        saveChanges();
+      }
+    };
+
+    const saveChanges = async () => {
+      const data = {
+        title,
+        content: markdown,
+        travelArea: location,
+        travelerCount: Number(members),
+        budget: Number(budget),
+        thumnail: imgUrl,
+        startDate: startDate,
+        endDate: endDate,
+        visibilityStatus: visibility,
+      };
+
+      try {
+        if (planId) {
+          const response = await fetch(
+            `http://localhost:9502/api/post/${planId}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access}`,
+              },
+              body: JSON.stringify(data),
+            }
+          );
+          if (!response.ok) {
+            alert("저장에 실패했습니다.");
+            throw new Error("Failed to save changes");
+          }
+          const json = await response.json();
+          if (json.success) {
+            alert("저장되었습니다.");
+          }
+        }
+      } catch (error) {
+        console.error("Error saving changes:", error);
+      }
+    };
+
+    window.addEventListener("keydown", handleSaveShortcut);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleSaveShortcut);
+    };
+  }, [planId]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -85,7 +162,14 @@ export default function TravelPlanCreatePage() {
           <div className="toggle-switch mb-6">
             <label className="inline-flex items-center cursor-pointer">
               <span>공개 여부</span>
-              <input role="switch" type="checkbox" />
+              <input
+                role="switch"
+                type="checkbox"
+                checked={visibility === "Public" ? false : true}
+                onChange={() => {
+                  setVisibility(visibility === "Public" ? "Private" : "Public");
+                }}
+              />
             </label>
           </div>
           <div className="mb-2 flex flex-col ">

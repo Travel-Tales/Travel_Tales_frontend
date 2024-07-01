@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
-import useStore from "@/store/store";
 import { recommandPlans } from "../../data/temporary.js";
 import { introduction } from "../../data/fixed";
 import TripCard from "../../components/TripCard";

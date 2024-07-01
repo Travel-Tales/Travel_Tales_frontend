@@ -3,16 +3,16 @@ import { devtools, persist } from "zustand/middleware";
 import type {} from "@redux-devtools/extension"; // required for devtools typing
 
 interface BearState {
-  bears: number;
-  increase: (by: number) => void;
+  accessToken: string;
+  setAccessToken: (token: string) => void;
 }
 
 const useStore = create<BearState>()(
   devtools(
     persist(
       (set) => ({
-        bears: 0,
-        increase: (by) => set((state) => ({ bears: state.bears + by })),
+        accessToken: "",
+        setAccessToken: (token: string) => set({ accessToken: token }),
       }),
       {
         name: "bear-storage",

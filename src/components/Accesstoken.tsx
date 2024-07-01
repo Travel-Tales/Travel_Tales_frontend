@@ -1,7 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
+import useStore from "@/store/store";
 
 export default function AccessToken({ refreshToken }: any) {
+  const setAccessToken = useStore((state) => state.setAccessToken);
+
   useEffect(() => {
     if (refreshToken) {
       getAccessToken();
@@ -18,6 +21,7 @@ export default function AccessToken({ refreshToken }: any) {
       const jsonData = await response.json();
       const accessToken = jsonData.data.access;
       localStorage.setItem("accessToken", accessToken);
+      setAccessToken(accessToken);
     } catch (error) {
       console.log(error);
     }

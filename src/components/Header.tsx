@@ -3,7 +3,6 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "../../public/main-logo.png";
-
 import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
 

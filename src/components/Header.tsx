@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "../../public/main-logo.png";
@@ -8,13 +8,7 @@ import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
 
 export default function Header() {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const access = useStore((state) => state.accessToken);
-
-  useEffect(() => {
-    //: 마운트 되고 나서 window 객체 있을때 실행
-    setAccessToken(LocalStorage.getItem("accessToken"));
-  }, [access]);
 
   return (
     <header
@@ -25,7 +19,6 @@ export default function Header() {
         <Link href="/">
           <Image src={mainLogo} alt="Website Logo" width={180} />
         </Link>
-        {/* <Link href={"/"}>Travel Tales</Link> */}
       </h1>
       <div className="custom-flex">
         <nav>
@@ -36,18 +29,15 @@ export default function Header() {
             <li className="menu">
               <Link href={"/travel/plans"}>Travel Plans</Link>
             </li>
-            <li className="menu">
-              <Link href={"/login"}>Login</Link>
-            </li>
-            {/* {token ? (
-            <li>
-              <Link href={"/mypage"}>MyPage</Link>
-            </li>
-          ) : (
-            <li>
-              <Link href={"/login"}>Login</Link>
-            </li>
-          )} */}
+            {access ? (
+              <li className="menu">
+                <Link href={"/mypage"}>MyPage</Link>
+              </li>
+            ) : (
+              <li className="menu">
+                <Link href={"/login"}>Login</Link>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

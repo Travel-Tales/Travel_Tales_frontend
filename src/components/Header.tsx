@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "../../public/main-logo.png";
+import LocalStorage from "@/service/localstorage";
 
 import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
@@ -15,6 +16,7 @@ export default function Header() {
     //: 마운트 되고 나서 window 객체 있을때 실행
     setAccessToken(LocalStorage.getItem("accessToken"));
   }, [access]);
+
 
   return (
     <header
@@ -36,18 +38,15 @@ export default function Header() {
             <li className="menu">
               <Link href={"/travel/plans"}>Travel Plans</Link>
             </li>
-            <li className="menu">
-              <Link href={"/login"}>Login</Link>
-            </li>
-            {/* {token ? (
-            <li>
-              <Link href={"/mypage"}>MyPage</Link>
-            </li>
-          ) : (
-            <li>
-              <Link href={"/login"}>Login</Link>
-            </li>
-          )} */}
+            {accessToken ? (
+              <li className="menu">
+                <Link href={"/mypage"}>MyPage</Link>
+              </li>
+            ) : (
+              <li className="menu">
+                <Link href={"/login"}>Login</Link>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

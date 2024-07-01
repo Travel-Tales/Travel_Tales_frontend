@@ -28,8 +28,8 @@ export default function CreatePlanButton() {
     budget: 1,
     thumnail: "",
     startDate: new Date(),
-    endDate: new Date(),
-    visibilityStatus: "Public",
+    endDate: new Date(), 
+    visibilityStatus: "Pubilc",
   };
 
   const createPlan = async (defaultData: DefaultData) => {

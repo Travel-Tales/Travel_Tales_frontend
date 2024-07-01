@@ -1,17 +1,13 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "../../public/main-logo.png";
 import LocalStorage from "@/service/localstorage";
+import useStore from "@/store/store";
 
 export default function Header() {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setAccessToken(LocalStorage.getItem("accessToken"));
-  }, []);
+  const access = useStore((state) => state.accessToken);
 
   return (
     <header
@@ -22,7 +18,6 @@ export default function Header() {
         <Link href="/">
           <Image src={mainLogo} alt="Website Logo" width={180} />
         </Link>
-        {/* <Link href={"/"}>Travel Tales</Link> */}
       </h1>
       <div className="custom-flex">
         <nav>
@@ -33,7 +28,7 @@ export default function Header() {
             <li className="menu">
               <Link href={"/travel/plans"}>Travel Plans</Link>
             </li>
-            {accessToken ? (
+            {access ? (
               <li className="menu">
                 <Link href={"/mypage"}>MyPage</Link>
               </li>

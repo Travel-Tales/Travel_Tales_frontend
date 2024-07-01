@@ -180,7 +180,7 @@ export default function TravelPlanCreatePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="input-border"
+              className="input-border py-1 px-3"
             />
           </div>
           <div className="flex flex-col mb-2">
@@ -191,7 +191,7 @@ export default function TravelPlanCreatePage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               required
-              className="input-border"
+              className="input-border py-1 px-3"
             />
           </div>
           <div className="flex flex-row justify-start items-center">
@@ -203,7 +203,7 @@ export default function TravelPlanCreatePage() {
                 value={members}
                 onChange={(e) => setMembers(e.target.value)}
                 required
-                className="input-border"
+                className="input-border py-1 px-3"
               />
             </div>
             <div className="flex flex-col mb-2">
@@ -214,7 +214,7 @@ export default function TravelPlanCreatePage() {
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
                 required
-                className="input-border"
+                className="input-border py-1 px-3"
               />
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function TravelPlanCreatePage() {
                 aria-label="프로필사진교체"
                 accept="image/*"
                 required
-                className="block w-full text-sm text-slate-500
+                className="block text-sm text-slate-500
                 file:mr-4 file:py-2 file:px-4 file:rounded-md
                 file:border-0 file:text-sm file:font-semibold
                 file:bg-pink-50 file:text-pink-700

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import LocalStorage from "@/service/localstorage";
+import useStore from "@/store/store";
 
 interface DefaultData {
   title: string;
@@ -11,13 +11,14 @@ interface DefaultData {
   travelerCount: number;
   budget: number;
   thumnail: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   visibilityStatus: string;
 }
 
 export default function CreatePlanButton() {
-  const accessToken = LocalStorage.getItem("accessToken");
+  const access = useStore((state) => state.accessToken);
+  const setPlanId = useStore((state) => state.setPlanId);
 
   const defaultData = {
     title: "",
@@ -26,8 +27,8 @@ export default function CreatePlanButton() {
     travelerCount: 1,
     budget: 1,
     thumnail: "",
-    startDate: "",
-    endDate: "",
+    startDate: new Date(),
+    endDate: new Date(), 
     visibilityStatus: "Pubilc",
   };
 
@@ -37,12 +38,12 @@ export default function CreatePlanButton() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${access}`,
         },
         body: JSON.stringify(defaultData),
       });
       const json = await response.json();
-      console.log(json);
+      setPlanId(json.data.id);
     } catch (error) {
       console.log(error);
     }

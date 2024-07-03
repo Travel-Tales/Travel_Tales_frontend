@@ -28,8 +28,8 @@ export default function CreatePlanButton() {
     budget: 1,
     thumnail: "",
     startDate: new Date(),
-    endDate: new Date(), 
-    visibilityStatus: "Pubilc",
+    endDate: new Date(),
+    visibilityStatus: "Public",
   };
 
   const createPlan = async (defaultData: DefaultData) => {
@@ -44,16 +44,23 @@ export default function CreatePlanButton() {
       });
       const json = await response.json();
       setPlanId(json.data.id);
+      return "success";
     } catch (error) {
       console.log(error);
+      return "fail";
     }
   };
 
   const router = useRouter();
 
   const movePage = async () => {
-    createPlan(defaultData);
-    router.push("/travel/plans/create");
+    const status = await createPlan(defaultData);
+    console.log(status);
+    if (status === "success") {
+      router.push("/travel/plans/create");
+    } else {
+      alert("에러발생, 페이지 생성하지 못했습니다.");
+    }
   };
 
   return (

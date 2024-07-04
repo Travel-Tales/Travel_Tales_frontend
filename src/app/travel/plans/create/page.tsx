@@ -15,37 +15,86 @@ import noImg from "../../../../../public/no-img.jpg";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Toolbar from "@/components/Toolbar";
 import useStore from "@/store/store";
+import io, { Socket } from "socket.io-client";
 
 interface DefaultData {
   title: string;
-  content: string;
-  travelArea: string;
-  travelerCount: string;
+  location: string;
+  members: string;
   budget: string;
-  thumnail: string;
   startDate: Date;
   endDate: Date;
-  visibilityStatus: string;
+  imgUrl: string;
+  visibility: string;
 }
 
 export default function TravelPlanCreatePage() {
-  const [visibility, setVisibility] = useState<string>("Public");
-  const [title, setTitle] = useState<string>("");
-  const [location, setLocation] = useState<string>("");
-  const [members, setMembers] = useState<string>("1");
-  const [budget, setBudget] = useState<string>("1");
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const imageRef = useRef(null);
-  const [imgUrl, setImgUrl] = useState<string>("");
+  const [data, setData] = useState<DefaultData>({
+    title: "",
+    location: "",
+    members: "1",
+    budget: "1",
+    startDate: new Date(),
+    endDate: new Date(),
+    imgUrl: "",
+    visibility: "Public",
+  });
   const [markdown, setMarkdown] = useState<string>("# Header");
 
   const [fileObj, setFileObj] = useState<File | null>(null);
-
+  const imageRef = useRef(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const planId = useStore((state) => state.planId);
   const access = useStore((state) => state.accessToken);
+
+  //socket
+  // const [socket, setSocket] = useState<Socket | null>(null);
+  // const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [transport, setTransport] = useState("N/A");
+
+  const saveChanges = async () => {
+    console.log(data.title);
+
+    const body = {
+      title: data.title,
+      content: markdown,
+      travelArea: data.location,
+      travelerCount: Number(data.members),
+      budget: Number(data.budget),
+      thumnail: data.imgUrl,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      visibilityStatus: data.visibility,
+    };
+
+    try {
+      if (planId) {
+        const response = await fetch(
+          `http://localhost:9502/api/post/${planId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access}`,
+            },
+            body: JSON.stringify(body),
+          }
+        );
+        if (!response.ok) {
+          alert("저장에 실패했습니다.");
+          throw new Error("Failed to save changes");
+        }
+        const json = await response.json();
+        if (json.success) {
+          alert("저장되었습니다.");
+        }
+      }
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+  };
 
   useEffect(() => {
     const handleSaveShortcut = (e: {
@@ -60,53 +109,74 @@ export default function TravelPlanCreatePage() {
       }
     };
 
-    const saveChanges = async () => {
-      const data = {
-        title,
-        content: markdown,
-        travelArea: location,
-        travelerCount: Number(members),
-        budget: Number(budget),
-        thumnail: imgUrl,
-        startDate: startDate,
-        endDate: endDate,
-        visibilityStatus: visibility,
-      };
-
-      try {
-        if (planId) {
-          const response = await fetch(
-            `http://localhost:9502/api/post/${planId}`,
-            {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access}`,
-              },
-              body: JSON.stringify(data),
-            }
-          );
-          if (!response.ok) {
-            alert("저장에 실패했습니다.");
-            throw new Error("Failed to save changes");
-          }
-          const json = await response.json();
-          if (json.success) {
-            alert("저장되었습니다.");
-          }
-        }
-      } catch (error) {
-        console.error("Error saving changes:", error);
-      }
-    };
-
     window.addEventListener("keydown", handleSaveShortcut);
 
     // Clean up event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleSaveShortcut);
     };
-  }, [planId]);
+  }, [planId, data, markdown]);
+
+  // useEffect(() => {
+  //   const socket = io("http://localhost:9502");
+
+  //   socket.on("connect", () => {
+  //     console.log("connected to server");
+  //     socket.emit("message", "Hello Server!");
+  //     setIsConnected(true);
+  //   });
+
+  //   socket.on("message", (message) => {
+  //     console.log("Message from server:", message);
+  //   });
+
+  //   socket.on("disconnect", () => {
+  //     console.log("disconnected from server");
+  //     setIsConnected(false);
+  //   });
+
+  //   socket.on("connect_error", (error) => {
+  //     console.error("Connection error:", error);
+  //   });
+
+  //   setSocket(socket);
+
+  //   return () => {
+  //     if (socket) {
+  //       socket.disconnect();
+  //     }
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   const socket = io("http://localhost:9502");
+
+  //   if (socket.connected) {
+  //     onConnect();
+  //   }
+
+  //   function onConnect() {
+  //     setIsConnected(true);
+  //     setTransport(socket.io.engine.transport.name);
+
+  //     socket.io.engine.on("upgrade", (transport) => {
+  //       setTransport(transport.name);
+  //     });
+  //   }
+
+  //   function onDisconnect() {
+  //     setIsConnected(false);
+  //     setTransport("N/A");
+  //   }
+
+  //   socket.on("connect", onConnect);
+  //   socket.on("disconnect", onDisconnect);
+
+  //   return () => {
+  //     socket.off("connect", onConnect);
+  //     socket.off("disconnect", onDisconnect);
+  //   };
+  // }, []);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -147,7 +217,7 @@ export default function TravelPlanCreatePage() {
       const file = files[0];
       setFileObj(file);
       const objectURL = URL.createObjectURL(file);
-      setImgUrl(objectURL);
+      setData({ ...data, imgUrl: objectURL });
     }
   };
 
@@ -157,6 +227,8 @@ export default function TravelPlanCreatePage() {
 
   return (
     <main>
+      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+      <p>Transport: {transport}</p>
       <section className="w-3/4 my-10 mx-auto">
         <form onSubmit={handleSubmit}>
           <div className="toggle-switch mb-6">
@@ -165,9 +237,13 @@ export default function TravelPlanCreatePage() {
               <input
                 role="switch"
                 type="checkbox"
-                checked={visibility === "Public" ? false : true}
+                checked={data.visibility === "Public" ? false : true}
                 onChange={() => {
-                  setVisibility(visibility === "Public" ? "Private" : "Public");
+                  setData({
+                    ...data,
+                    visibility:
+                      data.visibility === "Public" ? "Private" : "Public",
+                  });
                 }}
               />
             </label>
@@ -177,9 +253,11 @@ export default function TravelPlanCreatePage() {
             <input
               type="text"
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
+              value={data.title}
+              onChange={(e) => {
+                setData({ ...data, title: e.target.value });
+              }}
+              // required
               className="input-border py-1 px-3"
             />
           </div>
@@ -188,8 +266,8 @@ export default function TravelPlanCreatePage() {
             <input
               type="text"
               id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={data.location}
+              onChange={(e) => setData({ ...data, location: e.target.value })}
               required
               className="input-border py-1 px-3"
             />
@@ -200,8 +278,8 @@ export default function TravelPlanCreatePage() {
               <input
                 type="number"
                 id="members"
-                value={members}
-                onChange={(e) => setMembers(e.target.value)}
+                value={data.members}
+                onChange={(e) => setData({ ...data, members: e.target.value })}
                 required
                 className="input-border py-1 px-3"
               />
@@ -211,8 +289,8 @@ export default function TravelPlanCreatePage() {
               <input
                 type="number"
                 id="budget"
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
+                value={data.budget}
+                onChange={(e) => setData({ ...data, budget: e.target.value })}
                 required
                 className="input-border py-1 px-3"
               />
@@ -220,31 +298,35 @@ export default function TravelPlanCreatePage() {
           </div>
 
           <div className="flex flex-col my-6 border-y py-6">
-            {startDate && endDate && (
+            {data.startDate && data.endDate && (
               <div className="flex flex-row items-center mb-2">
                 <p className="mr-2">여행 시작일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
+                  selected={data.startDate}
+                  onChange={(date) =>
+                    date && setData({ ...data, startDate: date })
+                  }
                   selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
+                  startDate={data.startDate}
+                  endDate={data.endDate}
                   className="input-border px-2 py-1"
                 />
               </div>
             )}
-            {startDate && endDate && (
+            {data.startDate && data.endDate && (
               <div className="flex flex-row items-center">
                 <p className="mr-2">여행 종료일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
-                  selected={endDate}
-                  onChange={(date) => setEndDate(date)}
+                  selected={data.endDate}
+                  onChange={(date) =>
+                    date && setData({ ...data, endDate: date })
+                  }
                   selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
+                  startDate={data.startDate}
+                  endDate={data.endDate}
+                  minDate={data.startDate}
                   className="input-border px-2 py-1"
                 />
               </div>
@@ -270,7 +352,7 @@ export default function TravelPlanCreatePage() {
               />
             </label>
             <Image
-              src={imgUrl ? imgUrl : noImg}
+              src={data.imgUrl ? data.imgUrl : noImg}
               alt="대표사진 미리보기"
               width={200}
               height={100}

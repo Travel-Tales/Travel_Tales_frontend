@@ -55,8 +55,6 @@ export default function TravelPlanCreatePage() {
   const [transport, setTransport] = useState("N/A");
 
   const saveChanges = async () => {
-    console.log(data.title);
-
     const body = {
       title: data.title,
       content: markdown,
@@ -70,6 +68,8 @@ export default function TravelPlanCreatePage() {
     };
 
     try {
+      const socket = io("http://localhost:9502");
+
       if (planId) {
         const response = await fetch(
           `http://localhost:9502/api/post/${planId}`,
@@ -89,6 +89,7 @@ export default function TravelPlanCreatePage() {
         const json = await response.json();
         if (json.success) {
           alert("저장되었습니다.");
+          socket.emit("postUpdated", body);
         }
       }
     } catch (error) {
@@ -148,35 +149,36 @@ export default function TravelPlanCreatePage() {
   //   };
   // }, []);
 
-  // useEffect(() => {
-  //   const socket = io("http://localhost:9502");
+  useEffect(() => {
+    const socket = io("http://localhost:9502");
 
-  //   if (socket.connected) {
-  //     onConnect();
-  //   }
+    if (socket.connected) {
+      onConnect();
+    }
 
-  //   function onConnect() {
-  //     setIsConnected(true);
-  //     setTransport(socket.io.engine.transport.name);
+    function onConnect() {
+      setIsConnected(true);
+      setTransport(socket.io.engine.transport.name);
 
-  //     socket.io.engine.on("upgrade", (transport) => {
-  //       setTransport(transport.name);
-  //     });
-  //   }
+      socket.io.engine.on("upgrade", (transport) => {
+        console.log("upgrade", transport);
+        setTransport(transport.name);
+      });
+    }
 
-  //   function onDisconnect() {
-  //     setIsConnected(false);
-  //     setTransport("N/A");
-  //   }
+    function onDisconnect() {
+      setIsConnected(false);
+      setTransport("N/A");
+    }
 
-  //   socket.on("connect", onConnect);
-  //   socket.on("disconnect", onDisconnect);
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
 
-  //   return () => {
-  //     socket.off("connect", onConnect);
-  //     socket.off("disconnect", onDisconnect);
-  //   };
-  // }, []);
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+    };
+  }, []);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -227,8 +229,8 @@ export default function TravelPlanCreatePage() {
 
   return (
     <main>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      <p>Transport: {transport}</p>
+      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+      <p>Transport: {transport}</p> */}
       <section className="w-3/4 my-10 mx-auto">
         <form onSubmit={handleSubmit}>
           <div className="toggle-switch mb-6">

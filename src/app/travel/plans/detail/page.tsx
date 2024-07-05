@@ -1,11 +1,93 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import thumbnail from "../../../../../public/main-banner.jpg";
+import io, { Socket } from "socket.io-client";
 
 export default function TravelPlansDetailPage() {
+  // const info = await getDetailInfo();
+  const [info, setInfo] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [transport, setTransport] = useState("N/A");
+  const [socket, setSocket] = useState<any | null>(null);
+
+  useEffect(() => {
+    const socketInstance = io(`http://localhost:9502`, {
+      transports: ["websocket"],
+    });
+
+    const fetchData = async () => {
+      const initialData = await getDetailInfo();
+      setInfo(initialData);
+    };
+
+    fetchData();
+
+    if (socketInstance.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      setIsConnected(true);
+      setTransport(socketInstance.io.engine.transport.name);
+
+      socketInstance.io.engine.on("upgrade", (transport: any) => {
+        setTransport(transport.name);
+      });
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      setTransport("N/A");
+    }
+
+    socketInstance.on("connect", onConnect);
+    socketInstance.on("disconnect", onDisconnect);
+
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.off("connect", onConnect);
+      socketInstance.off("disconnect", onDisconnect);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+
+    socket.on("updatePost", (data: any) => {
+      console.log(data);
+      setInfo(data);
+    });
+
+    return () => {
+      socket.off("updatePost");
+    };
+  }, [isConnected, info]);
+
+  async function getDetailInfo() {
+    try {
+      const response = await fetch(`http://localhost:9502/api/post/${31}`, {
+        cache: "no-store",
+      });
+      const json = await response.json();
+      // console.log(json);
+      // console.log("json!!!!", json.data[16].travelPost);
+      return json;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <main>
-      <section className="page-section py-14">
+      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+      <p>Transport: {transport}</p>
+      {JSON.stringify(info)}
+      {/* <section className="page-section py-14">
         <h2 className="text-3xl font-bold pb-3 flex items-center">
           당일치기 당진 여행 계획서!{" "}
           <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
@@ -45,7 +127,7 @@ export default function TravelPlansDetailPage() {
           </div>
         </article>
         <article className="text-center">본문내용</article>
-      </section>
+      </section> */}
     </main>
   );
 }

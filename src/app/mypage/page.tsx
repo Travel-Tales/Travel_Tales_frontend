@@ -1,7 +1,39 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
+import useStore from "@/store/store";
 
 export default function Mypage() {
+  const url = "http://localhost:9502/api/post/my-post";
+  const access = useStore((state) => state.accessToken);
+  const setPlanId = useStore((state) => state.setPlanId);
+
+  const [plans, setPlans] = useState<any>([]);
+
+  useEffect(() => {
+    async function getMyPlans() {
+      // 서버 컴포넌트에서 패치를 실행한다면 패치된 url을 캐싱시켜준다.
+      // 하지만 최신 데이터가 필요한 순간들이 있기 때문에 그 부분은 따로 공부하자.
+      // 캐싱이나, revalidation
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access}`,
+        },
+        cache: "no-store",
+      });
+      const json = await response.json();
+      setPlans(json.data);
+    }
+    if (access) {
+      getMyPlans();
+    }
+  }, [access]);
+
   return (
     <main>
       <section className="page-section ">
@@ -31,6 +63,28 @@ export default function Mypage() {
             <h2>나의 여행 리뷰</h2>
           </section>
         </article>
+        <div>
+          <ul>
+            {plans.map((value: any) => (
+              <li key={value.id}>
+                <Link
+                  href={`travel/plans/detail/${value.id}`}
+                  onClick={() => setPlanId(value.id)}
+                >
+                  {value.id}
+                </Link>
+                {""}
+                <Link
+                  href={`travel/plans/edit/${value.id}`}
+                  style={{ marginLeft: "100px" }}
+                  onClick={() => setPlanId(value.id)}
+                >
+                  {value.id} edit
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
     </main>
   );

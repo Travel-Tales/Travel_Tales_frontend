@@ -10,12 +10,11 @@ import React, {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
-import testImg from "../../../../../public/camera_icon.svg";
-import noImg from "../../../../../public/no-img.jpg";
+import testImg from "/public/camera_icon.svg";
+import noImg from "/public/no-img.jpg";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Toolbar from "@/components/Toolbar";
 import useStore from "@/store/store";
-import io, { Socket } from "socket.io-client";
 
 interface DefaultData {
   title: string;
@@ -48,15 +47,10 @@ export default function TravelPlanCreatePage() {
   const planId = useStore((state) => state.planId);
   const access = useStore((state) => state.accessToken);
 
-  //socket
-  // const [socket, setSocket] = useState<Socket | null>(null);
-  // const [isConnected, setIsConnected] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
 
   const saveChanges = async () => {
-    console.log(data.title);
-
     const body = {
       title: data.title,
       content: markdown,
@@ -117,67 +111,6 @@ export default function TravelPlanCreatePage() {
     };
   }, [planId, data, markdown]);
 
-  // useEffect(() => {
-  //   const socket = io("http://localhost:9502");
-
-  //   socket.on("connect", () => {
-  //     console.log("connected to server");
-  //     socket.emit("message", "Hello Server!");
-  //     setIsConnected(true);
-  //   });
-
-  //   socket.on("message", (message) => {
-  //     console.log("Message from server:", message);
-  //   });
-
-  //   socket.on("disconnect", () => {
-  //     console.log("disconnected from server");
-  //     setIsConnected(false);
-  //   });
-
-  //   socket.on("connect_error", (error) => {
-  //     console.error("Connection error:", error);
-  //   });
-
-  //   setSocket(socket);
-
-  //   return () => {
-  //     if (socket) {
-  //       socket.disconnect();
-  //     }
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const socket = io("http://localhost:9502");
-
-  //   if (socket.connected) {
-  //     onConnect();
-  //   }
-
-  //   function onConnect() {
-  //     setIsConnected(true);
-  //     setTransport(socket.io.engine.transport.name);
-
-  //     socket.io.engine.on("upgrade", (transport) => {
-  //       setTransport(transport.name);
-  //     });
-  //   }
-
-  //   function onDisconnect() {
-  //     setIsConnected(false);
-  //     setTransport("N/A");
-  //   }
-
-  //   socket.on("connect", onConnect);
-  //   socket.on("disconnect", onDisconnect);
-
-  //   return () => {
-  //     socket.off("connect", onConnect);
-  //     socket.off("disconnect", onDisconnect);
-  //   };
-  // }, []);
-
   const handleSubmit = (e: any) => {
     e.preventDefault();
   };
@@ -227,8 +160,8 @@ export default function TravelPlanCreatePage() {
 
   return (
     <main>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      <p>Transport: {transport}</p>
+      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+      <p>Transport: {transport}</p> */}
       <section className="w-3/4 my-10 mx-auto">
         <form onSubmit={handleSubmit}>
           <div className="toggle-switch mb-6">

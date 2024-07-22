@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
 
@@ -19,6 +19,7 @@ interface DefaultData {
 export default function CreatePlanButton() {
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
+  let planId: number;
 
   const defaultData = {
     title: "",
@@ -44,6 +45,7 @@ export default function CreatePlanButton() {
       });
       const json = await response.json();
       setPlanId(json.data.id);
+      planId = json.data.id;
       return "success";
     } catch (error) {
       console.log(error);
@@ -56,8 +58,8 @@ export default function CreatePlanButton() {
   const movePage = async () => {
     const status = await createPlan(defaultData);
     console.log(status);
-    if (status === "success") {
-      router.push("/travel/plans/create");
+    if (status === "success" && planId) {
+      router.push(`/travel/plans/edit/${planId}`);
     } else {
       alert("에러발생, 페이지 생성하지 못했습니다.");
     }

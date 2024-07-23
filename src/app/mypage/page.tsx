@@ -5,12 +5,24 @@ import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
 
+interface Profile {
+  id: number;
+  nickname: string;
+  email: string;
+  loginType: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function Mypage() {
-  const url = "http://localhost:9502/api/post/my-post";
+  const postUrl = "http://localhost:9502/api/post/my-post";
+  const myProfileUrl = "http://localhost:9502/api/user/profile";
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
 
   const [plans, setPlans] = useState<any>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     async function getMyPlans() {
@@ -18,7 +30,7 @@ export default function Mypage() {
       // 하지만 최신 데이터가 필요한 순간들이 있기 때문에 그 부분은 따로 공부하자.
       // 캐싱이나, revalidation
 
-      const response = await fetch(url, {
+      const response = await fetch(postUrl, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -29,8 +41,20 @@ export default function Mypage() {
       const json = await response.json();
       setPlans(json.data);
     }
+    async function myProfile() {
+      const response = await fetch(myProfileUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access}`,
+        },
+      });
+      const json = await response.json();
+      setProfile(json.data);
+    }
     if (access) {
       getMyPlans();
+      myProfile();
     }
   }, [access]);
 
@@ -44,8 +68,8 @@ export default function Mypage() {
           <div className="flex flex-row">
             <ProfileImg />
             <section className="ml-4 mt-5">
-              <p>wlgus_57@naver.com</p>
-              <p>John Doe</p>
+              <p>{profile && profile.email}</p>
+              <p>{profile && profile.nickname}</p>
             </section>
           </div>
           <button className="bg-black text-white px-14 py-2 text-sm rounded-md">

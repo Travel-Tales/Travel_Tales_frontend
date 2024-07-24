@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "../../public/main-logo.png";
@@ -7,7 +7,12 @@ import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
 
 export default function Header() {
+  const [isClient, setIsClient] = useState(false);
   const access = useStore((state) => state.accessToken);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <header
@@ -28,7 +33,7 @@ export default function Header() {
             <li className="menu">
               <Link href={"/travel/plans"}>Travel Plans</Link>
             </li>
-            {access ? (
+            {isClient && access ? (
               <li className="menu">
                 <Link href={"/mypage"}>MyPage</Link>
               </li>

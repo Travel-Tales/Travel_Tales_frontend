@@ -1,0 +1,54 @@
+import LocalStorage from "./localstorage";
+const createApiClient = (baseUrl: string) => {
+  //   const access = useStore((state) => state.accessToken);
+  const access = LocalStorage.getItem("accessToken");
+  console.log(access);
+  const apiFetch = async (url: string, options = {}, headers = {}) => {
+    //: content type도 다를 수 있으니 header도 요청쪽에서 Authorization을 제외한 모든 설정을 전달
+    const mergedOptions = {
+      ...options,
+      headers: {
+        ...headers,
+        Authorization: `Bearer ${access}`,
+      },
+    };
+    const response = await fetch(baseUrl + url, mergedOptions);
+
+    if (!response.ok) {
+      //: 에러 공통 처리 (액세스 토큰 만료시 재발급 로직)
+      throw new Error("Network response was not ok");
+    } else {
+      const data = await response.json();
+      return data;
+    }
+  };
+
+  return {
+    //: options에는 header제외 모든 내용
+    get: (url: string, options: any, headers: any) =>
+      apiFetch(url, { ...options, method: "GET" }, headers),
+    post: (url: string, options: any, headers: any) =>
+      apiFetch(
+        url,
+        {
+          ...options,
+          method: "POST",
+        },
+        headers
+      ),
+    patch: (url: string, options: any, headers: any) =>
+      apiFetch(
+        url,
+        {
+          ...options,
+          method: "PATCH",
+        },
+        headers
+      ),
+    delete: (url: string, options: any, headers: any) =>
+      apiFetch(url, { ...options, method: "DELETE" }, headers),
+  };
+};
+
+export const apiClient = createApiClient("http://localhost:9502");
+//: return {get, post, patch, delete}

@@ -10,11 +10,18 @@ import useStore from "@/store/store";
 interface ImgUrl {
   imgUrl: string;
   setImgUrl: (url: string) => void;
+  fileObj: File | null;
+  setFileObj: (file: File | null) => void;
+  isEdit: boolean;
 }
-export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
-  const [fileObj, setFileObj] = useState<File | null>(null);
+export default function ProfileImg({
+  imgUrl,
+  setImgUrl,
+  fileObj,
+  setFileObj,
+  isEdit,
+}: ImgUrl) {
   const imageRef = useRef(null);
-  const ProfileImgUrl = "http://localhost:9502/api/user/profile/upload";
   const access = useStore((state) => state.accessToken);
 
   const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -29,26 +36,6 @@ export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
     }
   };
 
-  const handleUpload = async () => {
-    if (!fileObj) {
-      console.error("No file selected");
-      return;
-    }
-    //: fileObj가 있을 때 formData에 file obj를 넘겨준다.
-    //: 가공된 formData를 body로 보냄
-    const formData = new FormData();
-    formData.append("file", fileObj);
-    const response = await fetch(ProfileImgUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${access}`,
-      },
-      body: formData,
-    });
-    const json = await response.json();
-  };
-
   return (
     <div className="flex-shrink-0">
       <h2 className="a11y-hidden">Upload Profile Image</h2>
@@ -61,17 +48,19 @@ export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
             htmlFor="file_upload"
             className="custom-thumbnail-label w-full h-full"
           >
-            <input
-              id="file_upload"
-              onChange={hanedleImgChange}
-              ref={imageRef}
-              type="file"
-              alt="profile-image"
-              aria-label="프로필사진교체"
-              accept="image/*"
-              required
-              className="h-0 invisible"
-            />
+            {isEdit && (
+              <input
+                id="file_upload"
+                onChange={hanedleImgChange}
+                ref={imageRef}
+                type="file"
+                alt="profile-image"
+                aria-label="프로필사진교체"
+                accept="image/*"
+                required
+                className="h-0 invisible"
+              />
+            )}
             <Image
               src={imgUrl ? imgUrl : profilePicture}
               alt="프로필 이미지"
@@ -80,8 +69,10 @@ export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
               className="absolute top-0 left-0 cursor-pointer"
             />
             <div
-              className="absolute top-0 left-0 bg-gray-100/50 
-            rounded-full w-full h-full opacity-0 hover:opacity-100 cursor-pointer"
+              className={`${
+                isEdit ? "hover:opacity-100 cursor-pointer" : ""
+              } absolute top-0 left-0 bg-gray-100/50 
+            rounded-full w-full h-full opacity-0`}
             >
               <Image
                 src={cameraIcon}
@@ -94,7 +85,7 @@ export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
             </div>
           </label>
         </div>
-        <button
+        {/* <button
           onClick={handleUpload}
           className={` text-white p-2 rounded-md 
           text-xs mt-2 mx-auto block ${
@@ -105,7 +96,7 @@ export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
           disabled={!fileObj}
         >
           Img Upload
-        </button>
+        </button> */}
       </div>
     </div>
   );

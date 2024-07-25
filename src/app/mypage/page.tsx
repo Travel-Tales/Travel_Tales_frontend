@@ -15,25 +15,28 @@ export interface Profile {
   updatedAt: string;
 }
 
-interface UserInfo {
-  email: string;
-  nickname: string;
-}
-
 export default function Mypage() {
   const postUrl = "http://localhost:9502/api/post/my-post";
   const myProfileUrl = "http://localhost:9502/api/user/profile";
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
-
   const [plans, setPlans] = useState<any>([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [imgUrl, setImgUrl] = useState<string>("");
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    email: "",
+
+  //: 파일을 append하기 위한 obj
+  const [fileObj, setFileObj] = useState<File | null>(null);
+  //: 원본 프로필 전체 저장
+  const [profile, setProfile] = useState<Profile>({
+    id: 0,
     nickname: "",
+    email: "",
+    loginType: "",
+    imageUrl: "",
+    createdAt: "",
+    updatedAt: "",
   });
+  //: 클라이언트 이미지 변경을 위한 단순 변환 url 저장
+  const [imgUrl, setImgUrl] = useState<string>("");
 
   useEffect(() => {
     async function getMyPlans() {
@@ -62,30 +65,56 @@ export default function Mypage() {
       });
       const json = await response.json();
       setImgUrl(json.data.imageUrl);
-      setUserInfo({ email: json.data.email, nickname: json.data.nickname });
       setProfile(json.data);
     }
     getMyPlans();
     myProfile();
   }, []);
 
-  const updateUserProfile = (key: string, value: string) => {
-    setUserInfo({ ...userInfo, [key]: value });
+  const onChangeUserProfile = (key: string, value: string) => {
+    setProfile({ ...profile, [key]: value });
   };
 
-  const UserProfileInput: React.FC<{ keyName: keyof UserInfo }> = ({
+  const UserProfileInput: React.FC<{ keyName: keyof Profile }> = ({
     keyName,
   }) => {
     return (
       <input
-        value={userInfo[keyName]}
+        value={profile[keyName]}
         onChange={(e) => {
-          updateUserProfile(keyName, e.target.value);
+          onChangeUserProfile(keyName, e.target.value);
         }}
-        autoFocus={isEdit && keyName === "email"}
+        autoFocus={isEdit}
         className="block py-1 px-2 w-full"
       />
     );
+  };
+
+  const updateUserProfile = async () => {
+    //: 가공된 formData를 body로 보냄
+
+    const formData = new FormData();
+    if (fileObj) {
+      formData.append("file", fileObj);
+    }
+    formData.append("nickname", profile.nickname);
+
+    const response = await fetch("http://localhost:9502/api/user/profile", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${access}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.log("Failed to send");
+      return;
+    }
+    const json = await response.json();
+    setImgUrl(json.data.imageUrl);
+    setProfile(json.data);
+    setIsEdit(false);
   };
 
   return (
@@ -96,14 +125,20 @@ export default function Mypage() {
         sm:px-0 md:px-24 lg:px-44 pt-5"
         >
           <div className="flex flex-1 mr-10">
-            <ProfileImg imgUrl={imgUrl} setImgUrl={setImgUrl} />
+            <ProfileImg
+              imgUrl={imgUrl}
+              setImgUrl={setImgUrl}
+              fileObj={fileObj}
+              setFileObj={setFileObj}
+              isEdit={isEdit}
+            />
             {isEdit ? (
-              <section className="ml-4 mt-5 flex-1">
-                <UserProfileInput keyName="email" />
+              <section className="ml-4 mt-3 flex-1">
+                <p className="py-1 px-2 w-full">{profile && profile.email}</p>
                 <UserProfileInput keyName="nickname" />
               </section>
             ) : (
-              <section className="ml-4 mt-5 flex-1">
+              <section className="ml-4 mt-3 flex-1">
                 <p className="py-1 px-2 w-full">{profile && profile.email}</p>
                 <p className="py-1 px-2 w-full">
                   {profile && profile.nickname}
@@ -117,7 +152,9 @@ export default function Mypage() {
                 ? "bg-blue-700 text-white rounded-md block w-40 py-2"
                 : "bg-gray-900 text-white rounded-md block w-40 py-2"
             }`}
-            onClick={() => setIsEdit(isEdit ? false : true)}
+            onClick={() => {
+              isEdit ? updateUserProfile() : setIsEdit(true);
+            }}
           >
             {isEdit ? "SAVE" : "EDIT"}
           </button>

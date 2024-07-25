@@ -4,11 +4,18 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import Image from "next/image";
 import profilePicture from "../../public/profile_picture.png";
 import cameraIcon from "../../public/camera_icon.svg";
+import { Profile } from "@/app/mypage/page";
+import useStore from "@/store/store";
 
-export default function ProfileImg() {
-  const [imgUrl, setImgUrl] = useState<string>("");
+interface ImgUrl {
+  imgUrl: string;
+  setImgUrl: (url: string) => void;
+}
+export default function ProfileImg({ imgUrl, setImgUrl }: ImgUrl) {
   const [fileObj, setFileObj] = useState<File | null>(null);
   const imageRef = useRef(null);
+  const ProfileImgUrl = "http://localhost:9502/api/user/profile/upload";
+  const access = useStore((state) => state.accessToken);
 
   const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     //: 이미지를 교체했을 때
@@ -22,7 +29,7 @@ export default function ProfileImg() {
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!fileObj) {
       console.error("No file selected");
       return;
@@ -31,23 +38,25 @@ export default function ProfileImg() {
     //: 가공된 formData를 body로 보냄
     const formData = new FormData();
     formData.append("file", fileObj);
-    //   const response = await axios.post(
-    //     `${LOCALAPI}/api/users/me/image`,
-    //     formData,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${access_token}`,
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
+    const response = await fetch(ProfileImgUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${access}`,
+      },
+      body: formData,
+    });
+    const json = await response.json();
   };
 
   return (
-    <div>
+    <div className="flex-shrink-0">
       <h2 className="a11y-hidden">Upload Profile Image</h2>
-      <div className="user-image-wrapper ">
-        <div className="user-image-box w-24 h-24 relative overflow-hidden">
+      <div className="user-image-wrapper">
+        <div
+          className="user-image-box w-24 h-24 relative 
+        overflow-hidden border rounded-full border-gray-300"
+        >
           <label
             htmlFor="file_upload"
             className="custom-thumbnail-label w-full h-full"
@@ -87,9 +96,15 @@ export default function ProfileImg() {
         </div>
         <button
           onClick={handleUpload}
-          className="bg-gray-400 text-white p-2 rounded-md text-xs mt-2 mx-auto block"
+          className={` text-white p-2 rounded-md 
+          text-xs mt-2 mx-auto block ${
+            fileObj
+              ? "bg-blue-500 cursor-pointer"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
+          disabled={!fileObj}
         >
-          Upload
+          Img Upload
         </button>
       </div>
     </div>

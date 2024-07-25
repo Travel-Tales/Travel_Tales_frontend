@@ -5,7 +5,7 @@ import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
 
-interface Profile {
+export interface Profile {
   id: number;
   nickname: string;
   email: string;
@@ -15,6 +15,11 @@ interface Profile {
   updatedAt: string;
 }
 
+interface UserInfo {
+  email: string;
+  nickname: string;
+}
+
 export default function Mypage() {
   const postUrl = "http://localhost:9502/api/post/my-post";
   const myProfileUrl = "http://localhost:9502/api/user/profile";
@@ -22,7 +27,13 @@ export default function Mypage() {
   const setPlanId = useStore((state) => state.setPlanId);
 
   const [plans, setPlans] = useState<any>([]);
+  const [isEdit, setIsEdit] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [imgUrl, setImgUrl] = useState<string>("");
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    email: "",
+    nickname: "",
+  });
 
   useEffect(() => {
     async function getMyPlans() {
@@ -50,30 +61,65 @@ export default function Mypage() {
         },
       });
       const json = await response.json();
+      setImgUrl(json.data.imageUrl);
+      setUserInfo({ email: json.data.email, nickname: json.data.nickname });
       setProfile(json.data);
     }
-    if (access) {
-      getMyPlans();
-      myProfile();
-    }
-  }, [access]);
+    getMyPlans();
+    myProfile();
+  }, []);
+
+  const updateUserProfile = (key: string, value: string) => {
+    setUserInfo({ ...userInfo, [key]: value });
+  };
+
+  const UserProfileInput: React.FC<{ keyName: keyof UserInfo }> = ({
+    keyName,
+  }) => {
+    return (
+      <input
+        value={userInfo[keyName]}
+        onChange={(e) => {
+          updateUserProfile(keyName, e.target.value);
+        }}
+        autoFocus={isEdit && keyName === "email"}
+        className="block py-1 px-2 w-full"
+      />
+    );
+  };
 
   return (
     <main>
-      <section className="page-section ">
+      <section className="page-section">
         <article
           className="flex flex-row justify-between items-center 
         sm:px-0 md:px-24 lg:px-44 pt-5"
         >
-          <div className="flex flex-row">
-            <ProfileImg />
-            <section className="ml-4 mt-5">
-              <p>{profile && profile.email}</p>
-              <p>{profile && profile.nickname}</p>
-            </section>
+          <div className="flex flex-1 mr-10">
+            <ProfileImg imgUrl={imgUrl} setImgUrl={setImgUrl} />
+            {isEdit ? (
+              <section className="ml-4 mt-5 flex-1">
+                <UserProfileInput keyName="email" />
+                <UserProfileInput keyName="nickname" />
+              </section>
+            ) : (
+              <section className="ml-4 mt-5 flex-1">
+                <p className="py-1 px-2 w-full">{profile && profile.email}</p>
+                <p className="py-1 px-2 w-full">
+                  {profile && profile.nickname}
+                </p>
+              </section>
+            )}
           </div>
-          <button className="bg-black text-white px-14 py-2 text-sm rounded-md">
-            Edit
+          <button
+            className={`${
+              isEdit
+                ? "bg-blue-700 text-white rounded-md block w-40 py-2"
+                : "bg-gray-900 text-white rounded-md block w-40 py-2"
+            }`}
+            onClick={() => setIsEdit(isEdit ? false : true)}
+          >
+            {isEdit ? "SAVE" : "EDIT"}
           </button>
         </article>
         <article className="w-full flex flex-row text-center border-y mt-5 text-sm">

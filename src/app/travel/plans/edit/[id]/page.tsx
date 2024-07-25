@@ -15,6 +15,7 @@ import noImg from "/public/no-img.jpg";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Toolbar from "@/components/Toolbar";
 import useStore from "@/store/store";
+import { apiClient } from "@/service/interceptor";
 
 interface DefaultData {
   title: string;
@@ -65,23 +66,18 @@ export default function TravelPlanCreatePage() {
 
     try {
       if (planId) {
-        const response = await fetch(
-          `http://localhost:9502/api/post/${planId}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access}`,
-            },
-            body: JSON.stringify(body),
-          }
+        const headers = {
+          "Content-Type": "application/json",
+        };
+        const options = {
+          body: JSON.stringify(body),
+        };
+        const data = await apiClient.patch(
+          `/api/post/${planId}`,
+          options,
+          headers
         );
-        if (!response.ok) {
-          alert("저장에 실패했습니다.");
-          throw new Error("Failed to save changes");
-        }
-        const json = await response.json();
-        if (json.success) {
+        if (data.success) {
           alert("저장되었습니다.");
         }
       }

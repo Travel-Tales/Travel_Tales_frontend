@@ -4,11 +4,25 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import Image from "next/image";
 import profilePicture from "../../public/profile_picture.png";
 import cameraIcon from "../../public/camera_icon.svg";
+import { Profile } from "@/app/mypage/page";
+import useStore from "@/store/store";
 
-export default function ProfileImg() {
-  const [imgUrl, setImgUrl] = useState<string>("");
-  const [fileObj, setFileObj] = useState<File | null>(null);
+interface ImgUrl {
+  imgUrl: string;
+  setImgUrl: (url: string) => void;
+  fileObj: File | null;
+  setFileObj: (file: File | null) => void;
+  isEdit: boolean;
+}
+export default function ProfileImg({
+  imgUrl,
+  setImgUrl,
+  fileObj,
+  setFileObj,
+  isEdit,
+}: ImgUrl) {
   const imageRef = useRef(null);
+  const access = useStore((state) => state.accessToken);
 
   const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     //: 이미지를 교체했을 때
@@ -22,47 +36,31 @@ export default function ProfileImg() {
     }
   };
 
-  const handleUpload = () => {
-    if (!fileObj) {
-      console.error("No file selected");
-      return;
-    }
-    //: fileObj가 있을 때 formData에 file obj를 넘겨준다.
-    //: 가공된 formData를 body로 보냄
-    const formData = new FormData();
-    formData.append("file", fileObj);
-    //   const response = await axios.post(
-    //     `${LOCALAPI}/api/users/me/image`,
-    //     formData,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${access_token}`,
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-  };
-
   return (
-    <div>
+    <div className="flex-shrink-0">
       <h2 className="a11y-hidden">Upload Profile Image</h2>
-      <div className="user-image-wrapper ">
-        <div className="user-image-box w-24 h-24 relative overflow-hidden">
+      <div className="user-image-wrapper">
+        <div
+          className="user-image-box w-24 h-24 relative 
+        overflow-hidden border rounded-full border-gray-300"
+        >
           <label
             htmlFor="file_upload"
             className="custom-thumbnail-label w-full h-full"
           >
-            <input
-              id="file_upload"
-              onChange={hanedleImgChange}
-              ref={imageRef}
-              type="file"
-              alt="profile-image"
-              aria-label="프로필사진교체"
-              accept="image/*"
-              required
-              className="h-0 invisible"
-            />
+            {isEdit && (
+              <input
+                id="file_upload"
+                onChange={hanedleImgChange}
+                ref={imageRef}
+                type="file"
+                alt="profile-image"
+                aria-label="프로필사진교체"
+                accept="image/*"
+                required
+                className="h-0 invisible"
+              />
+            )}
             <Image
               src={imgUrl ? imgUrl : profilePicture}
               alt="프로필 이미지"
@@ -71,8 +69,10 @@ export default function ProfileImg() {
               className="absolute top-0 left-0 cursor-pointer"
             />
             <div
-              className="absolute top-0 left-0 bg-gray-100/50 
-            rounded-full w-full h-full opacity-0 hover:opacity-100 cursor-pointer"
+              className={`${
+                isEdit ? "hover:opacity-100 cursor-pointer" : ""
+              } absolute top-0 left-0 bg-gray-100/50 
+            rounded-full w-full h-full opacity-0`}
             >
               <Image
                 src={cameraIcon}
@@ -85,12 +85,18 @@ export default function ProfileImg() {
             </div>
           </label>
         </div>
-        <button
+        {/* <button
           onClick={handleUpload}
-          className="bg-gray-400 text-white p-2 rounded-md text-xs mt-2 mx-auto block"
+          className={` text-white p-2 rounded-md 
+          text-xs mt-2 mx-auto block ${
+            fileObj
+              ? "bg-blue-500 cursor-pointer"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
+          disabled={!fileObj}
         >
-          Upload
-        </button>
+          Img Upload
+        </button> */}
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
 
-interface Profile {
+export interface Profile {
   id: number;
   nickname: string;
   email: string;
@@ -20,9 +20,23 @@ export default function Mypage() {
   const myProfileUrl = "http://localhost:9502/api/user/profile";
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
-
   const [plans, setPlans] = useState<any>([]);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isEdit, setIsEdit] = useState(false);
+
+  //: 파일을 append하기 위한 obj
+  const [fileObj, setFileObj] = useState<File | null>(null);
+  //: 원본 프로필 전체 저장
+  const [profile, setProfile] = useState<Profile>({
+    id: 0,
+    nickname: "",
+    email: "",
+    loginType: "",
+    imageUrl: "",
+    createdAt: "",
+    updatedAt: "",
+  });
+  //: 클라이언트 이미지 변경을 위한 단순 변환 url 저장
+  const [imgUrl, setImgUrl] = useState<string>("");
 
   useEffect(() => {
     async function getMyPlans() {
@@ -50,30 +64,99 @@ export default function Mypage() {
         },
       });
       const json = await response.json();
+      setImgUrl(json.data.imageUrl);
       setProfile(json.data);
     }
-    if (access) {
-      getMyPlans();
-      myProfile();
+    getMyPlans();
+    myProfile();
+  }, []);
+
+  const onChangeUserProfile = (key: string, value: string) => {
+    setProfile({ ...profile, [key]: value });
+  };
+
+  const UserProfileInput: React.FC<{ keyName: keyof Profile }> = ({
+    keyName,
+  }) => {
+    return (
+      <input
+        value={profile[keyName]}
+        onChange={(e) => {
+          onChangeUserProfile(keyName, e.target.value);
+        }}
+        autoFocus={isEdit}
+        className="block py-1 px-2 w-full"
+      />
+    );
+  };
+
+  const updateUserProfile = async () => {
+    //: 가공된 formData를 body로 보냄
+
+    const formData = new FormData();
+    if (fileObj) {
+      formData.append("file", fileObj);
     }
-  }, [access]);
+    formData.append("nickname", profile.nickname);
+
+    const response = await fetch("http://localhost:9502/api/user/profile", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${access}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.log("Failed to send");
+      return;
+    }
+    const json = await response.json();
+    setImgUrl(json.data.imageUrl);
+    setProfile(json.data);
+    setIsEdit(false);
+  };
 
   return (
     <main>
-      <section className="page-section ">
+      <section className="page-section">
         <article
           className="flex flex-row justify-between items-center 
         sm:px-0 md:px-24 lg:px-44 pt-5"
         >
-          <div className="flex flex-row">
-            <ProfileImg />
-            <section className="ml-4 mt-5">
-              <p>{profile && profile.email}</p>
-              <p>{profile && profile.nickname}</p>
-            </section>
+          <div className="flex flex-1 mr-10">
+            <ProfileImg
+              imgUrl={imgUrl}
+              setImgUrl={setImgUrl}
+              fileObj={fileObj}
+              setFileObj={setFileObj}
+              isEdit={isEdit}
+            />
+            {isEdit ? (
+              <section className="ml-4 mt-3 flex-1">
+                <p className="py-1 px-2 w-full">{profile && profile.email}</p>
+                <UserProfileInput keyName="nickname" />
+              </section>
+            ) : (
+              <section className="ml-4 mt-3 flex-1">
+                <p className="py-1 px-2 w-full">{profile && profile.email}</p>
+                <p className="py-1 px-2 w-full">
+                  {profile && profile.nickname}
+                </p>
+              </section>
+            )}
           </div>
-          <button className="bg-black text-white px-14 py-2 text-sm rounded-md">
-            Edit
+          <button
+            className={`${
+              isEdit
+                ? "bg-blue-700 text-white rounded-md block w-40 py-2"
+                : "bg-gray-900 text-white rounded-md block w-40 py-2"
+            }`}
+            onClick={() => {
+              isEdit ? updateUserProfile() : setIsEdit(true);
+            }}
+          >
+            {isEdit ? "SAVE" : "EDIT"}
           </button>
         </article>
         <article className="w-full flex flex-row text-center border-y mt-5 text-sm">

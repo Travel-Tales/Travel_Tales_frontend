@@ -66,7 +66,7 @@ export default function ProfileImg({
               alt="프로필 이미지"
               width={96}
               height={96}
-              className="absolute top-0 left-0 cursor-pointer"
+              className="absolute top-0 left-0"
             />
             <div
               className={`${

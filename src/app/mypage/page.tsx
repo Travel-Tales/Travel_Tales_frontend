@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
+import { apiClient } from "@/service/interceptor";
 
 export interface Profile {
   id: number;
@@ -19,6 +20,7 @@ export default function Mypage() {
   const postUrl = "http://localhost:9502/api/post/my-post";
   const myProfileUrl = "http://localhost:9502/api/user/profile";
   const access = useStore((state) => state.accessToken);
+  const setAccessToken = useStore((state) => state.setAccessToken);
   const setPlanId = useStore((state) => state.setPlanId);
   const [plans, setPlans] = useState<any>([]);
   const [isEdit, setIsEdit] = useState(false);
@@ -43,29 +45,27 @@ export default function Mypage() {
       // 서버 컴포넌트에서 패치를 실행한다면 패치된 url을 캐싱시켜준다.
       // 하지만 최신 데이터가 필요한 순간들이 있기 때문에 그 부분은 따로 공부하자.
       // 캐싱이나, revalidation
-
-      const response = await fetch(postUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access}`,
-        },
-        cache: "no-store",
-      });
-      const json = await response.json();
-      setPlans(json.data);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const options = { cache: "no-store" };
+      const json = await apiClient.get(`/api/post/my-post`, options, headers);
+      setPlans(json.data.data);
+      if (json.accessToken !== "null") {
+        setAccessToken(json.accessToken);
+      }
     }
     async function myProfile() {
-      const response = await fetch(myProfileUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access}`,
-        },
-      });
-      const json = await response.json();
-      setImgUrl(json.data.imageUrl);
-      setProfile(json.data);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const options = {};
+      const json = await apiClient.get(`/api/user/profile`, options, headers);
+      setImgUrl(json.data.data.imageUrl);
+      setProfile(json.data.data);
+      if (json.accessToken !== "null") {
+        setAccessToken(json.accessToken);
+      }
     }
     getMyPlans();
     myProfile();
@@ -99,22 +99,15 @@ export default function Mypage() {
     }
     formData.append("nickname", profile.nickname);
 
-    const response = await fetch("http://localhost:9502/api/user/profile", {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${access}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      console.log("Failed to send");
-      return;
-    }
-    const json = await response.json();
-    setImgUrl(json.data.imageUrl);
-    setProfile(json.data);
+    const headers = {};
+    const options = {};
+    const json = await apiClient.patch(`/api/user/profile`, options, headers);
+    setImgUrl(json.data.data.imageUrl);
+    setProfile(json.data.data);
     setIsEdit(false);
+    if (json.accessToken !== "null") {
+      setAccessToken(json.accessToken);
+    }
   };
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import useStore from "@/store/store";
+import { refreshAccessToken } from "@/service/interceptor";
 
 export default function AccessToken({ refreshToken }: any) {
   const setAccessToken = useStore((state) => state.setAccessToken);
@@ -13,20 +14,11 @@ export default function AccessToken({ refreshToken }: any) {
 
   async function getAccessToken() {
     try {
-      const response = await fetch("http://localhost:9502/api/auth/refresh", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      const jsonData = await response.json();
-      const accessToken = jsonData.data.access;
-      localStorage.setItem("accessToken", accessToken);
+      const accessToken = await refreshAccessToken("http://localhost:9502");
       setAccessToken(accessToken);
     } catch (error) {
       console.log(error);
     }
-
-    // 응답 처리 로직 추가
   }
 
   return <></>;

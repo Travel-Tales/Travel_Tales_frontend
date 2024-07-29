@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
+import { apiClient } from "@/service/interceptor";
 
 interface DefaultData {
   title: string;
@@ -19,6 +20,7 @@ interface DefaultData {
 export default function CreatePlanButton() {
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
+  const setAccessToken = useStore((state) => state.setAccessToken);
   let planId: number;
 
   const defaultData = {
@@ -35,17 +37,20 @@ export default function CreatePlanButton() {
 
   const createPlan = async (defaultData: DefaultData) => {
     try {
-      const response = await fetch("http://localhost:9502/api/post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access}`,
-        },
-        body: JSON.stringify(defaultData),
-      });
-      const json = await response.json();
-      setPlanId(json.data.id);
-      planId = json.data.id;
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const options = { body: JSON.stringify(defaultData) };
+      const { data, accessToken } = await apiClient.post(
+        `/api/post`,
+        options,
+        headers
+      );
+      setPlanId(data.data.id);
+      planId = data.data.id;
+      if (accessToken !== "null") {
+        setAccessToken(accessToken);
+      }
       return "success";
     } catch (error) {
       console.log(error);

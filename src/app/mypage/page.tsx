@@ -99,22 +99,15 @@ export default function Mypage() {
     }
     formData.append("nickname", profile.nickname);
 
-    const response = await fetch("http://localhost:9502/api/user/profile", {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${access}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      console.log("Failed to send");
-      return;
-    }
-    const json = await response.json();
-    setImgUrl(json.data.imageUrl);
-    setProfile(json.data);
+    const headers = {};
+    const options = {};
+    const json = await apiClient.patch(`/api/user/profile`, options, headers);
+    setImgUrl(json.data.data.imageUrl);
+    setProfile(json.data.data);
     setIsEdit(false);
+    if (json.accessToken !== "null") {
+      setAccessToken(json.accessToken);
+    }
   };
 
   return (

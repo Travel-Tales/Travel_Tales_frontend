@@ -1,6 +1,6 @@
 import LocalStorage from "./localstorage";
 
-const refreshAccessToken = async (baseUrl: string, access: string) => {
+export const refreshAccessToken = async (baseUrl: string) => {
   const response = await fetch(`${baseUrl}/api/auth/refresh`, {
     method: "POST",
     headers: {
@@ -10,7 +10,7 @@ const refreshAccessToken = async (baseUrl: string, access: string) => {
   });
   if (!response.ok) {
     //: 리프레시 토큰 만료
-    console.log("시간 만료! 다시 로그인 해주세요.");
+    alert("시간 만료! 다시 로그인 해주세요.");
     location.replace("http://localhost:3000/login");
   } else {
     const jsonData = await response.json();
@@ -22,8 +22,8 @@ const refreshAccessToken = async (baseUrl: string, access: string) => {
 
 const createApiClient = (baseUrl: string) => {
   //   const access = useStore((state) => state.accessToken);
-  const access = LocalStorage.getItem("accessToken");
   const apiFetch = async (url: string, options = {}, headers = {}) => {
+    const access = LocalStorage.getItem("accessToken");
     //: content type도 다를 수 있으니 header도 요청쪽에서 Authorization을 제외한 모든 설정을 전달
     const mergedOptions = {
       ...options,
@@ -38,13 +38,13 @@ const createApiClient = (baseUrl: string) => {
       //: 에러 공통 처리 (액세스 토큰 만료시 재발급 로직)
       if (response.status === 401 && access) {
         //: 액세스토큰 만료
-        const accessToken = await refreshAccessToken(baseUrl, access);
+        const accessToken = await refreshAccessToken(baseUrl);
         const resetOptions = {
-          ...options,
           headers: {
             ...headers,
             Authorization: `Bearer ${accessToken}`,
           },
+          ...options,
         };
         const response = await fetch(baseUrl + url, resetOptions);
         const data = await response.json();

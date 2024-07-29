@@ -9,6 +9,8 @@ export default function AccessToken({ refreshToken }: any) {
   useEffect(() => {
     if (refreshToken) {
       getAccessToken();
+    } else {
+      setAccessToken("");
     }
   }, [refreshToken]);
 

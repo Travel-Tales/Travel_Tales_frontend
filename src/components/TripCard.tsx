@@ -3,9 +3,12 @@
 import React from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import thumbnail from "/public/main-banner.jpg";
 
 export default function TripCard({ list }: any) {
   const path = usePathname();
+
+  console.log(list);
 
   return (
     <ul
@@ -21,7 +24,7 @@ export default function TripCard({ list }: any) {
         >
           <div className="relative card">
             <Image
-              src={value.thumbnail}
+              src={value.thumbnail ? value.thumbnail : thumbnail}
               alt="계획 리스트 썸네일"
               fill
               className="object-fit"

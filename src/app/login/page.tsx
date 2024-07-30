@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import kakaoLogin from "../../../public/kakao_login_large_wide.png";
-import googleLogin from "../../../public/web_light_sq_ctn@3x.png";
-import logo from "../../../public/main-logo.png";
+import kakaoLogin from "/public/kakao_login_large_wide.png";
+import googleLogin from "/public/web_light_sq_ctn@3x.png";
+import logo from "/public/main-logo.png";
 import Head from "next/head";
 
 export default function LoginPage() {

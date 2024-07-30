@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import mainLogo from "../../public/main-logo.png";
+import mainLogo from "/public/main-logo.png";
 
 export default function Footer() {
   return (

@@ -2,10 +2,25 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import thumbnail from "../../../../../public/main-banner.jpg";
+import thumbnail from "../../../../../../public/main-banner.jpg";
 import io, { Socket } from "socket.io-client";
 import useStore from "@/store/store";
 import LocalStorage from "@/service/localstorage";
+
+interface Info {
+  budget: number;
+  content: string;
+  createdAt: string;
+  endDate: string;
+  id: number;
+  startDate: string;
+  thumbnail: string;
+  title: string;
+  travelArea: string;
+  travelerCount: number;
+  updatedAt: string;
+  visibilityStatus: string;
+}
 
 export default function TravelPlansDetailPage({
   params: { id },
@@ -13,7 +28,20 @@ export default function TravelPlansDetailPage({
   params: { id: number };
 }) {
   // const info = await getDetailInfo();
-  const [info, setInfo] = useState(null);
+  const [info, setInfo] = useState<Info>({
+    budget: 0,
+    content: "",
+    createdAt: "",
+    endDate: "",
+    id: 0,
+    startDate: "",
+    thumbnail: "",
+    title: "",
+    travelArea: "",
+    travelerCount: 0,
+    updatedAt: "",
+    visibilityStatus: "",
+  });
   const [isConnected, setIsConnected] = useState(false);
   // const [transport, setTransport] = useState("N/A");
   const [socket, setSocket] = useState<any | null>(null);
@@ -30,7 +58,7 @@ export default function TravelPlansDetailPage({
 
     const fetchData = async () => {
       const initialData = await getDetailInfo();
-      setInfo(initialData);
+      setInfo(initialData.data[0]);
     };
     fetchData();
 
@@ -43,7 +71,7 @@ export default function TravelPlansDetailPage({
     socketInstance.emit("setInit");
     socketInstance.emit("joinRoom", { postId: id });
     socketInstance.on("postUpdate", (post) => {
-      setInfo(post);
+      setInfo(post.data[0]);
     });
   }, []);
 
@@ -59,29 +87,41 @@ export default function TravelPlansDetailPage({
     }
   }
 
+  const formatingDate = (date: string) => {
+    const newDate = new Date(date);
+    const year = newDate.getFullYear();
+    const month = newDate.getMonth();
+    const day = newDate.getDay();
+
+    return year + "." + month + "." + day;
+  };
+
   return (
     <main>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      {JSON.stringify(info)}
-      {/* <section className="page-section py-14">
+      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
+      <section className="page-section py-14">
         <h2 className="text-3xl font-bold pb-3 flex items-center">
-          당일치기 당진 여행 계획서!{" "}
+          {info.title}
           <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
-            Public
+            {info.visibilityStatus}
           </span>
         </h2>
         <article className="">
           <p className="pb-2">
-            <span>지역: </span>국내
+            <span>지역: </span>
+            {info.travelArea}
           </p>
           <p className="pb-2">
-            <span>인원: </span>4명
+            <span>인원: </span>
+            {info.travelerCount}명
           </p>
           <p className="pb-2">
-            <span>날짜: </span>2024.05.12 ~ 2024.05.12
+            <span>날짜: </span>
+            {formatingDate(info.startDate)} ~ {formatingDate(info.endDate)}
           </p>
           <p className="pb-2">
-            <span>총 예산: </span>340,000원
+            <span>총 예산: </span>
+            {info.budget}원
           </p>
           <p></p>
           <div className="flex items-center space-x-2 pb-2">
@@ -101,9 +141,12 @@ export default function TravelPlansDetailPage({
               </span>
             </div>
           </div>
+          <div className="">
+            <Image src={thumbnail} width={400} height={400} alt="" />
+          </div>
         </article>
-        <article className="text-center">본문내용</article>
-      </section> */}
+        <article className="text-center">{info.content}</article>
+      </section>
     </main>
   );
 }

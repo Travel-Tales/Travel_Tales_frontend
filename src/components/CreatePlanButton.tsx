@@ -62,7 +62,6 @@ export default function CreatePlanButton() {
 
   const movePage = async () => {
     const status = await createPlan(defaultData);
-    console.log(status);
     if (status === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
     } else {

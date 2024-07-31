@@ -5,6 +5,8 @@ import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
+import Image from "next/image";
+import TripCard from "@/components/TripCard";
 
 export interface Profile {
   id: number;
@@ -17,13 +19,11 @@ export interface Profile {
 }
 
 export default function Mypage() {
-  const postUrl = "http://localhost:9502/api/post/my-post";
-  const myProfileUrl = "http://localhost:9502/api/user/profile";
-  const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
   const setPlanId = useStore((state) => state.setPlanId);
-  const [plans, setPlans] = useState<any>([]);
+  const [list, setList] = useState<any>([]);
   const [isEdit, setIsEdit] = useState(false);
+  const [tab, setTab] = useState("나의 여행 계획서");
 
   //: 파일을 append하기 위한 obj
   const [fileObj, setFileObj] = useState<File | null>(null);
@@ -40,36 +40,75 @@ export default function Mypage() {
   //: 클라이언트 이미지 변경을 위한 단순 변환 url 저장
   const [imgUrl, setImgUrl] = useState<string>("");
 
+  const tabList = [
+    { id: 0, tabName: "나의 여행 계획서" },
+    { id: 1, tabName: "나의 여행 리뷰" },
+  ];
+
+  async function getMyPlans() {
+    // 서버 컴포넌트에서 패치를 실행한다면 패치된 url을 캐싱시켜준다.
+    // 하지만 최신 데이터가 필요한 순간들이 있기 때문에 그 부분은 따로 공부하자.
+    // 캐싱이나, revalidation
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const options = {};
+    const { data, accessToken } = await apiClient.get(
+      `/api/post/my-post`,
+      options,
+      headers
+    );
+    setList(data.data);
+    if (accessToken !== "null") {
+      setAccessToken(accessToken);
+    }
+  }
+
+  async function myProfile() {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const options = {};
+    const { data, accessToken } = await apiClient.get(
+      `/api/user/profile`,
+      options,
+      headers
+    );
+    setImgUrl(data.data.imageUrl);
+    setProfile(data.data);
+    if (accessToken !== "null") {
+      setAccessToken(accessToken);
+    }
+  }
+
+  async function getMyReviews() {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const options = {};
+    const { data, accessToken } = await apiClient.get(
+      `/api/post/my-post`,
+      options,
+      headers
+    );
+    setList(data.data);
+    if (accessToken !== "null") {
+      setAccessToken(accessToken);
+    }
+  }
+
   useEffect(() => {
-    async function getMyPlans() {
-      // 서버 컴포넌트에서 패치를 실행한다면 패치된 url을 캐싱시켜준다.
-      // 하지만 최신 데이터가 필요한 순간들이 있기 때문에 그 부분은 따로 공부하자.
-      // 캐싱이나, revalidation
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      const options = { cache: "no-store" };
-      const json = await apiClient.get(`/api/post/my-post`, options, headers);
-      setPlans(json.data.data);
-      if (json.accessToken !== "null") {
-        setAccessToken(json.accessToken);
-      }
-    }
-    async function myProfile() {
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      const options = {};
-      const json = await apiClient.get(`/api/user/profile`, options, headers);
-      setImgUrl(json.data.data.imageUrl);
-      setProfile(json.data.data);
-      if (json.accessToken !== "null") {
-        setAccessToken(json.accessToken);
-      }
-    }
     getMyPlans();
     myProfile();
   }, []);
+
+  useEffect(() => {
+    if (tab === "나의 여행 계획서") {
+      getMyPlans();
+    } else {
+      getMyReviews();
+    }
+  }, [tab]);
 
   const onChangeUserProfile = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -108,6 +147,10 @@ export default function Mypage() {
     if (json.accessToken !== "null") {
       setAccessToken(json.accessToken);
     }
+  };
+
+  const handleTabChange = (tabName: string) => {
+    setTab(tabName);
   };
 
   return (
@@ -153,38 +196,23 @@ export default function Mypage() {
           </button>
         </article>
         <article className="w-full flex flex-row text-center border-y mt-5 text-sm">
-          <section
-            className="flex-1 py-3 hover:bg-gray-100 cursor-pointer after:content-['|']
-          after:text-border-color relative after:absolute after:-right-0.5 after:top-2.5"
-          >
-            <h2>나의 여행 계획서</h2>
-          </section>
-          <section className="flex-1 py-3 hover:bg-gray-100 cursor-pointer">
-            <h2>나의 여행 리뷰</h2>
-          </section>
+          {tabList.map((value) => (
+            <button
+              key={value.id}
+              className={`flex-1 py-3 hover:bg-gray-100 cursor-pointer ${
+                value.id === 0
+                  ? "after:content-['|'] after:text-border-color relative after:absolute after:-right-0.5 after:top-2.5"
+                  : ""
+              } ${tab === value.tabName ? "bg-gray-100" : ""}`}
+              onClick={() => handleTabChange(value.tabName)}
+            >
+              <h2>{value.tabName}</h2>
+            </button>
+          ))}
         </article>
-        <div>
-          <ul>
-            {plans.map((value: any) => (
-              <li key={value.id}>
-                <Link
-                  href={`travel/plans/detail/${value.id}`}
-                  onClick={() => setPlanId(value.id)}
-                >
-                  {value.id}
-                </Link>
-                {""}
-                <Link
-                  href={`travel/plans/edit/${value.id}`}
-                  style={{ marginLeft: "100px" }}
-                  onClick={() => setPlanId(value.id)}
-                >
-                  {value.id} edit
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <article className="my-5">
+          <TripCard list={list} />
+        </article>
       </section>
     </main>
   );

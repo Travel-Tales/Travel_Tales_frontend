@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
-import thumbnail from "../../../../../../public/main-banner.jpg";
 import io, { Socket } from "socket.io-client";
 import useStore from "@/store/store";
 import LocalStorage from "@/service/localstorage";
+import thumbnail from "/public/main-banner.jpg";
+import deleteButton from "/public/delete.png";
+import { apiClient } from "@/service/interceptor";
 
 interface Info {
   budget: number;
@@ -28,20 +30,7 @@ export default function TravelPlansDetailPage({
   params: { id: number };
 }) {
   // const info = await getDetailInfo();
-  const [info, setInfo] = useState<Info>({
-    budget: 0,
-    content: "",
-    createdAt: "",
-    endDate: "",
-    id: 0,
-    startDate: "",
-    thumbnail: "",
-    title: "",
-    travelArea: "",
-    travelerCount: 0,
-    updatedAt: "",
-    visibilityStatus: "",
-  });
+  const [info, setInfo] = useState<Info | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   // const [transport, setTransport] = useState("N/A");
   const [socket, setSocket] = useState<any | null>(null);
@@ -58,7 +47,7 @@ export default function TravelPlansDetailPage({
 
     const fetchData = async () => {
       const initialData = await getDetailInfo();
-      setInfo(initialData.data[0]);
+      setInfo(initialData);
     };
     fetchData();
 
@@ -81,7 +70,16 @@ export default function TravelPlansDetailPage({
         cache: "no-store",
       });
       const json = await response.json();
-      return json;
+      const data = json.data[0];
+      return {
+        ...data,
+        title: data.title || "제목없음",
+        content: data.content || "내용없음",
+        travelArea: data.travelArea || "지역없음",
+        travelerCount: data.travelerCount || 0,
+        budget: data.budget || 0,
+        thumbnail: data.thumbnail || thumbnail,
+      };
     } catch (error) {
       console.log(error);
     }
@@ -96,56 +94,67 @@ export default function TravelPlansDetailPage({
     return year + "." + month + "." + day;
   };
 
+  const deletePost = async () => {};
+
   return (
     <main>
-      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
       <section className="page-section py-14">
-        <h2 className="text-3xl font-bold pb-3 flex items-center">
-          {info.title}
-          <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
-            {info.visibilityStatus}
-          </span>
-        </h2>
-        <article className="">
-          <p className="pb-2">
-            <span>지역: </span>
-            {info.travelArea}
-          </p>
-          <p className="pb-2">
-            <span>인원: </span>
-            {info.travelerCount}명
-          </p>
-          <p className="pb-2">
-            <span>날짜: </span>
-            {formatingDate(info.startDate)} ~ {formatingDate(info.endDate)}
-          </p>
-          <p className="pb-2">
-            <span>총 예산: </span>
-            {info.budget}원
-          </p>
-          <p></p>
-          <div className="flex items-center space-x-2 pb-2">
-            <span className="">키워드:</span>
-            <div className="flex space-x-2">
-              <span
-                className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
-                aria-label="당진 해시태그"
-              >
-                #당진
+        {info && (
+          <>
+            <h2 className="text-3xl font-bold pb-3 flex items-center">
+              {info.title ? info.title : "제목없음"}
+              <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
+                {info.visibilityStatus}
               </span>
-              <span
-                className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
-                aria-label="당일치기 해시태그"
-              >
-                #당일치기
-              </span>
-            </div>
-          </div>
-          <div className="">
-            <Image src={thumbnail} width={400} height={400} alt="" />
-          </div>
-        </article>
-        <article className="text-center">{info.content}</article>
+            </h2>
+            <article className="">
+              <p className="pb-2">
+                <span>지역: </span>
+                {info.travelArea ? info.travelArea : "지역없음"}
+              </p>
+              <p className="pb-2">
+                <span>인원: </span>
+                {info.travelerCount}명
+              </p>
+              <p className="pb-2">
+                <span>날짜: </span>
+                {formatingDate(info.startDate)} ~ {formatingDate(info.endDate)}
+              </p>
+              <p className="pb-2">
+                <span>총 예산: </span>
+                {info.budget}원
+              </p>
+              <p></p>
+              <div className="flex items-center space-x-2 pb-2">
+                <span className="">키워드:</span>
+                <div className="flex space-x-2">
+                  <span
+                    className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
+                    aria-label="당진 해시태그"
+                  >
+                    #당진
+                  </span>
+                  <span
+                    className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
+                    aria-label="당일치기 해시태그"
+                  >
+                    #당일치기
+                  </span>
+                </div>
+              </div>
+              <div className="">
+                <Image src={info.thumbnail} width={400} height={400} alt="" />
+              </div>
+            </article>
+            <article className="text-center">{info.content}</article>
+            <button
+              onClick={deletePost}
+              className="absolute top-14 my-74 right-0 mx-10 sm:mx-12 lg:mx-20"
+            >
+              <Image src={deleteButton} width={20} height={20} alt="delete" />
+            </button>
+          </>
+        )}
       </section>
     </main>
   );

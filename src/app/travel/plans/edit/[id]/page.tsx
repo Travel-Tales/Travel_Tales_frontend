@@ -19,7 +19,7 @@ import { apiClient } from "@/service/interceptor";
 
 interface DefaultData {
   title: string;
-  location: string;
+  travelArea: string;
   members: string;
   budget: string;
   startDate: Date;
@@ -31,7 +31,7 @@ interface DefaultData {
 export default function TravelPlanCreatePage() {
   const [data, setData] = useState<DefaultData>({
     title: "",
-    location: "",
+    travelArea: "",
     members: "1",
     budget: "1",
     startDate: new Date(),
@@ -55,7 +55,7 @@ export default function TravelPlanCreatePage() {
     const body = {
       title: data.title,
       content: markdown,
-      travelArea: data.location,
+      travelArea: data.travelArea,
       travelerCount: Number(data.members),
       budget: Number(data.budget),
       thumnail: data.imgUrl,
@@ -72,7 +72,7 @@ export default function TravelPlanCreatePage() {
         const options = {
           body: JSON.stringify(body),
         };
-        const data = await apiClient.patch(
+        const { data, accessToken } = await apiClient.patch(
           `/api/post/${planId}`,
           options,
           headers
@@ -195,8 +195,8 @@ export default function TravelPlanCreatePage() {
             <input
               type="text"
               id="location"
-              value={data.location}
-              onChange={(e) => setData({ ...data, location: e.target.value })}
+              value={data.travelArea}
+              onChange={(e) => setData({ ...data, travelArea: e.target.value })}
               required
               className="input-border py-1 px-3"
             />

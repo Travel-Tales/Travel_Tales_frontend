@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import thumbnail from "../../../../../public/main-banner.jpg";
+import thumbnail from "/public/main-banner.jpg";
 
 export default function TravelReviewDetailPage() {
   return (

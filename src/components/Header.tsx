@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,10 +10,24 @@ import useStore from "@/store/store";
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
   const access = useStore((state) => state.accessToken);
+  const setAccessToken = useStore((state) => state.setAccessToken);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const logout = async () => {
+    alert("로그아웃 하시겠습니까?");
+    const response = await fetch("http://localhost:9502/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    if (response.ok) {
+      LocalStorage.removeItem("accessToken");
+      setAccessToken("");
+      alert("로그아웃 되었습니다.");
+    }
+  };
 
   return (
     <header
@@ -34,9 +49,16 @@ export default function Header() {
               <Link href={"/travel/plans"}>Travel Plans</Link>
             </li>
             {isClient && access ? (
-              <li className="menu">
-                <Link href={"/mypage"}>MyPage</Link>
-              </li>
+              <>
+                <li className="menu">
+                  <Link href={"/mypage"}>MyPage</Link>
+                </li>
+                <li className="menu">
+                  <Link href={"/"} onClick={logout}>
+                    Logout
+                  </Link>
+                </li>
+              </>
             ) : (
               <li className="menu">
                 <Link href={"/login"}>Login</Link>

@@ -94,7 +94,17 @@ export default function TravelPlansDetailPage({
     return year + "." + month + "." + day;
   };
 
-  const deletePost = async () => {};
+  const deletePost = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const options = {};
+    const { data, accessToken } = await apiClient.delete(
+      `/api/post/${id}`,
+      options,
+      headers
+    );
+  };
 
   return (
     <main>

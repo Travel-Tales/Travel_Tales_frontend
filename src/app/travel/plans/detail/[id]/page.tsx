@@ -7,7 +7,9 @@ import useStore from "@/store/store";
 import LocalStorage from "@/service/localstorage";
 import thumbnail from "/public/main-banner.jpg";
 import deleteButton from "/public/delete.png";
+import editButton from "/public/edit.png";
 import { apiClient } from "@/service/interceptor";
+import { useRouter } from "next/navigation";
 
 interface Info {
   budget: number;
@@ -35,6 +37,9 @@ export default function TravelPlansDetailPage({
   // const [transport, setTransport] = useState("N/A");
   const [socket, setSocket] = useState<any | null>(null);
   const access = LocalStorage.getItem("accessToken");
+  const setAccessToken = useStore((state) => state.setAccessToken);
+
+  const router = useRouter();
 
   useEffect(() => {
     const socketInstance = io(`http://localhost:9502/post`, {
@@ -104,6 +109,13 @@ export default function TravelPlansDetailPage({
       options,
       headers
     );
+    if (accessToken !== "null") {
+      setAccessToken(accessToken);
+    }
+  };
+
+  const editPost = async () => {
+    router.push(`/travel/plans/edit/${id}`);
   };
 
   return (
@@ -158,10 +170,32 @@ export default function TravelPlansDetailPage({
             </article>
             <article className="text-center">{info.content}</article>
             <button
-              onClick={deletePost}
-              className="absolute top-14 my-74 right-0 mx-10 sm:mx-12 lg:mx-20"
+              onClick={editPost}
+              className="absolute top-14 my-74 right-20 mx-10 sm:mx-12 lg:mx-20 
+              flex items-center text-sm"
             >
-              <Image src={deleteButton} width={20} height={20} alt="delete" />
+              <Image
+                src={editButton}
+                width={21}
+                height={21}
+                alt="edit"
+                className="mr-1"
+              />
+              수정하기
+            </button>
+            <button
+              onClick={deletePost}
+              className="absolute top-14 my-74 right-0 mx-10 sm:mx-12 lg:mx-20 
+              flex items-center text-sm"
+            >
+              <Image
+                src={deleteButton}
+                width={20}
+                height={20}
+                alt="delete"
+                className="mr-1"
+              />
+              삭제
             </button>
           </>
         )}

@@ -11,7 +11,7 @@ interface DefaultData {
   travelArea: string;
   travelerCount: number;
   budget: number;
-  thumnail: string;
+  thumbnail: string;
   startDate: Date;
   endDate: Date;
   visibilityStatus: string;
@@ -29,7 +29,7 @@ export default function CreatePlanButton() {
     travelArea: "",
     travelerCount: 1,
     budget: 1,
-    thumnail: "",
+    thumbnail: "",
     startDate: new Date(),
     endDate: new Date(),
     visibilityStatus: "Public",

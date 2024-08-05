@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import useStore from "@/store/store";
 import { refreshAccessToken } from "@/service/interceptor";
+import LocalStorage from "@/service/localstorage";
 
 export default function AccessToken({ refreshToken }: any) {
   const setAccessToken = useStore((state) => state.setAccessToken);
@@ -9,6 +10,9 @@ export default function AccessToken({ refreshToken }: any) {
   useEffect(() => {
     if (refreshToken) {
       getAccessToken();
+    } else {
+      setAccessToken("");
+      LocalStorage.removeItem("accessToken");
     }
   }, [refreshToken]);
 

@@ -19,6 +19,7 @@ export interface Profile {
 }
 
 export default function Mypage() {
+  const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
   const setPlanId = useStore((state) => state.setPlanId);
   const [list, setList] = useState<any>([]);

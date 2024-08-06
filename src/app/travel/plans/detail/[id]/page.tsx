@@ -65,8 +65,16 @@ export default function TravelPlansDetailPage({
     socketInstance.emit("setInit");
     socketInstance.emit("joinRoom", { postId: id });
     socketInstance.on("postUpdate", (post) => {
-      setInfo(post.data[0]);
+      console.log(post);
+      setInfo(post[0]);
     });
+
+    // return () => {
+    //   socketInstance.emit("leaveRoom", { postId: id });
+    //   socketInstance.off("connect", () => {
+    //     setIsConnected(false);
+    //   });
+    // };
   }, []);
 
   async function getDetailInfo() {
@@ -120,6 +128,7 @@ export default function TravelPlansDetailPage({
 
   return (
     <main>
+      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
       <section className="page-section py-14">
         {info && (
           <>
@@ -165,7 +174,12 @@ export default function TravelPlansDetailPage({
                 </div>
               </div>
               <div className="">
-                <Image src={info.thumbnail} width={400} height={400} alt="" />
+                <Image
+                  src={info.thumbnail || thumbnail}
+                  width={400}
+                  height={400}
+                  alt=""
+                />
               </div>
             </article>
             <article className="text-center">{info.content}</article>

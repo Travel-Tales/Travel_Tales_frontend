@@ -19,25 +19,31 @@ import { apiClient } from "@/service/interceptor";
 
 interface DefaultData {
   title: string;
+  content: string;
   travelArea: string;
   members: string;
   budget: string;
   startDate: Date;
   endDate: Date;
   imgUrl: string;
-  visibility: string;
+  visibilityStatus: string;
 }
 
-export default function TravelPlanCreatePage() {
+export default function TravelPlanCreatePage({
+  params: { id },
+}: {
+  params: { id: number };
+}) {
   const [data, setData] = useState<DefaultData>({
     title: "",
+    content: "",
     travelArea: "",
     members: "1",
     budget: "1",
     startDate: new Date(),
     endDate: new Date(),
     imgUrl: "",
-    visibility: "Public",
+    visibilityStatus: "Public",
   });
   const [markdown, setMarkdown] = useState<string>("# Header");
 
@@ -47,9 +53,7 @@ export default function TravelPlanCreatePage() {
 
   const planId = useStore((state) => state.planId);
   const access = useStore((state) => state.accessToken);
-
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
+  const setAccessToken = useStore((state) => state.setAccessToken);
 
   const saveChanges = async () => {
     const body = {
@@ -58,27 +62,28 @@ export default function TravelPlanCreatePage() {
       travelArea: data.travelArea,
       travelerCount: Number(data.members),
       budget: Number(data.budget),
-      thumnail: data.imgUrl,
+      thumbnail: data.imgUrl,
       startDate: data.startDate,
       endDate: data.endDate,
-      visibilityStatus: data.visibility,
+      visibilityStatus: data.visibilityStatus,
     };
 
     try {
-      if (planId) {
-        const headers = {
-          "Content-Type": "application/json",
-        };
+      if (id) {
+        const headers = {};
         const options = {
           body: JSON.stringify(body),
         };
         const { data, accessToken } = await apiClient.patch(
-          `/api/post/${planId}`,
+          `/api/post/${id}`,
           options,
           headers
         );
         if (data.success) {
           alert("저장되었습니다.");
+        }
+        if (accessToken !== "null") {
+          setAccessToken(accessToken);
         }
       }
     } catch (error) {
@@ -105,7 +110,51 @@ export default function TravelPlanCreatePage() {
     return () => {
       window.removeEventListener("keydown", handleSaveShortcut);
     };
-  }, [planId, data, markdown]);
+  }, [id, data, markdown]);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      console.error("Textarea element not found");
+    }
+  }, []);
+
+  useEffect(() => {
+    const getPostInfo = async () => {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const options = { cache: "no-store" };
+      const { data, accessToken } = await apiClient.get(
+        `/api/post/${id}`,
+        options,
+        headers
+      );
+      const fetchedData = data.data[0];
+
+      setData({
+        ...fetchedData,
+        imgUrl: fetchedData.imgUrl || "",
+        content: fetchedData.content || "",
+        title: fetchedData.title || "",
+        travelArea: fetchedData.travelArea || "",
+        members: fetchedData.members?.toString() || "1",
+        budget: fetchedData.budget?.toString() || "1",
+        startDate: fetchedData.startDate
+          ? new Date(fetchedData.startDate)
+          : new Date(),
+        endDate: fetchedData.endDate
+          ? new Date(fetchedData.endDate)
+          : new Date(),
+        visibilityStatus: fetchedData.visibilityStatus || "Public",
+      });
+      setMarkdown(fetchedData.content);
+      if (accessToken !== "null") {
+        setAccessToken(accessToken);
+      }
+    };
+    getPostInfo();
+  }, []);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -131,13 +180,6 @@ export default function TravelPlanCreatePage() {
     );
   };
 
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) {
-      console.error("Textarea element not found");
-    }
-  }, []);
-
   const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     //: 이미지를 교체했을 때
     const files = e.target.files;
@@ -156,8 +198,6 @@ export default function TravelPlanCreatePage() {
 
   return (
     <main>
-      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      <p>Transport: {transport}</p> */}
       <section className="w-3/4 my-10 mx-auto">
         <form onSubmit={handleSubmit}>
           <div className="toggle-switch mb-6">
@@ -166,12 +206,12 @@ export default function TravelPlanCreatePage() {
               <input
                 role="switch"
                 type="checkbox"
-                checked={data.visibility === "Public" ? false : true}
+                checked={data.visibilityStatus === "Public" ? false : true}
                 onChange={() => {
                   setData({
                     ...data,
-                    visibility:
-                      data.visibility === "Public" ? "Private" : "Public",
+                    visibilityStatus:
+                      data.visibilityStatus === "Public" ? "Private" : "Public",
                   });
                 }}
               />
@@ -310,7 +350,7 @@ export default function TravelPlanCreatePage() {
             </div>
           </>
 
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
             <button
               type="submit"
               className="bg-gray-300 px-6 py-1
@@ -318,7 +358,7 @@ export default function TravelPlanCreatePage() {
             >
               저장
             </button>
-          </div>
+          </div> */}
         </form>
       </section>
     </main>

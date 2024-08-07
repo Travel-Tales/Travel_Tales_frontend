@@ -46,9 +46,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <button onClick={onLink} type="button">
         &#128279;
       </button>
-      {/* <button onClick={onImage} type="button">
-        &#128247;
-      </button> */}
       <label className="relative cursor-pointer">
         &#128247;
         <input

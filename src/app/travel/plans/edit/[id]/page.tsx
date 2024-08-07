@@ -21,11 +21,12 @@ interface DefaultData {
   title: string;
   content: string;
   travelArea: string;
-  members: string;
+  travelerCount: number;
   budget: string;
   startDate: Date;
   endDate: Date;
-  imgUrl: string;
+  // imageUrls: string[];
+  thumbnailFile: string;
   visibilityStatus: string;
 }
 
@@ -38,11 +39,12 @@ export default function TravelPlanCreatePage({
     title: "",
     content: "",
     travelArea: "",
-    members: "1",
-    budget: "1",
+    travelerCount: 1,
+    budget: "0",
     startDate: new Date(),
     endDate: new Date(),
-    imgUrl: "",
+    // imageUrls: [],
+    thumbnailFile: "",
     visibilityStatus: "Public",
   });
   const [markdown, setMarkdown] = useState<string>("# Header");
@@ -60,19 +62,29 @@ export default function TravelPlanCreatePage({
       title: data.title,
       content: markdown,
       travelArea: data.travelArea,
-      travelerCount: Number(data.members),
-      budget: Number(data.budget),
-      thumbnail: data.imgUrl,
+      travelerCount: Number(data.travelerCount),
+      budget: Number(data.budget.replace(/,/g, "")),
+      thumbnailFile: data.thumbnailFile,
+      // imageUrls: JSON.stringify(data.imageUrls),
       startDate: data.startDate,
       endDate: data.endDate,
       visibilityStatus: data.visibilityStatus,
     };
 
+    const formData = new FormData();
+    Object.entries(body).forEach(([key, value]) => {
+      if (typeof value === "number" || value instanceof Date) {
+        formData.append(key, value.toString());
+      } else {
+        formData.append(key, value);
+      }
+    });
+
     try {
       if (id) {
         const headers = {};
         const options = {
-          body: JSON.stringify(body),
+          body: formData,
         };
         const { data, accessToken } = await apiClient.patch(
           `/api/post/${id}`,
@@ -124,7 +136,7 @@ export default function TravelPlanCreatePage({
       const headers = {
         "Content-Type": "application/json",
       };
-      const options = { cache: "no-store" };
+      const options = {};
       const { data, accessToken } = await apiClient.get(
         `/api/post/${id}`,
         options,
@@ -134,12 +146,15 @@ export default function TravelPlanCreatePage({
 
       setData({
         ...fetchedData,
-        imgUrl: fetchedData.imgUrl || "",
+        thumbnailFile: fetchedData.thumbnailFile || "",
+        imageUrls: fetchedData.imageUrls || "",
         content: fetchedData.content || "",
         title: fetchedData.title || "",
         travelArea: fetchedData.travelArea || "",
-        members: fetchedData.members?.toString() || "1",
-        budget: fetchedData.budget?.toString() || "1",
+        travelerCount: fetchedData.travelerCount || 1,
+        budget: fetchedData.budget
+          ? formatNumberWithCommas(`${fetchedData.budget}`)
+          : "1",
         startDate: fetchedData.startDate
           ? new Date(fetchedData.startDate)
           : new Date(),
@@ -188,12 +203,22 @@ export default function TravelPlanCreatePage({
       const file = files[0];
       setFileObj(file);
       const objectURL = URL.createObjectURL(file);
-      setData({ ...data, imgUrl: objectURL });
+      setData({ ...data, thumbnailFile: objectURL });
     }
   };
 
   const handleChange = (event: any) => {
     setMarkdown(event.target.value);
+  };
+
+  const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/,/g, "");
+    const formattedValue = formatNumberWithCommas(value);
+    setData({ ...data, budget: formattedValue });
+  };
+
+  const formatNumberWithCommas = (value: string) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   return (
@@ -247,8 +272,10 @@ export default function TravelPlanCreatePage({
               <input
                 type="number"
                 id="members"
-                value={data.members}
-                onChange={(e) => setData({ ...data, members: e.target.value })}
+                value={data.travelerCount}
+                onChange={(e) =>
+                  setData({ ...data, travelerCount: +e.target.value })
+                }
                 required
                 className="input-border py-1 px-3"
               />
@@ -256,10 +283,10 @@ export default function TravelPlanCreatePage({
             <div className="flex flex-col mb-2">
               <label htmlFor="budget">여행 예산</label>
               <input
-                type="number"
+                type="text"
                 id="budget"
                 value={data.budget}
-                onChange={(e) => setData({ ...data, budget: e.target.value })}
+                onChange={handleBudgetChange}
                 required
                 className="input-border py-1 px-3"
               />
@@ -321,7 +348,7 @@ export default function TravelPlanCreatePage({
               />
             </label>
             <Image
-              src={data.imgUrl ? data.imgUrl : noImg}
+              src={data.thumbnailFile ? data.thumbnailFile : noImg}
               alt="대표사진 미리보기"
               width={200}
               height={100}

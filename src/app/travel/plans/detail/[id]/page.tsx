@@ -65,7 +65,6 @@ export default function TravelPlansDetailPage({
     socketInstance.emit("setInit");
     socketInstance.emit("joinRoom", { postId: id });
     socketInstance.on("postUpdate", (post) => {
-      console.log(post);
       setInfo(post[0]);
     });
 
@@ -102,9 +101,9 @@ export default function TravelPlansDetailPage({
     const newDate = new Date(date);
     const year = newDate.getFullYear();
     const month = newDate.getMonth();
-    const day = newDate.getDay();
+    const day = newDate.getDate();
 
-    return year + "." + month + "." + day;
+    return year + "." + Number(month + 1) + "." + day;
   };
 
   const deletePost = async () => {
@@ -128,7 +127,7 @@ export default function TravelPlansDetailPage({
 
   return (
     <main>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
       <section className="page-section py-14">
         {info && (
           <>

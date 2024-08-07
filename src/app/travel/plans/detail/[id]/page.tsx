@@ -107,6 +107,7 @@ export default function TravelPlansDetailPage({
   };
 
   const deletePost = async () => {
+    alert("삭제하시겠습니까?");
     const headers = {
       "Content-Type": "application/json",
     };
@@ -118,6 +119,10 @@ export default function TravelPlansDetailPage({
     );
     if (accessToken !== "null") {
       setAccessToken(accessToken);
+    }
+    if (data.success) {
+      alert("삭제되었습니다.");
+      router.replace("/mypage"); // 이전 페이지 URL로 대체
     }
   };
 

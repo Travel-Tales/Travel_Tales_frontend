@@ -38,7 +38,7 @@ export default function TripCard({ list, accessToken }: any) {
           >
             <div className="relative card">
               <Image
-                src={value.thumbnail ? value.thumbnail : thumbnail}
+                src={value.thumbnail !== "" ? value.thumbnail : thumbnail}
                 alt="계획 리스트 썸네일"
                 fill
                 className="object-fit"

@@ -81,7 +81,11 @@ const createApiClient = (baseUrl: string) => {
         headers
       ),
     delete: (url: string, options: any, headers: any) =>
-      apiFetch(url, { ...options, method: "DELETE" }, headers),
+      apiFetch(
+        url,
+        { ...options, method: "DELETE", cache: "no-store" },
+        headers
+      ),
   };
 };
 

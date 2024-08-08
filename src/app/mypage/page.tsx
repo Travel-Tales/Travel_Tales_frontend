@@ -140,7 +140,7 @@ export default function Mypage() {
     formData.append("nickname", profile.nickname);
 
     const headers = {};
-    const options = {};
+    const options = { body: formData };
     const json = await apiClient.patch(`/api/user/profile`, options, headers);
     setImgUrl(json.data.data.imageUrl);
     setProfile(json.data.data);

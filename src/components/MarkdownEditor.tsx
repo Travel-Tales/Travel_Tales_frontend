@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Image from "next/image";
 
 // import "./MarkdownEditor.css";
 
@@ -50,11 +51,13 @@ const MarkdownEditor = ({ markdown }: { markdown: string }) => {
             );
           },
           img({ ...props }) {
+            console.log("props", props);
             return (
-              <img
-                style={{ maxWidth: "40vw" }}
-                src={props.src?.replace("/public/", "/")}
+              <Image
+                src={props.src?.replace("/public/", "/") || ""}
                 alt="MarkdownRenderer__Image"
+                width={500}
+                height={350}
               />
             );
           },

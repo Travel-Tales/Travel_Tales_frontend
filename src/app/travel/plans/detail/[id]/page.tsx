@@ -65,7 +65,6 @@ export default function TravelPlansDetailPage({
     socketInstance.emit("setInit");
     socketInstance.emit("joinRoom", { postId: id });
     socketInstance.on("postUpdate", (post) => {
-      console.log(post);
       setInfo(post[0]);
     });
 
@@ -102,12 +101,19 @@ export default function TravelPlansDetailPage({
     const newDate = new Date(date);
     const year = newDate.getFullYear();
     const month = newDate.getMonth();
-    const day = newDate.getDay();
+    const day = newDate.getDate();
 
-    return year + "." + month + "." + day;
+    return (
+      year +
+      "." +
+      (+month < 9 ? "0" + (month + 1) : month + 1) +
+      "." +
+      (day < 10 ? "0" + day : day)
+    );
   };
 
   const deletePost = async () => {
+    alert("삭제하시겠습니까?");
     const headers = {
       "Content-Type": "application/json",
     };
@@ -120,6 +126,10 @@ export default function TravelPlansDetailPage({
     if (accessToken !== "null") {
       setAccessToken(accessToken);
     }
+    if (data.success) {
+      alert("삭제되었습니다.");
+      router.replace("/mypage"); // 이전 페이지 URL로 대체
+    }
   };
 
   const editPost = async () => {
@@ -128,13 +138,20 @@ export default function TravelPlansDetailPage({
 
   return (
     <main>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
       <section className="page-section py-14">
         {info && (
           <>
             <h2 className="text-3xl font-bold pb-3 flex items-center">
               {info.title ? info.title : "제목없음"}
-              <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
+              <span
+                className={`ml-2  text-xs  
+              rounded-full px-3 py-1 ${
+                info.visibilityStatus === "Public"
+                  ? "bg-gray-100 text-gray-500"
+                  : "bg-red-100 text-red-500"
+              }`}
+              >
                 {info.visibilityStatus}
               </span>
             </h2>
@@ -153,7 +170,7 @@ export default function TravelPlansDetailPage({
               </p>
               <p className="pb-2">
                 <span>총 예산: </span>
-                {info.budget}원
+                {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
               </p>
               <p></p>
               <div className="flex items-center space-x-2 pb-2">

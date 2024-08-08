@@ -25,7 +25,7 @@ interface DefaultData {
   budget: string;
   startDate: Date;
   endDate: Date;
-  // imageUrls: string[];
+  imageUrls: string[];
   thumbnailFile: string;
   visibilityStatus: string;
 }
@@ -43,13 +43,13 @@ export default function TravelPlanCreatePage({
     budget: "0",
     startDate: new Date(),
     endDate: new Date(),
-    // imageUrls: [],
+    imageUrls: [],
     thumbnailFile: "",
     visibilityStatus: "Public",
   });
   const [markdown, setMarkdown] = useState<string>("# Header");
 
-  const [fileObj, setFileObj] = useState<File | null>(null);
+  // const [fileObj, setFileObj] = useState<File | null>(null);
   const imageRef = useRef(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -65,7 +65,7 @@ export default function TravelPlanCreatePage({
       travelerCount: Number(data.travelerCount),
       budget: Number(data.budget.replace(/,/g, "")),
       thumbnailFile: data.thumbnailFile,
-      // imageUrls: JSON.stringify(data.imageUrls),
+      imageUrls: JSON.stringify(data.imageUrls),
       startDate: data.startDate,
       endDate: data.endDate,
       visibilityStatus: data.visibilityStatus,
@@ -163,7 +163,9 @@ export default function TravelPlanCreatePage({
           : new Date(),
         visibilityStatus: fetchedData.visibilityStatus || "Public",
       });
-      setMarkdown(fetchedData.content);
+      if (fetchedData.content) {
+        setMarkdown(fetchedData.content);
+      }
       if (accessToken !== "null") {
         setAccessToken(accessToken);
       }
@@ -201,7 +203,6 @@ export default function TravelPlanCreatePage({
     if (files && files.length > 0) {
       //: 파일 정보를 받아서 obj 와 url을 저장
       const file = files[0];
-      setFileObj(file);
       const objectURL = URL.createObjectURL(file);
       setData({ ...data, thumbnailFile: objectURL });
     }
@@ -219,6 +220,33 @@ export default function TravelPlanCreatePage({
 
   const formatNumberWithCommas = (value: string) => {
     return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const uploadImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      //: 파일 정보를 받아서 obj 와 url을 저장
+      const file = files[0];
+      // const objectURL = URL.createObjectURL(file);
+
+      const formData = new FormData();
+      formData.append("imageFile", file);
+
+      const headers = {};
+      const options = {
+        body: formData,
+      };
+      const { data } = await apiClient.post(
+        `/api/post/upload-image`,
+        options,
+        headers
+      );
+      const fetchData = data;
+      // setData({ ...data, imageUrls: [...data.imageUrls, fetchData.data] });
+
+      const markdownImg = `![](${fetchData.data})`;
+      insertAtCursor(markdownImg);
+    }
   };
 
   return (
@@ -329,7 +357,7 @@ export default function TravelPlanCreatePage({
             )}
           </div>
           <div className="mb-6">
-            <label htmlFor="file_upload" className="block mb-2">
+            <label htmlFor="file_upload" className="inline-block mb-2">
               대표사진 선택 (썸네일)
               <input
                 id="file_upload"
@@ -344,7 +372,7 @@ export default function TravelPlanCreatePage({
                 file:mr-4 file:py-2 file:px-4 file:rounded-md
                 file:border-0 file:text-sm file:font-semibold
                 file:bg-pink-50 file:text-pink-700
-                hover:file:bg-pink-100 mt-2"
+                hover:file:bg-pink-100 mt-2 w-52"
               />
             </label>
             <Image
@@ -363,7 +391,7 @@ export default function TravelPlanCreatePage({
               onOrderedList={() => insertAtCursor("1. Item")}
               onUnorderedList={() => insertAtCursor("- Item")}
               onLink={() => insertAtCursor("[link](url)")}
-              onImage={() => insertAtCursor("![alt text](url)")}
+              onImage={(e) => uploadImage(e)}
             />
             <div className="preview flex flex-row w-full border">
               <textarea

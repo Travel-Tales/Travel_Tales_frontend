@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 interface ToolbarProps {
   onBold: () => void;
@@ -8,7 +8,7 @@ interface ToolbarProps {
   onOrderedList: () => void;
   onUnorderedList: () => void;
   onLink: () => void;
-  onImage: () => void;
+  onImage: (e: any) => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -21,6 +21,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onLink,
   onImage,
 }) => {
+  const imageRef = useRef(null);
+
   return (
     <div className="toolbar">
       <button onClick={onBold} type="button">
@@ -44,9 +46,23 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <button onClick={onLink} type="button">
         &#128279;
       </button>
-      <button onClick={onImage} type="button">
+      {/* <button onClick={onImage} type="button">
         &#128247;
-      </button>
+      </button> */}
+      <label className="relative cursor-pointer">
+        &#128247;
+        <input
+          id="file_upload"
+          onChange={onImage}
+          ref={imageRef}
+          type="file"
+          alt="profile-image"
+          aria-label="이미지 업로드"
+          accept="image/*"
+          required
+          className="absolute top-0 left-0 h-0 invisible"
+        />
+      </label>
     </div>
   );
 };

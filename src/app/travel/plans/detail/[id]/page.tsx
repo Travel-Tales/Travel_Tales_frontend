@@ -103,7 +103,13 @@ export default function TravelPlansDetailPage({
     const month = newDate.getMonth();
     const day = newDate.getDate();
 
-    return year + "." + Number(month + 1) + "." + day;
+    return (
+      year +
+      "." +
+      (+month < 9 ? "0" + (month + 1) : month + 1) +
+      "." +
+      (day < 10 ? "0" + day : day)
+    );
   };
 
   const deletePost = async () => {
@@ -138,7 +144,14 @@ export default function TravelPlansDetailPage({
           <>
             <h2 className="text-3xl font-bold pb-3 flex items-center">
               {info.title ? info.title : "제목없음"}
-              <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
+              <span
+                className={`ml-2  text-xs  
+              rounded-full px-3 py-1 ${
+                info.visibilityStatus === "Public"
+                  ? "bg-gray-100 text-gray-500"
+                  : "bg-red-100 text-red-500"
+              }`}
+              >
                 {info.visibilityStatus}
               </span>
             </h2>
@@ -157,7 +170,7 @@ export default function TravelPlansDetailPage({
               </p>
               <p className="pb-2">
                 <span>총 예산: </span>
-                {info.budget}원
+                {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
               </p>
               <p></p>
               <div className="flex items-center space-x-2 pb-2">

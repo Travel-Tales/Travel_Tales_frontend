@@ -61,13 +61,14 @@ const createApiClient = (baseUrl: string) => {
   return {
     //: options에는 header제외 모든 내용
     get: (url: string, options: any, headers: any) =>
-      apiFetch(url, { ...options, method: "GET" }, headers),
+      apiFetch(url, { ...options, method: "GET", cache: "no-store" }, headers),
     post: (url: string, options: any, headers: any) =>
       apiFetch(
         url,
         {
           ...options,
           method: "POST",
+          cache: "no-store",
         },
         headers
       ),
@@ -77,6 +78,7 @@ const createApiClient = (baseUrl: string) => {
         {
           ...options,
           method: "PATCH",
+          cache: "no-store",
         },
         headers
       ),

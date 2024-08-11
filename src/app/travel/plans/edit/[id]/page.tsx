@@ -294,7 +294,7 @@ export default function TravelPlanCreatePage({
               className="input-border py-1 px-3"
             />
           </div>
-          <div className="flex flex-row justify-start items-center">
+          <div className="flex flex-row flex-wrap: wrap justify-start items-center">
             <div className="flex flex-col mb-2 mr-6">
               <label htmlFor="members">여행 인원</label>
               <input

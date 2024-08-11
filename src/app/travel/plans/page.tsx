@@ -9,25 +9,24 @@ async function getPlans() {
   const headers = {
     "Content-Type": "application/json",
   };
-  const options = {};
-  const { data, accessToken } = await apiClient.get(
-    `/api/post`,
-    options,
-    headers
-  );
-  const dataList = data.data;
-  return { dataList, accessToken };
+  const response = await fetch(`http://localhost:9502/api/post`, {
+    method: "GET",
+    headers,
+    cache: "no-store",
+  });
+  const json = await response.json();
+  return { jsonData: json.data, accessToken: "null" };
 }
 
 export default async function TravelPlansPage() {
-  const { dataList, accessToken } = await getPlans();
+  const { jsonData, accessToken } = await getPlans();
   return (
     <main>
       <section className="page-section pt-4 pb-16">
         <SearchBar />
         <Category />
         <section>
-          <TripCard list={dataList} accessToken={accessToken} />
+          <TripCard list={jsonData} accessToken={accessToken} />
         </section>
       </section>
     </main>

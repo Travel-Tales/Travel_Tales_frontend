@@ -1,0 +1,63 @@
+name: Develop CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: build-and-deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: git clone
+        uses: actions/checkout@v3
+
+      #노드 버전 설정
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.17.0"
+
+      # workflow가 실행될 때 필요한 파일 중에서 거의 바뀌지 않는 파일들을 GitHub의 캐시에 올려놓고 CI 서버로 내려받습니다.
+      # 프로젝트에서 자주 바뀌지 않는 수많은 패키지를 매번 다운받아 올리면 시간도 오래걸리고 네트워크 대역폭을 많이 사용하게됩니다.
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set CI to false
+        run: |
+          echo "CI=false" >> $GITHUB_ENV
+
+      - name: npm install
+        run: npm ci
+
+      - name: npm build
+        run: npm run build
+        env:
+          GENERATE_SOURCEMAP: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync \
+            --region ap-northeast-2 \
+            .next s3://traveltalse \

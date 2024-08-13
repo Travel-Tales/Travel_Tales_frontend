@@ -18,7 +18,9 @@ export default function AccessToken({ refreshToken }: any) {
 
   async function getAccessToken() {
     try {
-      const accessToken = await refreshAccessToken("http://localhost:9502");
+      const accessToken = await refreshAccessToken(
+        process.env.NEXT_PUBLIC_API_URL
+      );
       setAccessToken(accessToken);
     } catch (error) {
       console.log(error);

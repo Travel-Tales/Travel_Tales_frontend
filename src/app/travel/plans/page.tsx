@@ -9,7 +9,7 @@ async function getPlans() {
   const headers = {
     "Content-Type": "application/json",
   };
-  const response = await fetch(`http://localhost:9502/api/post`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/post`, {
     method: "GET",
     headers,
     cache: "no-store",

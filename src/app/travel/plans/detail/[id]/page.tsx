@@ -42,7 +42,7 @@ export default function TravelPlansDetailPage({
   const router = useRouter();
 
   useEffect(() => {
-    const socketInstance = io(`http://localhost:9502/post`, {
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
       transports: ["websocket"],
       auth: {
         Authorization: `Bearer ${access}`,
@@ -78,9 +78,12 @@ export default function TravelPlansDetailPage({
 
   async function getDetailInfo() {
     try {
-      const response = await fetch(`http://localhost:9502/api/post/${id}`, {
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/post/${id}`,
+        {
+          cache: "no-store",
+        }
+      );
       const json = await response.json();
       const data = json.data[0];
       return {

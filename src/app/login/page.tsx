@@ -9,11 +9,11 @@ import Head from "next/head";
 
 export default function LoginPage() {
   const clickKakaoLogin = () => {
-    window.location.href = "http://localhost:9502/api/auth/kakao";
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/kakao`;
   };
 
   const clickGoogleLogin = () => {
-    window.location.href = "http://localhost:9502/api/auth/google";
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`;
   };
 
   return (

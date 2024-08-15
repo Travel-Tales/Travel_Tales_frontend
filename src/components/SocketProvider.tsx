@@ -32,10 +32,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    const socketInstance = new (ClientIO as any)("http://localhost:9502", {
-      path: "/api/socket/io",
-      addTrailingSlash: false,
-    });
+    const socketInstance = new (ClientIO as any)(
+      process.env.NEXT_PUBLIC_API_URL,
+      {
+        path: "/api/socket/io",
+        addTrailingSlash: false,
+      }
+    );
 
     socketInstance.on("connect", async () => {
       setIsConnected(true);

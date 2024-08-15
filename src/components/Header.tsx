@@ -18,10 +18,13 @@ export default function Header() {
 
   const logout = async () => {
     alert("로그아웃 하시겠습니까?");
-    const response = await fetch("http://localhost:9502/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
     if (response.ok) {
       LocalStorage.removeItem("accessToken");
       setAccessToken("");

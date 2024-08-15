@@ -1,6 +1,6 @@
 import LocalStorage from "./localstorage";
 
-export const refreshAccessToken = async (baseUrl: string) => {
+export const refreshAccessToken = async (baseUrl: string | undefined) => {
   const response = await fetch(`${baseUrl}/api/auth/refresh`, {
     method: "POST",
     headers: {
@@ -11,7 +11,7 @@ export const refreshAccessToken = async (baseUrl: string) => {
   if (!response.ok) {
     //: 리프레시 토큰 만료
     alert("시간 만료! 다시 로그인 해주세요.");
-    location.replace("http://localhost:3000/login");
+    location.replace(`${process.env.NEXT_PUBLIC_API_URL}/login`);
   } else {
     const jsonData = await response.json();
     const accessToken = jsonData.data.access;
@@ -20,7 +20,7 @@ export const refreshAccessToken = async (baseUrl: string) => {
   }
 };
 
-const createApiClient = (baseUrl: string) => {
+const createApiClient = (baseUrl: string | undefined) => {
   //   const access = useStore((state) => state.accessToken);
   const apiFetch = async (url: string, options = {}, headers = {}) => {
     const access = LocalStorage.getItem("accessToken");
@@ -91,5 +91,5 @@ const createApiClient = (baseUrl: string) => {
   };
 };
 
-export const apiClient = createApiClient("http://localhost:9502");
+export const apiClient = createApiClient(process.env.NEXT_PUBLIC_API_URL);
 //: return {get, post, patch, delete}

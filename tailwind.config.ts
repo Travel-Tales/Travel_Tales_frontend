@@ -42,6 +42,14 @@ const config: Config = {
         "main-color": "#000e76",
         "border-color": "#e5e7eb",
       },
+      top: {
+        "-7": "-7px",
+        "-5": "-5px",
+      },
+      zIndex: {
+        "1": "1",
+        "2": "2",
+      },
     },
   },
   plugins: [],

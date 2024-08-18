@@ -34,9 +34,10 @@ export default function Header() {
   };
 
   const toggleMenu = (e: any) => {
-    console.log(e.target.value);
-    // setIsToggle()
+    setIsToggle(e.target.checked);
   };
+
+  console.log(isToggle);
 
   return (
     <>
@@ -51,33 +52,33 @@ export default function Header() {
           </Link>
         </h1>
         <div className="custom-flex relative">
-          {/* <nav>
-          <ul className="nav">
-            <li className="menu">
-              <Link href={"/travel/reviews"}>Reviews</Link>
-            </li>
-            <li className="menu">
-              <Link href={"/travel/plans"}>Travel Plans</Link>
-            </li>
-            {isClient && access ? (
-              <>
-                <li className="menu">
-                  <Link href={"/mypage"}>MyPage</Link>
-                </li>
-                <li className="menu">
-                  <Link href={"/"} onClick={logout}>
-                    Logout
-                  </Link>
-                </li>
-              </>
-            ) : (
+          <nav className="pc-menu hidden md:block">
+            <ul className="nav">
               <li className="menu">
-                <Link href={"/login"}>Login</Link>
+                <Link href={"/travel/reviews"}>Reviews</Link>
               </li>
-            )}
-          </ul>
-        </nav> */}
-          <nav>
+              <li className="menu">
+                <Link href={"/travel/plans"}>Travel Plans</Link>
+              </li>
+              {isClient && access ? (
+                <>
+                  <li className="menu">
+                    <Link href={"/mypage"}>MyPage</Link>
+                  </li>
+                  <li className="menu">
+                    <Link href={"/"} onClick={logout}>
+                      Logout
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <li className="menu">
+                  <Link href={"/login"}>Login</Link>
+                </li>
+              )}
+            </ul>
+          </nav>
+          <nav className="mb-menu block md:hidden">
             <div className="menuToggle">
               <input type="checkbox" onChange={toggleMenu} />
 
@@ -124,7 +125,9 @@ export default function Header() {
         </div>
       </header>
       <div
-        className={`blur hidden absolute top-0 left-0 w-full h-full bg-gray-950 opacity-25`}
+        className={`blur ${
+          isToggle ? "block h-full" : "hidden"
+        } absolute top-0 left-0 w-full bg-gray-950 opacity-25 md:hidden`}
       ></div>
     </>
   );

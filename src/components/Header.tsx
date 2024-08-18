@@ -9,6 +9,7 @@ import useStore from "@/store/store";
 
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
+  const [isToggle, setIsToggle] = useState(false);
   const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
 
@@ -32,18 +33,25 @@ export default function Header() {
     }
   };
 
+  const toggleMenu = (e: any) => {
+    console.log(e.target.value);
+    // setIsToggle()
+  };
+
   return (
-    <header
-      className="w-full fixed top-0 left-0 
-    custom-flex px-6 py-4 border-b bg-white z-10"
-    >
-      <h1 className="main-logo">
-        <Link href="/">
-          <Image src={mainLogo} alt="Website Logo" width={180} />
-        </Link>
-      </h1>
-      <div className="custom-flex">
-        <nav>
+    <>
+      <header
+        className="w-full fixed top-0 left-0 
+      custom-flex px-6 py-4 border-b border-gray-200 bg-white z-10
+      "
+      >
+        <h1 className="main-logo">
+          <Link href="/">
+            <Image src={mainLogo} alt="Website Logo" width={180} />
+          </Link>
+        </h1>
+        <div className="custom-flex relative">
+          {/* <nav>
           <ul className="nav">
             <li className="menu">
               <Link href={"/travel/reviews"}>Reviews</Link>
@@ -68,8 +76,56 @@ export default function Header() {
               </li>
             )}
           </ul>
-        </nav>
-      </div>
-    </header>
+        </nav> */}
+          <nav>
+            <div className="menuToggle">
+              <input type="checkbox" onChange={toggleMenu} />
+
+              <span className="mb-menu-bar"></span>
+              <span className="mb-menu-bar"></span>
+              <span className="mb-menu-bar"></span>
+
+              <ul className="menu-wrapper">
+                <li className="menu">
+                  <Link className="no-underline" href={"/travel/reviews"}>
+                    Reviews
+                  </Link>
+                </li>
+                <li className="menu">
+                  <Link className="no-underline" href={"/travel/plans"}>
+                    Travel Plans
+                  </Link>
+                </li>
+                {isClient && access ? (
+                  <>
+                    <li className="menu">
+                      <Link className="no-underline" href={"/mypage"}>
+                        MyPage
+                      </Link>
+                    </li>
+                    <li className="menu">
+                      <Link
+                        className="no-underline"
+                        href={"/"}
+                        onClick={logout}
+                      >
+                        Logout
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <li className="menu">
+                    <Link href={"/login"}>Login</Link>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <div
+        className={`blur hidden absolute top-0 left-0 w-full h-full bg-gray-950 opacity-25`}
+      ></div>
+    </>
   );
 }

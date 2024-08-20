@@ -24,7 +24,7 @@ async function getPlans() {
     const json = await response.json();
     return { jsonData: json.data, accessToken: "null" };
   } catch (error) {
-    console.log(error);
+    console.error("API 요청 중 오류 발생:", error);
     return { jsonData: [], accessToken: "null" };
   }
 }

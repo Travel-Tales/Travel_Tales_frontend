@@ -35,7 +35,7 @@ export default function Header() {
         throw new Error("에러발생");
       }
     } catch (error) {
-      console.error();
+      console.log(error);
     }
   };
 

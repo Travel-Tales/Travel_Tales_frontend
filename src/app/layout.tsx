@@ -21,13 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      {/* <SocketProvider> */}
       <body>
         <Header />
         {children}
         <Footer />
       </body>
-      {/* </SocketProvider> */}
     </html>
   );
 }

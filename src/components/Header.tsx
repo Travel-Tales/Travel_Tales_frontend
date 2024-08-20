@@ -31,9 +31,11 @@ export default function Header() {
         LocalStorage.removeItem("accessToken");
         setAccessToken("");
         alert("로그아웃 되었습니다.");
+      } else {
+        throw new Error("Network response was not ok");
       }
     } catch (error) {
-      console.log(error);
+      console.error("API 요청 중 오류 발생:", error);
     }
   };
 

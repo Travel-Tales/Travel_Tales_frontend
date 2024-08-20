@@ -19,17 +19,21 @@ export default function Header() {
 
   const logout = async () => {
     alert("로그아웃 하시겠습니까?");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
-      {
-        method: "POST",
-        credentials: "include",
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        LocalStorage.removeItem("accessToken");
+        setAccessToken("");
+        alert("로그아웃 되었습니다.");
       }
-    );
-    if (response.ok) {
-      LocalStorage.removeItem("accessToken");
-      setAccessToken("");
-      alert("로그아웃 되었습니다.");
+    } catch (error) {
+      console.log(error);
     }
   };
 

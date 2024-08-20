@@ -19,17 +19,23 @@ export default function Header() {
 
   const logout = async () => {
     alert("로그아웃 하시겠습니까?");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
-      {
-        method: "POST",
-        credentials: "include",
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        LocalStorage.removeItem("accessToken");
+        setAccessToken("");
+        alert("로그아웃 되었습니다.");
+      } else {
+        throw new Error("에러발생");
       }
-    );
-    if (response.ok) {
-      LocalStorage.removeItem("accessToken");
-      setAccessToken("");
-      alert("로그아웃 되었습니다.");
+    } catch (error) {
+      console.error();
     }
   };
 
@@ -37,18 +43,18 @@ export default function Header() {
     setIsToggle(e.target.checked);
   };
 
-  console.log(isToggle);
-
   return (
     <>
       <header
         className="w-full fixed top-0 left-0 
       custom-flex px-6 py-4 border-b border-gray-200 bg-white z-10
+      xs:px-3
       "
+        style={{ height: "70.84px" }}
       >
-        <h1 className="main-logo">
+        <h1 className="main-logo xs:mr-6">
           <Link href="/">
-            <Image src={mainLogo} alt="Website Logo" width={180} />
+            <Image src={mainLogo} alt="Website Logo" width={180} height={38} />
           </Link>
         </h1>
         <div className="custom-flex relative">

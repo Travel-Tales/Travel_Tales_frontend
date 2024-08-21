@@ -11,6 +11,7 @@ const config: Config = {
       xs: { max: "350px" },
       s: "470px",
       sm: "640px",
+      "sm-max": { max: "767px" },
       md: "768px",
       lg: "1024px",
       xl: "1280px",
@@ -51,6 +52,9 @@ const config: Config = {
       zIndex: {
         "1": "1",
         "2": "2",
+      },
+      width: {
+        "1/8": "12.5%",
       },
     },
   },

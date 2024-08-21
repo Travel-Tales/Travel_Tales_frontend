@@ -32,10 +32,10 @@ export default function Header() {
         setAccessToken("");
         alert("로그아웃 되었습니다.");
       } else {
-        throw new Error("에러발생");
+        throw new Error("Network response was not ok");
       }
     } catch (error) {
-      console.error();
+      console.error("API 요청 중 오류 발생:", error);
     }
   };
 

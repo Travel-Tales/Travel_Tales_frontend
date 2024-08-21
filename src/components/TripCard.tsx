@@ -45,8 +45,10 @@ export default function TripCard({ list, accessToken }: any) {
               />
             </div>
             <div className="p-3">
-              <p>{value.title ? value.title : "제목없음"}</p>
-              <p className="font-semibold text-sm">
+              <p className="text-sm sm:text-base">
+                {value.title ? value.title : "제목없음"}
+              </p>
+              <p className="font-semibold text-xs sm:text-sm">
                 {value.travelArea ? value.travelArea : "지역없음"}
               </p>
             </div>

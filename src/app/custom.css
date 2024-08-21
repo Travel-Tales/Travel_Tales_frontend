@@ -10,6 +10,16 @@
   @apply px-3 py-2;
 }
 
+.footer-menu {
+  @apply px-3 py-2;
+}
+
+@media all and (max-width: 469px) {
+  .footer-menu {
+    @apply px-1 py-1;
+  }
+}
+
 .custom-button {
   @apply bg-blue-700 text-white px-4 py-2 rounded-md;
 }

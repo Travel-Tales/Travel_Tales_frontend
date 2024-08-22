@@ -70,7 +70,7 @@ export default function CreatePlanButton() {
   };
 
   return (
-    <button onClick={movePage} className="custom-button">
+    <button onClick={movePage} className="custom-button xs:text-xs">
       Create New Travel Plan
     </button>
   );

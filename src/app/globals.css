@@ -24,6 +24,12 @@ footer {
   height: 120px; /* footer 높이 */
 }
 
+@media all and (max-width: 469px) {
+  footer {
+    height: 200px; /* footer 높이 */
+  }
+}
+
 .a11y-hidden {
   position: absolute;
   width: 1px;
@@ -53,6 +59,17 @@ img.object-fit {
 
 .introduce {
   width: calc(100% / 3 - 30px);
+}
+@media all and (min-width: 640px) and (max-width: 767px) {
+  .introduce {
+    width: calc(100% / 3 - 20px);
+  }
+}
+
+@media all and (max-width: 639px) {
+  .introduce {
+    width: 100%;
+  }
 }
 
 .toggle-switch label {
@@ -237,7 +254,7 @@ input[type="number"] {
 
 .menuToggle input:checked ~ span {
   opacity: 1;
-  transform: rotate(45deg) translate(2px, -1px);
+  transform: rotate(45deg) translate(4px, -1px);
   background: #232323;
 }
 

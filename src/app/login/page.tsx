@@ -19,7 +19,7 @@ export default function LoginPage() {
   return (
     <>
       <main className="relative">
-        <section className="absolute top-1/2 left-1/2 -translate-x-2/4 -translate-y-3/4">
+        <section className="absolute top-1/2 left-1/2 -translate-x-2/4 -translate-y-2/4">
           <div>
             <h2 className="font-bold text-2xl text-center text-main-color mb-2">
               <Image src={logo} alt="logo" width={200} className="mx-auto " />
@@ -35,11 +35,14 @@ export default function LoginPage() {
             className="block"
             onClick={clickKakaoLogin}
           >
-            <Image
-              src={kakaoLogin}
-              alt="카카오 로그인 버튼 이미지"
-              width={320}
-            />
+            <div style={{ maxWidth: "300px", minWidth: "250px" }}>
+              <Image
+                src={kakaoLogin}
+                alt="카카오 로그인 버튼 이미지"
+                width={300}
+                height={200}
+              />
+            </div>
           </button>
           <button
             aria-label="구글 로그인"
@@ -47,11 +50,14 @@ export default function LoginPage() {
             id="my-signin2"
             onClick={clickGoogleLogin}
           >
-            <Image
-              src={googleLogin}
-              alt="구글 로그인 버튼 이미지"
-              width={320}
-            />
+            <div style={{ maxWidth: "300px", minWidth: "250px" }}>
+              <Image
+                src={googleLogin}
+                alt="구글 로그인 버튼 이미지"
+                width={300}
+                height={200}
+              />
+            </div>
           </button>
         </section>
       </main>

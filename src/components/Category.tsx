@@ -46,14 +46,23 @@ export default function Category() {
 
   return (
     <article>
-      <ul className="flex flex-row items-center justify-around py-10">
+      <ul className="flex flex-wrap md:flex-nowrap items-center justify-around py-10">
         {locationList.map((value, index) => (
-          <li className="cursor-pointer flex-1 text-center" key={index}>
+          <li
+            className="cursor-pointer text-center w-1/2 md:w-1/8 box-border"
+            key={index}
+          >
             <button
-              className={`border ${
-                index === 9 ? "border-r-1" : "border-r-0"
-              } w-full py-2
-              hover:bg-gray-100`}
+              className={`border w-full py-2 hover:bg-gray-100
+                ${index === 9 ? "md:border-r-1" : "md:border-r-0"} 
+                ${index % 2 === 0 ? "sm-max:border-r-0" : "sm-max:border-r-1"}
+                ${
+                  index === 8 || index === 9
+                    ? "sm-max:border-b-1"
+                    : "sm-max:border-b-0"
+                }
+
+              `}
             >
               {value.nation}
             </button>

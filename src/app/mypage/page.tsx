@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
-import useStore from "@/store/store";
-import { apiClient } from "@/service/interceptor";
+import useStore from "store/store";
+import { apiClient } from "service/interceptor";
 import Image from "next/image";
 import TripCard from "@/components/TripCard";
 

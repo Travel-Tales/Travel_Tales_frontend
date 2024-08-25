@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "/public/main-logo.png";
-import LocalStorage from "@/service/localstorage";
-import useStore from "@/store/store";
+import LocalStorage from "service/localstorage";
+import useStore from "store/store";
 
 export default function Header() {
   const [isClient, setIsClient] = useState(false);

@@ -4,8 +4,8 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import Image from "next/image";
 import profilePicture from "/public/profile_picture.png";
 import cameraIcon from "/public/camera_icon.svg";
-import { Profile } from "@/app/mypage/page";
-import useStore from "@/store/store";
+import { Profile } from "app/mypage/page";
+import useStore from "store/store";
 
 interface ImgUrl {
   imgUrl: string;

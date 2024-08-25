@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type {} from "@redux-devtools/extension"; // required for devtools typing
-import LocalStorage from "@/service/localstorage";
+import LocalStorage from "service/localstorage";
 
 interface BearState {
   accessToken: string;

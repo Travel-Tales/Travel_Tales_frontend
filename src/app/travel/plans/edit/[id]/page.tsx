@@ -14,8 +14,8 @@ import testImg from "/public/camera_icon.svg";
 import noImg from "/public/no-img.jpg";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Toolbar from "@/components/Toolbar";
-import useStore from "@/store/store";
-import { apiClient } from "@/service/interceptor";
+import useStore from "store/store";
+import { apiClient } from "service/interceptor";
 
 interface DefaultData {
   title: string;

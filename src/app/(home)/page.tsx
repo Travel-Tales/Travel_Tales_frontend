@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { recommandPlans } from "../../data/temporary.js";
-import { introduction } from "../../data/fixed";
-import TripCard from "../../components/TripCard";
+import { recommandPlans } from "data/temporary.js";
+import { introduction } from "data/fixed";
+import TripCard from "components/TripCard";
 import Head from "next/head.js";
 import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";

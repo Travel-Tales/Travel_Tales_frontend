@@ -3,12 +3,12 @@
 import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import io, { Socket } from "socket.io-client";
-import useStore from "@/store/store";
-import LocalStorage from "@/service/localstorage";
+import useStore from "store/store";
+import LocalStorage from "service/localstorage";
 import thumbnail from "/public/main-banner.jpg";
 import deleteButton from "/public/delete.png";
 import editButton from "/public/edit.png";
-import { apiClient } from "@/service/interceptor";
+import { apiClient } from "service/interceptor";
 import { useRouter } from "next/navigation";
 
 interface Info {

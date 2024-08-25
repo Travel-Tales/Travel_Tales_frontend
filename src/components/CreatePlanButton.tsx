@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import useStore from "@/store/store";
-import { apiClient } from "@/service/interceptor";
+import useStore from "store/store";
+import { apiClient } from "service/interceptor";
 
 interface DefaultData {
   title: string;

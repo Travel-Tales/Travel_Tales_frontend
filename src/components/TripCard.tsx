@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import thumbnail from "/public/main-banner.jpg";
-import useStore from "@/store/store";
+import useStore from "store/store";
 import { useRouter } from "next/navigation";
 
 export default function TripCard({ list, accessToken }: any) {

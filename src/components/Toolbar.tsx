@@ -65,3 +65,51 @@ const Toolbar: React.FC<ToolbarProps> = ({
 };
 
 export default Toolbar;
+
+// import React, { useRef } from "react";
+
+// interface ToolbarProps {
+//   onBold: () => void;
+//   onItalic: () => void;
+//   onHeading: () => void;
+//   onBlockquote: () => void;
+//   onOrderedList: () => void;
+//   onUnorderedList: () => void;
+//   onLink: () => void;
+//   onImage: (e: any) => void;
+// }
+
+// const Toolbar = ({}) => {
+//   const imageRef = useRef(null);
+
+//   return (
+//     <div className="toolbar">
+//       <button type="button">
+//         <strong>B</strong>
+//       </button>
+//       <button type="button">
+//         <em>I</em>
+//       </button>
+//       <button type="button">H</button>
+//       <button type="button">&ldquo;</button>
+//       <button type="button">1.</button>
+//       <button type="button">-</button>
+//       <button type="button">&#128279;</button>
+//       <label className="relative cursor-pointer">
+//         &#128247;
+//         <input
+//           id="file_upload"
+//           ref={imageRef}
+//           type="file"
+//           alt="profile-image"
+//           aria-label="이미지 업로드"
+//           accept="image/*"
+//           required
+//           className="absolute top-0 left-0 h-0 invisible"
+//         />
+//       </label>
+//     </div>
+//   );
+// };
+
+// export default Toolbar;

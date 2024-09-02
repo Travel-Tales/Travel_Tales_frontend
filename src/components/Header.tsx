@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "/public/main-logo.png";
@@ -10,6 +10,7 @@ import useStore from "@/store/store";
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
   const [isToggle, setIsToggle] = useState(false);
+  const checkboxRef = useRef<HTMLInputElement | null>(null);
   const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
 
@@ -41,6 +42,13 @@ export default function Header() {
 
   const toggleMenu = (e: any) => {
     setIsToggle(e.target.checked);
+  };
+
+  const closedMenu = () => {
+    if (checkboxRef.current) {
+      checkboxRef.current.checked = false;
+      setIsToggle(false);
+    }
   };
 
   return (
@@ -86,26 +94,26 @@ export default function Header() {
           </nav>
           <nav className="mb-menu block md:hidden">
             <div className="menuToggle">
-              <input type="checkbox" onChange={toggleMenu} />
+              <input type="checkbox" onChange={toggleMenu} ref={checkboxRef} />
 
               <span className="mb-menu-bar"></span>
               <span className="mb-menu-bar"></span>
               <span className="mb-menu-bar"></span>
 
               <ul className="menu-wrapper">
-                <li className="menu">
+                <li className="menu" onClick={closedMenu}>
                   <Link className="no-underline" href={"/travel/reviews"}>
                     Reviews
                   </Link>
                 </li>
-                <li className="menu">
+                <li className="menu" onClick={closedMenu}>
                   <Link className="no-underline" href={"/travel/plans"}>
                     Travel Plans
                   </Link>
                 </li>
                 {isClient && access ? (
                   <>
-                    <li className="menu">
+                    <li className="menu" onClick={closedMenu}>
                       <Link className="no-underline" href={"/mypage"}>
                         MyPage
                       </Link>
@@ -121,7 +129,7 @@ export default function Header() {
                     </li>
                   </>
                 ) : (
-                  <li className="menu">
+                  <li className="menu" onClick={closedMenu}>
                     <Link href={"/login"}>Login</Link>
                   </li>
                 )}
@@ -133,7 +141,8 @@ export default function Header() {
       <div
         className={`blur ${
           isToggle ? "block h-full" : "hidden"
-        } absolute top-0 left-0 w-full bg-gray-950 opacity-25 md:hidden`}
+        } absolute top-0 left-0 w-full bg-gray-950 opacity-25 md:hidden z-1`}
+        onClick={closedMenu}
       ></div>
     </>
   );

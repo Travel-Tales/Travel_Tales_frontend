@@ -8,7 +8,10 @@ export default function TravelReviewDetailPage() {
       <section className="page-section py-14">
         <h2 className="text-3xl font-bold pb-3 flex items-center">
           당일치기 당진 여행 후기!{" "}
-          <span className="ml-2 bg-gray-100 text-xs text-gray-500 rounded-full px-3 py-1">
+          <span
+            className="ml-2 bg-gray-100 text-xs text-gray-500
+           rounded-full px-3 py-1"
+          >
             Public
           </span>
         </h2>

@@ -102,6 +102,12 @@ img.object-fit {
   transition: left 250ms linear;
 }
 
+@media all and (max-width: 469px) {
+  .toggle-switch [type="checkbox"]::before {
+    height: 1.35em;
+  }
+}
+
 .toggle-switch [type="checkbox"]:checked::before {
   background-color: white;
   left: 1.5em;

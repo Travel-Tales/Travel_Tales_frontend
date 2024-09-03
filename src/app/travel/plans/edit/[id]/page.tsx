@@ -251,7 +251,7 @@ export default function TravelPlanCreatePage({
 
   return (
     <main>
-      <section className="w-3/4 my-10 mx-auto">
+      <section className="w-3/4 my-10 mx-auto xs-max:text-sm">
         <form onSubmit={handleSubmit}>
           <div className="toggle-switch mb-6">
             <label className="inline-flex items-center cursor-pointer">
@@ -294,8 +294,8 @@ export default function TravelPlanCreatePage({
               className="input-border py-1 px-3"
             />
           </div>
-          <div className="flex flex-row flex-wrap: wrap justify-start items-center">
-            <div className="flex flex-col mb-2 mr-6">
+          <div className="flex flex-row flex-wrap justify-start items-center">
+            <div className="flex flex-col mb-2 s:mr-6 xs-max:w-full">
               <label htmlFor="members">여행 인원</label>
               <input
                 type="number"
@@ -308,7 +308,7 @@ export default function TravelPlanCreatePage({
                 className="input-border py-1 px-3"
               />
             </div>
-            <div className="flex flex-col mb-2">
+            <div className="flex flex-col mb-2 xs-max:w-full">
               <label htmlFor="budget">여행 예산</label>
               <input
                 type="text"
@@ -323,8 +323,8 @@ export default function TravelPlanCreatePage({
 
           <div className="flex flex-col my-6 border-y py-6">
             {data.startDate && data.endDate && (
-              <div className="flex flex-row items-center mb-2">
-                <p className="mr-2">여행 시작일: </p>
+              <div className="s:flex s:flex-row items-center mb-2">
+                <p className="mr-2 xs-max:mb-1">여행 시작일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
                   selected={data.startDate}
@@ -339,8 +339,8 @@ export default function TravelPlanCreatePage({
               </div>
             )}
             {data.startDate && data.endDate && (
-              <div className="flex flex-row items-center">
-                <p className="mr-2">여행 종료일: </p>
+              <div className="s:flex s:flex-row items-center">
+                <p className="mr-2 xs-max:mb-1">여행 종료일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
                   selected={data.endDate}
@@ -419,3 +419,211 @@ export default function TravelPlanCreatePage({
     </main>
   );
 }
+
+// "use client";
+
+// import React, {
+//   useState,
+//   ChangeEvent,
+//   useRef,
+//   useCallback,
+//   useEffect,
+// } from "react";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+// import Image from "next/image";
+// import testImg from "/public/camera_icon.svg";
+// import noImg from "/public/no-img.jpg";
+// import MarkdownEditor from "@/components/MarkdownEditor";
+// import Toolbar from "@/components/Toolbar";
+// import useStore from "@/store/store";
+// import { apiClient } from "@/service/interceptor";
+
+// interface DefaultData {
+//   title: string;
+//   content: string;
+//   travelArea: string;
+//   travelerCount: number;
+//   budget: string;
+//   startDate: Date;
+//   endDate: Date;
+//   imageUrls: string[];
+//   thumbnailFile: string;
+//   visibilityStatus: string;
+// }
+
+// export default function TravelPlanCreatePage({
+//   params: { id },
+// }: {
+//   params: { id: number };
+// }) {
+//   const [data, setData] = useState<DefaultData>({
+//     title: "",
+//     content: "",
+//     travelArea: "",
+//     travelerCount: 1,
+//     budget: "0",
+//     startDate: new Date(),
+//     endDate: new Date(),
+//     imageUrls: [],
+//     thumbnailFile: "",
+//     visibilityStatus: "Public",
+//   });
+//   const [markdown, setMarkdown] = useState<string>("# Header");
+
+//   // const [fileObj, setFileObj] = useState<File | null>(null);
+//   const imageRef = useRef(null);
+//   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+//   const planId = useStore((state) => state.planId);
+//   const access = useStore((state) => state.accessToken);
+//   const setAccessToken = useStore((state) => state.setAccessToken);
+
+//   return (
+//     <main>
+//       <section className="w-3/4 my-10 mx-auto xs-max:text-sm">
+//         <form>
+//           <div className="toggle-switch mb-6">
+//             <label className="inline-flex items-center cursor-pointer">
+//               <span>공개 여부</span>
+//               <input
+//                 role="switch"
+//                 type="checkbox"
+//                 checked={data.visibilityStatus === "Public" ? false : true}
+//                 onChange={() => {
+//                   setData({
+//                     ...data,
+//                     visibilityStatus:
+//                       data.visibilityStatus === "Public" ? "Private" : "Public",
+//                   });
+//                 }}
+//               />
+//             </label>
+//           </div>
+//           <div className="mb-2 flex flex-col ">
+//             <label htmlFor="title">계획 제목</label>
+//             <input
+//               type="text"
+//               id="title"
+//               value={data.title}
+//               onChange={(e) => {
+//                 setData({ ...data, title: e.target.value });
+//               }}
+//               // required
+//               className="input-border py-1 px-3"
+//             />
+//           </div>
+//           <div className="flex flex-col mb-2">
+//             <label htmlFor="location">여행 지역</label>
+//             <input
+//               type="text"
+//               id="location"
+//               value={data.travelArea}
+//               onChange={(e) => setData({ ...data, travelArea: e.target.value })}
+//               required
+//               className="input-border py-1 px-3"
+//             />
+//           </div>
+//           <div className="flex flex-row flex-wrap justify-start items-center">
+//             <div className="flex flex-col mb-2 s:mr-6 xs-max:w-full">
+//               <label htmlFor="members">여행 인원</label>
+//               <input
+//                 type="number"
+//                 id="members"
+//                 value={data.travelerCount}
+//                 onChange={(e) =>
+//                   setData({ ...data, travelerCount: +e.target.value })
+//                 }
+//                 required
+//                 className="input-border py-1 px-3 "
+//               />
+//             </div>
+//             <div className="flex flex-col mb-2 xs-max:w-full">
+//               <label htmlFor="budget">여행 예산</label>
+//               <input
+//                 type="text"
+//                 id="budget"
+//                 value={data.budget}
+//                 required
+//                 className="input-border py-1 px-3"
+//               />
+//             </div>
+//           </div>
+
+//           <div className="flex flex-col my-6 border-y py-6">
+//             {data.startDate && data.endDate && (
+//               <div className="s:flex s:flex-row items-center mb-2">
+//                 <p className="mr-2 xs-max:mb-1">여행 시작일: </p>
+//                 <DatePicker
+//                   dateFormat="yyyy년 MM월 dd일"
+//                   selected={data.startDate}
+//                   onChange={(date) =>
+//                     date && setData({ ...data, startDate: date })
+//                   }
+//                   selectsStart
+//                   startDate={data.startDate}
+//                   endDate={data.endDate}
+//                   className="input-border px-2 py-1"
+//                 />
+//               </div>
+//             )}
+//             {data.startDate && data.endDate && (
+//               <div className="s:flex s:flex-row items-center">
+//                 <p className="mr-2 xs-max:mb-1">여행 종료일: </p>
+//                 <DatePicker
+//                   dateFormat="yyyy년 MM월 dd일"
+//                   selected={data.endDate}
+//                   onChange={(date) =>
+//                     date && setData({ ...data, endDate: date })
+//                   }
+//                   selectsEnd
+//                   startDate={data.startDate}
+//                   endDate={data.endDate}
+//                   minDate={data.startDate}
+//                   className="input-border px-2 py-1"
+//                 />
+//               </div>
+//             )}
+//           </div>
+//           <div className="mb-6">
+//             <label htmlFor="file_upload" className="inline-block mb-2">
+//               대표사진 선택 (썸네일)
+//               <input
+//                 id="file_upload"
+//                 ref={imageRef}
+//                 type="file"
+//                 alt="profile-image"
+//                 aria-label="프로필사진교체"
+//                 accept="image/*"
+//                 required
+//                 className="block text-sm text-slate-500
+//                 file:mr-4 file:py-2 file:px-4 file:rounded-md
+//                 file:border-0 file:text-sm file:font-semibold
+//                 file:bg-pink-50 file:text-pink-700
+//                 hover:file:bg-pink-100 mt-2 w-52"
+//               />
+//             </label>
+//             <Image
+//               src={data.thumbnailFile ? data.thumbnailFile : noImg}
+//               alt="대표사진 미리보기"
+//               width={200}
+//               height={100}
+//             />
+//           </div>
+//           <>
+//             <Toolbar />
+//             <div className="preview flex flex-row w-full border">
+//               <textarea
+//                 ref={textareaRef}
+//                 className="editor min-h-48 w-1/2 border-r p-2"
+//                 value={markdown}
+//                 placeholder="계획이나 후기를 작성해주세요!"
+//               />
+//               <MarkdownEditor markdown={markdown} />
+//             </div>
+//           </>
+//         </form>
+//       </section>
+//     </main>
+//   );
+// }

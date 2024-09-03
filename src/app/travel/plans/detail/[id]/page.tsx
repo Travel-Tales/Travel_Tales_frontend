@@ -10,6 +10,7 @@ import deleteButton from "/public/delete.png";
 import editButton from "/public/edit.png";
 import { apiClient } from "@/service/interceptor";
 import { useRouter } from "next/navigation";
+import MarkdownRender from "@/components/MarkdownRender";
 
 interface Info {
   budget: number;
@@ -199,23 +200,26 @@ export default function TravelPlansDetailPage({
                     </span>
                   </div>
                 </div>
-                <div className="mt-10">
-                  <Image
-                    src={info.thumbnail || thumbnail}
-                    width={400}
-                    height={400}
-                    alt=""
-                    className="mx-auto lg:mx-0"
-                  />
-                </div>
-              </article>
-              <article className="text-center my-8 lg:text-left xs-max:text-sm">
-                {info.content}
-              </article>
-              <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">
-                <button
-                  onClick={editPost}
-                  className="lg:px-0 lg:py-3 lg:mr-6
+              </div>
+              <div className="">
+                <span className="">대표이미지</span>
+                <Image
+                  src={info.thumbnail || thumbnail}
+                  width={300}
+                  height={300}
+                  alt={info.thumbnail}
+                  className="mx-auto lg:mx-0"
+                />
+              </div>
+            </article>
+            <article className="preview text-center my-8 xs-max:text-sm mx-auto border-solid border-y py-8">
+              <MarkdownRender markdown={info.content} />
+            </article>
+            <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">
+              <button
+                onClick={editPost}
+                className="lg:px-0 lg:py-3 lg:mr-6
+
          lg:rounded-none lg:bg-transparent lg:text-black
          px-8 py-3 mr-3 rounded bg-blue-500 text-white
          flex items-center text-sm"

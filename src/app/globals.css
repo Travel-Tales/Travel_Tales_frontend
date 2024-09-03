@@ -120,6 +120,7 @@ img.object-fit {
 .preview h1 {
   font-size: 32px;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 .preview h2 {
   font-size: 24px;
@@ -290,4 +291,11 @@ input[type="number"] {
  */
 .menuToggle input:checked ~ ul {
   transform: translate(-100%, 0);
+}
+
+.markdown-render {
+  img {
+    max-width: 500px;
+    margin: 0 auto;
+  }
 }

@@ -143,58 +143,62 @@ export default function TravelPlansDetailPage({
   return (
     <main>
       {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
-      <section className="page-section py-14">
-        {info && (
-          <>
-            <h2
-              className="lg:w-9/12 text-3xl font-bold pb-3 flex items-center
+      <div className="max-w-5xl mx-auto px-10 py-14 box-border">
+        <section className="relative">
+          {info && (
+            <>
+              <h2
+                className="lg:w-9/12 text-3xl font-bold pb-3 flex items-center
        xs-max:text-2xl"
-            >
-              {info.title ? info.title : "제목없음"}
-              <span
-                className={`ml-2  text-xs
+              >
+                {info.title ? info.title : "제목없음"}
+                <span
+                  className={`ml-2  text-xs
+
               rounded-full px-3 py-1 ${
                 info.visibilityStatus === "Public"
                   ? "bg-gray-100 text-gray-500"
                   : "bg-red-100 text-red-500"
               }`}
-              >
-                {info.visibilityStatus}
-              </span>
-            </h2>
-            <article className="xs-max:text-sm">
-              <p className="pb-2">
-                <span>지역: </span>
-                {info.travelArea ? info.travelArea : "지역없음"}
-              </p>
-              <p className="pb-2">
-                <span>인원: </span>
-                {info.travelerCount}명
-              </p>
-              <p className="pb-2">
-                <span>날짜: </span>
-                {formatingDate(info.startDate)} ~ {formatingDate(info.endDate)}
-              </p>
-              <p className="pb-2">
-                <span>총 예산: </span>
-                {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
-              </p>
-              <p></p>
-              <div className="flex items-center space-x-2 pb-2">
-                <span className="">키워드:</span>
-                <div className="flex space-x-2">
-                  <span
-                    className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
-                    aria-label="당진 해시태그"
-                  >
-                    #당진
-                  </span>
-                  <span
-                    className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
-                    aria-label="당일치기 해시태그"
-                  >
-                    #당일치기
-                  </span>
+                >
+                  {info.visibilityStatus}
+                </span>
+              </h2>
+              <article className="xs-max:text-sm">
+                <p className="pb-2">
+                  <span>지역: </span>
+                  {info.travelArea ? info.travelArea : "지역없음"}
+                </p>
+                <p className="pb-2">
+                  <span>인원: </span>
+                  {info.travelerCount}명
+                </p>
+                <p className="pb-2">
+                  <span>날짜: </span>
+                  {formatingDate(info.startDate)} ~{" "}
+                  {formatingDate(info.endDate)}
+                </p>
+                <p className="pb-2">
+                  <span>총 예산: </span>
+                  {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
+                </p>
+                <p></p>
+                <div className="flex items-center space-x-2 pb-2">
+                  <span className="">키워드:</span>
+                  <div className="flex space-x-2">
+                    <span
+                      className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
+                      aria-label="당진 해시태그"
+                    >
+                      #당진
+                    </span>
+                    <span
+                      className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
+                      aria-label="당일치기 해시태그"
+                    >
+                      #당일치기
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="">
@@ -215,39 +219,41 @@ export default function TravelPlansDetailPage({
               <button
                 onClick={editPost}
                 className="lg:px-0 lg:py-3 lg:mr-6
+
          lg:rounded-none lg:bg-transparent lg:text-black
          px-8 py-3 mr-3 rounded bg-blue-500 text-white
          flex items-center text-sm"
-              >
-                <Image
-                  src={editButton}
-                  width={21}
-                  height={21}
-                  alt="edit"
-                  className="mr-1 hidden lg:block"
-                />
-                수정하기
-              </button>
-              <button
-                onClick={deletePost}
-                className="lg:px-0 lg:py-3 lg:mr-0
+                >
+                  <Image
+                    src={editButton}
+                    width={21}
+                    height={21}
+                    alt="edit"
+                    className="mr-1 hidden lg:block"
+                  />
+                  수정하기
+                </button>
+                <button
+                  onClick={deletePost}
+                  className="lg:px-0 lg:py-3 lg:mr-0
            lg:rounded-none lg:bg-transparent lg:text-black
            px-8 py-3 rounded bg-zinc-400 text-white
           flex items-center text-sm"
-              >
-                <Image
-                  src={deleteButton}
-                  width={20}
-                  height={20}
-                  alt="delete"
-                  className="mr-1 hidden lg:block"
-                />
-                삭제하기
-              </button>
-            </div>
-          </>
-        )}
-      </section>
+                >
+                  <Image
+                    src={deleteButton}
+                    width={20}
+                    height={20}
+                    alt="delete"
+                    className="mr-1 hidden lg:block"
+                  />
+                  삭제하기
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

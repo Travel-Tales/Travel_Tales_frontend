@@ -200,25 +200,24 @@ export default function TravelPlansDetailPage({
                     </span>
                   </div>
                 </div>
-              </div>
-              <div className="">
-                <span className="">대표이미지</span>
-                <Image
-                  src={info.thumbnail || thumbnail}
-                  width={300}
-                  height={300}
-                  alt={info.thumbnail}
-                  className="mx-auto lg:mx-0"
-                />
-              </div>
-            </article>
-            <article className="preview text-center my-8 xs-max:text-sm mx-auto border-solid border-y py-8">
-              <MarkdownRender markdown={info.content} />
-            </article>
-            <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">
-              <button
-                onClick={editPost}
-                className="lg:px-0 lg:py-3 lg:mr-6
+                <div className="">
+                  <span className="">대표이미지</span>
+                  <Image
+                    src={info.thumbnail || thumbnail}
+                    width={300}
+                    height={300}
+                    alt={info.thumbnail}
+                    className="mx-auto lg:mx-0"
+                  />
+                </div>
+              </article>
+              <article className="preview text-center my-8 xs-max:text-sm mx-auto border-solid border-y py-8">
+                <MarkdownRender markdown={info.content} />
+              </article>
+              <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">
+                <button
+                  onClick={editPost}
+                  className="lg:px-0 lg:py-3 lg:mr-6
 
          lg:rounded-none lg:bg-transparent lg:text-black
          px-8 py-3 mr-3 rounded bg-blue-500 text-white

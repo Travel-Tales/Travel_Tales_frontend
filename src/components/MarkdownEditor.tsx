@@ -10,7 +10,7 @@ import Image from "next/image";
 
 const MarkdownEditor = ({ markdown }: { markdown: string }) => {
   return (
-    <div className="w-1/2 p-2 overflow-hidden break-all">
+    <div className="w-1/2 p-2 overflow-hidden break-all markdown-render">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -50,17 +50,17 @@ const MarkdownEditor = ({ markdown }: { markdown: string }) => {
               </blockquote>
             );
           },
-          img({ ...props }) {
-            console.log("props", props);
-            return (
-              <Image
-                src={props.src?.replace("/public/", "/") || ""}
-                alt="MarkdownRenderer__Image"
-                width={500}
-                height={350}
-              />
-            );
-          },
+          // img({ ...props }) {
+          //   console.log("props", props);
+          //   return (
+          //     <Image
+          //       src={props.src?.replace("/public/", "/") || ""}
+          //       alt="MarkdownRenderer__Image"
+          //       width={500}
+          //       height={350}
+          //     />
+          //   );
+          // },
           em({ children, ...props }) {
             return (
               <span style={{ fontStyle: "italic" }} {...props}>

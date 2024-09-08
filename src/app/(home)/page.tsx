@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
-import Image from "next/image";
+import React from "react";
 import { recommandPlans } from "../../data/temporary.js";
 import { introduction } from "../../data/fixed";
 import TripCard from "../../components/TripCard";
 import Head from "next/head.js";
 import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";
-import Link from "next/link.js";
 import Banner from "@/components/Banner";
 
 export default function Home() {

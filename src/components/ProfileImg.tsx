@@ -1,10 +1,9 @@
 "use client";
 
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useRef } from "react";
 import Image from "next/image";
 import profilePicture from "/public/profile_picture.png";
 import cameraIcon from "/public/camera_icon.svg";
-import { Profile } from "@/app/mypage/page";
 import useStore from "@/store/store";
 
 interface ImgUrl {
@@ -89,72 +88,3 @@ export default function ProfileImg({
     </div>
   );
 }
-
-// "use client";
-
-// import React, { ChangeEvent, useRef, useState } from "react";
-// import Image from "next/image";
-// import profilePicture from "/public/profile_picture.png";
-// import cameraIcon from "/public/camera_icon.svg";
-// import { Profile } from "@/app/mypage/page";
-// import useStore from "@/store/store";
-
-// interface ImgUrl {
-//   imgUrl: string;
-//   setImgUrl: (url: string) => void;
-//   fileObj: File | null;
-//   setFileObj: (file: File | null) => void;
-//   isEdit: boolean;
-// }
-// export default function ProfileImg() {
-//   const imageRef = useRef(null);
-//   const access = useStore((state) => state.accessToken);
-
-//   return (
-//     <div className="flex-shrink-0">
-//       <h2 className="a11y-hidden">Upload Profile Image</h2>
-//       <div className="user-image-wrapper">
-//         <div
-//           className="user-image-box w-16 h-16 s:w-20 s:h-20 md:w-24 md:h-24 relative
-//         overflow-hidden border rounded-full border-gray-300"
-//         >
-//           <label
-//             htmlFor="file_upload"
-//             className="custom-thumbnail-label w-full h-full"
-//           >
-//             <input
-//               id="file_upload"
-//               ref={imageRef}
-//               type="file"
-//               alt="profile-image"
-//               aria-label="프로필사진교체"
-//               accept="image/*"
-//               required
-//               className="h-0 invisible"
-//             />
-//             <Image
-//               src={profilePicture}
-//               alt="프로필 이미지"
-//               width={96}
-//               height={96}
-//               className="absolute top-0 left-0"
-//             />
-//             <div
-//               className={`absolute top-0 left-0 bg-gray-100/50
-//             rounded-full w-full h-full`}
-//             >
-//               <Image
-//                 src={cameraIcon}
-//                 alt=""
-//                 width={20}
-//                 height={20}
-//                 className="absolute top-1/2	left-1/2
-//                 -translate-x-2/4 -translate-y-2/4"
-//               />
-//             </div>
-//           </label>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

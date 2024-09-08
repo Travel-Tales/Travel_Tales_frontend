@@ -4,8 +4,7 @@ import "./globals.css";
 import "./custom.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Head from "next/head";
-import { SocketProvider } from "@/components/SocketProvider";
+// import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -1,7 +1,6 @@
 import React from "react";
 import SearchBar from "@/components/SearchBar";
 import TripCard from "@/components/TripCard";
-import { recommandPlans } from "@/data/temporary";
 import Category from "@/components/Category";
 import { apiClient } from "@/service/interceptor";
 

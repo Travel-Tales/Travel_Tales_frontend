@@ -1,5 +1,3 @@
-import recommandThumbnail from "../../public/recommand-plan.jpg";
-
 export const recommandPlans = [
   {
     id: 1,

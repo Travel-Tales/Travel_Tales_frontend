@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import thumbnailImg from "/public/thumbnail-img.jpg";
+import thumbnailImg from "/public/thumbnail-img.webp";
 import useStore from "@/store/store";
 
 type List = {
@@ -71,8 +71,10 @@ export default function TripCard({ list, accessToken }: TripCardProps) {
       <div className="relative card">
         <Image
           src={item.thumbnail || thumbnailImg}
+          width={640}
+          height={428}
           alt="계획 리스트 썸네일"
-          fill
+          priority={true} // 우선 로드 설정
           className="object-fit"
         />
       </div>

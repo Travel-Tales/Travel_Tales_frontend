@@ -11,6 +11,7 @@ import editButton from "/public/edit.png";
 import { apiClient } from "@/service/interceptor";
 import { useRouter, useSearchParams } from "next/navigation";
 import MarkdownRender from "@/components/MarkdownRender";
+import { refreshAccessToken } from "@/service/interceptor";
 
 interface Info {
   budget: number;
@@ -63,8 +64,16 @@ export default function TravelPlansDetailPage({
     socketInstance.on("connect", () => {
       setIsConnected(true);
     });
-    socketInstance.on("error", (error) => {
-      console.error("Socket encountered error: ", error);
+    socketInstance.on("error", async (error) => {
+      if (error === "Invalid Token") {
+        const accessToken = await refreshAccessToken(
+          process.env.NEXT_PUBLIC_API_URL
+        );
+        setAccessToken(accessToken);
+        socketInstance.emit("setInit");
+      } else {
+        console.error("Socket encountered error: ", error);
+      }
     });
     socketInstance.emit("setInit");
     socketInstance.emit("joinRoom", { postId: id });

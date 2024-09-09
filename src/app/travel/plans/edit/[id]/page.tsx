@@ -49,7 +49,30 @@ export default function TravelPlanCreatePage({
   const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
 
+  const matchUrl = (content: string) => {
+    if (content) {
+      let str = content;
+      let matchUrlArray: string[] = [];
+
+      // 정규식을 통해 공통 패턴의 문자열 추출
+      const regex =
+        /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?_profile/g;
+
+      // 해당 패턴을 모두 찾기
+      const matches = str.match(regex);
+      if (matches) {
+        matches.forEach((match) => {
+          matchUrlArray = [...matchUrlArray, match];
+        });
+        return matchUrlArray;
+      } else {
+        console.log("No matches found");
+      }
+    }
+  };
+
   const saveChanges = async () => {
+    const matchUrlArray = matchUrl(markdown);
     const body = {
       title: data.title,
       content: markdown,
@@ -57,7 +80,7 @@ export default function TravelPlanCreatePage({
       travelerCount: Number(data.travelerCount),
       budget: Number(data.budget.replace(/,/g, "")),
       thumbnailFile: data.thumbnailFile,
-      imageUrls: JSON.stringify(data.imageUrls),
+      imageUrl: JSON.stringify(matchUrlArray),
       startDate: data.startDate,
       endDate: data.endDate,
       visibilityStatus: data.visibilityStatus,

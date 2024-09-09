@@ -22,7 +22,15 @@ export default function LoginPage() {
         <section className="absolute top-1/2 left-1/2 -translate-x-2/4 -translate-y-2/4">
           <div>
             <h2 className="font-bold text-2xl text-center text-main-color mb-2">
-              <Image src={logo} alt="logo" width={200} className="mx-auto " />
+              <Image
+                src={logo}
+                alt="logo"
+                width={200}
+                height={100}
+                priority={true}
+                className="mx-auto"
+                style={{ width: "auto", height: "auto" }}
+              />
               Login
             </h2>
             <p className="mb-10 text-lg text-gray-700 text-center">
@@ -35,12 +43,13 @@ export default function LoginPage() {
             className="block"
             onClick={clickKakaoLogin}
           >
-            <div style={{ maxWidth: "300px", minWidth: "250px" }}>
+            <div>
               <Image
                 src={kakaoLogin}
                 alt="카카오 로그인 버튼 이미지"
                 width={300}
                 height={200}
+                priority={true}
               />
             </div>
           </button>
@@ -56,6 +65,7 @@ export default function LoginPage() {
                 alt="구글 로그인 버튼 이미지"
                 width={300}
                 height={200}
+                priority={true}
               />
             </div>
           </button>

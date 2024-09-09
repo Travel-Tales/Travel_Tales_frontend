@@ -23,7 +23,7 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "main-banner": "url('../../public/main-banner.jpg')",
+        "main-banner": "url('../../public/main-banner1.avif')",
       },
       backgroundPosition: {
         "bottom-1": "center bottom -5rem",

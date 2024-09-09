@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
-import Image from "next/image";
 import TripCard from "@/components/TripCard";
 
 export interface Profile {
@@ -219,116 +217,3 @@ export default function Mypage() {
     </main>
   );
 }
-
-// "use client";
-
-// import React, { useState, useEffect } from "react";
-// import Link from "next/link";
-// import ProfileImg from "@/components/ProfileImg";
-// import useStore from "@/store/store";
-// import { apiClient } from "@/service/interceptor";
-// import Image from "next/image";
-// import TripCard from "@/components/TripCard";
-
-// export interface Profile {
-//   id: number;
-//   nickname: string;
-//   email: string;
-//   loginType: string;
-//   imageUrl: string;
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// export default function Mypage() {
-//   const [list, setList] = useState<any>([]);
-//   const [isEdit, setIsEdit] = useState(false);
-//   const [tab, setTab] = useState("나의 여행 계획서");
-
-//   //: 파일을 append하기 위한 obj
-//   const [fileObj, setFileObj] = useState<File | null>(null);
-//   //: 원본 프로필 전체 저장
-//   const [profile, setProfile] = useState<Profile>({
-//     id: 0,
-//     nickname: "",
-//     email: "",
-//     loginType: "",
-//     imageUrl: "",
-//     createdAt: "",
-//     updatedAt: "",
-//   });
-//   //: 클라이언트 이미지 변경을 위한 단순 변환 url 저장
-//   const [imgUrl, setImgUrl] = useState<string>("");
-
-//   const tabList = [
-//     { id: 0, tabName: "나의 여행 계획서" },
-//     { id: 1, tabName: "나의 여행 리뷰" },
-//   ];
-
-//   const UserProfileInput: React.FC<{ keyName: keyof Profile }> = ({
-//     keyName,
-//   }) => {
-//     return (
-//       <input
-//         value={profile[keyName]}
-//         autoFocus={isEdit}
-//         className="block py-1 px-2 w-full"
-//       />
-//     );
-//   };
-
-//   return (
-//     <main>
-//       <section className="page-section">
-//         <article
-//           className="s:flex s:flex-row s:justify-between s:items-center
-//         sm:px-0 md:px-24 lg:px-44 pt-5"
-//         >
-//           <div className="xs:block flex flex-1 s:mr-10">
-//             <ProfileImg />
-//             {isEdit ? (
-//               <section className="ml-4 mt-3 flex-1">
-//                 <p className="py-1 px-2 w-full">wlgus_57@naver.com</p>
-//                 <UserProfileInput keyName="nickname" />
-//               </section>
-//             ) : (
-//               <section className="ml-2 mt-3 sm:ml-4 sm:mt-3 flex-1">
-//                 <p className="text-sm sm:text-base sm:py-1 sm:px-2 w-full">
-//                   wlgus_57@naver.com
-//                 </p>
-//                 <p className="text-sm sm:text-base sm:py-1 sm:px-2 w-full">
-//                   wusiddldlqslek.
-//                 </p>
-//               </section>
-//             )}
-//           </div>
-//           <button
-//             className={`${
-//               isEdit ? "bg-blue-700" : "bg-gray-900"
-//             } text-white rounded-md block sm:w-40 sm:py-2 sm:text-base
-//             s:w-28 s:py-1.5 s:mt-0 mt-3 text-sm w-full py-1.5`}
-//           >
-//             {isEdit ? "SAVE" : "EDIT"}
-//           </button>
-//         </article>
-//         <article className="w-full flex flex-row text-center border-y mt-5 sm:text-sm text-xs">
-//           {tabList.map((value) => (
-//             <button
-//               key={value.id}
-//               className={`flex-1 py-3 hover:bg-gray-100 cursor-pointer ${
-//                 value.id === 0
-//                   ? "after:content-['|'] after:text-border-color relative after:absolute after:-right-0.5 after:top-2.5"
-//                   : ""
-//               } ${tab === value.tabName ? "bg-gray-100" : ""}`}
-//             >
-//               <p>{value.tabName}</p>
-//             </button>
-//           ))}
-//         </article>
-//         <article className="my-5">
-//           <TripCard list={list} />
-//         </article>
-//       </section>
-//     </main>
-//   );
-// }

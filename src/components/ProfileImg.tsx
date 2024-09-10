@@ -2,8 +2,8 @@
 
 import React, { ChangeEvent, useRef } from "react";
 import Image from "next/image";
-import profilePicture from "/public/profile_picture.png";
-import cameraIcon from "/public/camera_icon.svg";
+import profilePicture from "./../../public/profile_picture.png";
+import cameraIcon from "./../../public/camera_icon.svg";
 import useStore from "@/store/store";
 
 interface ImgUrl {

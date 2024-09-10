@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import thumbnailImg from "/public/thumbnail-img.webp";
+import thumbnailImg from "./../../public/thumbnail-img.webp";
 import useStore from "@/store/store";
 
 type List = {
@@ -62,7 +62,7 @@ export default function TripCard({ list, accessToken }: TripCardProps) {
   };
 
   // 개별 카드 컴포넌트
-  const TripCardItem = ({ item }: { item: any }) => (
+  const TripCardItem = ({ item }: { item: List }) => (
     <li
       key={item.id}
       className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer"
@@ -75,7 +75,7 @@ export default function TripCard({ list, accessToken }: TripCardProps) {
           height={428}
           alt="계획 리스트 썸네일"
           priority={true} // 우선 로드 설정
-          className="object-fit"
+          className="object-cover"
         />
       </div>
       <div className="p-3">

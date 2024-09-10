@@ -2,7 +2,6 @@ import React from "react";
 import { recommandPlans } from "../../data/temporary.js";
 import { introduction } from "../../data/fixed";
 import TripCard from "../../components/TripCard";
-import Head from "next/head.js";
 import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";
 import Banner from "@/components/Banner";

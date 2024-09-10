@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import searchIcon from "/public/search-white.png";
+import searchIcon from "./../../public/search-white.png";
 import { usePathname } from "next/navigation";
 
 export default function SearchBar() {

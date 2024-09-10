@@ -211,6 +211,8 @@ export default function TravelPlansDetailPage({
                     height={300}
                     alt={info.thumbnail}
                     className="mx-auto lg:mx-0"
+                    style={{ width: "auto", height: "auto" }}
+                    priority={true} // 우선 로드 설정
                   />
                 </div>
               </article>

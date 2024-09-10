@@ -19,24 +19,28 @@ export default function Header() {
   }, []);
 
   const logout = async () => {
-    alert("로그아웃 하시겠습니까?");
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
-        {
-          method: "POST",
-          credentials: "include",
+    if (confirm("로그아웃 하시겠습니까?") === true) {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          LocalStorage.removeItem("accessToken");
+          setAccessToken("");
+          alert("로그아웃 되었습니다.");
+          location.reload();
+        } else {
+          throw new Error("Network response was not ok");
         }
-      );
-      if (response.ok) {
-        LocalStorage.removeItem("accessToken");
-        setAccessToken("");
-        alert("로그아웃 되었습니다.");
-      } else {
-        throw new Error("Network response was not ok");
+      } catch (error) {
+        console.error("API 요청 중 오류 발생:", error);
       }
-    } catch (error) {
-      console.error("API 요청 중 오류 발생:", error);
+    } else {
+      return;
     }
   };
 
@@ -62,7 +66,14 @@ export default function Header() {
       >
         <h1 className="main-logo xs:mr-6">
           <Link href="/">
-            <Image src={mainLogo} alt="Website Logo" width={180} height={38} />
+            <Image
+              src={mainLogo}
+              alt="Website Logo"
+              width={180}
+              height={38}
+              priority={true}
+              style={{ width: "auto", height: "auto" }}
+            />
           </Link>
         </h1>
         <div className="custom-flex relative">

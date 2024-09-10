@@ -372,6 +372,7 @@ export default function TravelPlanCreatePage({
               alt="대표사진 미리보기"
               width={200}
               height={100}
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <>

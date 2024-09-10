@@ -41,7 +41,6 @@ export default function SearchBar() {
             <Image
               src={searchIcon}
               alt="search button icon"
-              layout="responsive"
               width={22}
               height={22}
             />

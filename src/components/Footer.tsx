@@ -10,7 +10,14 @@ export default function Footer() {
     md:flex-row justify-center md:justify-between md:items-center"
     >
       <div className="footer-logo mb-2 s:pl-3 s:mb-0 md:pl-0">
-        <Image src={mainLogo} alt="Website Logo" width={120} />
+        <Image
+          src={mainLogo}
+          alt="Website Logo"
+          width={120}
+          height={100}
+          priority={true}
+          style={{ width: "auto", height: "auto" }}
+        />
         <p className="text-sm text-neutral-700">
           © 2024 Travel Tales. All rights reserved.
         </p>

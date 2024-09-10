@@ -5,9 +5,9 @@ import Image from "next/image";
 import io from "socket.io-client";
 import useStore from "@/store/store";
 import LocalStorage from "@/service/localstorage";
-import thumbnail from "/public/thumbnail-img.webp";
-import deleteButton from "/public/delete.png";
-import editButton from "/public/edit.png";
+import thumbnail from "./../../../../../../public/thumbnail-img.webp";
+import deleteButton from "./../../../../../../public/delete.png";
+import editButton from "./../../../../../../public/edit.png";
 import { apiClient } from "@/service/interceptor";
 import { useRouter, useSearchParams } from "next/navigation";
 import MarkdownRender from "@/components/MarkdownRender";
@@ -47,70 +47,73 @@ export default function TravelPlansDetailPage({
   const params = searchParams.get("page");
 
   useEffect(() => {
-    const connectSocket = async () => {
-      const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
-        transports: ["websocket"],
-        auth: {
-          Authorization: `Bearer ${access}`,
-        },
-      });
+    if (access) {
+      const connectSocket = async () => {
+        const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
+          transports: ["websocket"],
+          auth: {
+            Authorization: `Bearer ${access}`,
+          },
+        });
 
-      socketInstance.on("connect", () => {
-        setIsConnected(true);
-      });
+        socketInstance.on("connect", () => {
+          setIsConnected(true);
+        });
 
-      socketInstance.emit("setInit");
-      socketInstance.emit("joinRoom", { postId: id });
-      socketInstance.on("postUpdate", (post) => {
-        setInfo(post[0]);
-      });
+        socketInstance.emit("setInit");
+        socketInstance.emit("joinRoom", { postId: id });
+        socketInstance.on("postUpdate", (post) => {
+          setInfo(post[0]);
+        });
 
-      socketInstance.on("error", async (error) => {
-        if (error.message === "Invalid Token") {
-          console.error("Socket encountered error: ", error);
+        socketInstance.on("error", async (error) => {
+          if (error.message === "Invalid Token") {
+            console.error("Socket encountered error: ", error);
 
-          try {
-            const newAccessToken = await refreshAccessToken(
-              process.env.NEXT_PUBLIC_API_URL
-            );
-            setAccessToken(newAccessToken);
+            try {
+              const newAccessToken = await refreshAccessToken(
+                process.env.NEXT_PUBLIC_API_URL
+              );
+              setAccessToken(newAccessToken);
 
-            socketInstance.disconnect();
+              socketInstance.disconnect();
 
-            const newSocketInstance = io(
-              `${process.env.NEXT_PUBLIC_API_URL}/post`,
-              {
-                transports: ["websocket"],
-                auth: {
-                  Authorization: `Bearer ${newAccessToken}`,
-                },
-              }
-            );
+              const newSocketInstance = io(
+                `${process.env.NEXT_PUBLIC_API_URL}/post`,
+                {
+                  transports: ["websocket"],
+                  auth: {
+                    Authorization: `Bearer ${newAccessToken}`,
+                  },
+                }
+              );
 
-            newSocketInstance.on("connect", () => {
-              setIsConnected(true);
-            });
+              newSocketInstance.on("connect", () => {
+                setIsConnected(true);
+              });
 
-            newSocketInstance.emit("setInit");
-            newSocketInstance.emit("joinRoom", { postId: id });
-            newSocketInstance.on("postUpdate", (post) => {
-              setInfo(post[0]);
-            });
-          } catch (err) {
-            console.error("Failed to refresh token:", err);
+              newSocketInstance.emit("setInit");
+              newSocketInstance.emit("joinRoom", { postId: id });
+              newSocketInstance.on("postUpdate", (post) => {
+                setInfo(post[0]);
+              });
+            } catch (err) {
+              console.error("Failed to refresh token:", err);
+            }
+          } else {
+            console.error("Socket encountered error: ", error);
           }
-        } else {
-          console.error("Socket encountered error: ", error);
-        }
-      });
+        });
 
-      return () => {
-        socketInstance.emit("leaveRoom", { postId: id });
-        socketInstance.disconnect();
+        return () => {
+          socketInstance.emit("leaveRoom", { postId: id });
+          socketInstance.disconnect();
+        };
       };
-    };
 
-    connectSocket();
+      connectSocket();
+    }
+
 
     // Initial data fetch
     const fetchData = async () => {
@@ -118,6 +121,7 @@ export default function TravelPlansDetailPage({
       setInfo(initialData);
     };
     fetchData();
+
   }, [access, id]);
 
   async function getDetailInfo() {

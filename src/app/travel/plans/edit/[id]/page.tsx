@@ -4,7 +4,7 @@ import React, { useState, ChangeEvent, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
-import noImg from "/public/no-img.jpg";
+import noImg from "./../../../../../../public/no-img.jpg";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Toolbar from "@/components/Toolbar";
 import useStore from "@/store/store";

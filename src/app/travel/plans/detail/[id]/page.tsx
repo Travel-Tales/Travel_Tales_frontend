@@ -11,6 +11,7 @@ import editButton from "/public/edit.png";
 import { apiClient } from "@/service/interceptor";
 import { useRouter, useSearchParams } from "next/navigation";
 import MarkdownRender from "@/components/MarkdownRender";
+import { refreshAccessToken } from "@/service/interceptor";
 
 interface Info {
   budget: number;
@@ -46,39 +47,78 @@ export default function TravelPlansDetailPage({
   const params = searchParams.get("page");
 
   useEffect(() => {
-    const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
-      transports: ["websocket"],
-      auth: {
-        Authorization: `Bearer ${access}`,
-      },
-    });
-    //: 처음 데이터를 받아오는 곳
+    const connectSocket = async () => {
+      const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
+        transports: ["websocket"],
+        auth: {
+          Authorization: `Bearer ${access}`,
+        },
+      });
 
+      socketInstance.on("connect", () => {
+        setIsConnected(true);
+      });
+
+      socketInstance.emit("setInit");
+      socketInstance.emit("joinRoom", { postId: id });
+      socketInstance.on("postUpdate", (post) => {
+        setInfo(post[0]);
+      });
+
+      socketInstance.on("error", async (error) => {
+        if (error.message === "Invalid Token") {
+          console.error("Socket encountered error: ", error);
+
+          try {
+            const newAccessToken = await refreshAccessToken(
+              process.env.NEXT_PUBLIC_API_URL
+            );
+            setAccessToken(newAccessToken);
+
+            socketInstance.disconnect();
+
+            const newSocketInstance = io(
+              `${process.env.NEXT_PUBLIC_API_URL}/post`,
+              {
+                transports: ["websocket"],
+                auth: {
+                  Authorization: `Bearer ${newAccessToken}`,
+                },
+              }
+            );
+
+            newSocketInstance.on("connect", () => {
+              setIsConnected(true);
+            });
+
+            newSocketInstance.emit("setInit");
+            newSocketInstance.emit("joinRoom", { postId: id });
+            newSocketInstance.on("postUpdate", (post) => {
+              setInfo(post[0]);
+            });
+          } catch (err) {
+            console.error("Failed to refresh token:", err);
+          }
+        } else {
+          console.error("Socket encountered error: ", error);
+        }
+      });
+
+      return () => {
+        socketInstance.emit("leaveRoom", { postId: id });
+        socketInstance.disconnect();
+      };
+    };
+
+    connectSocket();
+
+    // Initial data fetch
     const fetchData = async () => {
       const initialData = await getDetailInfo();
       setInfo(initialData);
     };
     fetchData();
-
-    socketInstance.on("connect", () => {
-      setIsConnected(true);
-    });
-    socketInstance.on("error", (error) => {
-      console.error("Socket encountered error: ", error);
-    });
-    socketInstance.emit("setInit");
-    socketInstance.emit("joinRoom", { postId: id });
-    socketInstance.on("postUpdate", (post) => {
-      setInfo(post[0]);
-    });
-
-    // return () => {
-    //   socketInstance.emit("leaveRoom", { postId: id });
-    //   socketInstance.off("connect", () => {
-    //     setIsConnected(false);
-    //   });
-    // };
-  }, []);
+  }, [access, id]);
 
   async function getDetailInfo() {
     try {

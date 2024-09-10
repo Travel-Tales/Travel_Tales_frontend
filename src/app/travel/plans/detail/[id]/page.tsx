@@ -114,13 +114,15 @@ export default function TravelPlansDetailPage({
       connectSocket();
     }
 
+
     // Initial data fetch
     const fetchData = async () => {
       const initialData = await getDetailInfo();
       setInfo(initialData);
     };
     fetchData();
-  }, []);
+
+  }, [access, id]);
 
   async function getDetailInfo() {
     try {
@@ -228,7 +230,7 @@ export default function TravelPlansDetailPage({
                   {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
                 </p>
                 <p></p>
-                <div className="flex items-center space-x-2 pb-2">
+                {/* <div className="flex items-center space-x-2 pb-2">
                   <span className="">키워드:</span>
                   <div className="flex space-x-2">
                     <span
@@ -244,7 +246,7 @@ export default function TravelPlansDetailPage({
                       #당일치기
                     </span>
                   </div>
-                </div>
+                </div> */}
                 <div className="">
                   <span className="">대표이미지</span>
                   <Image

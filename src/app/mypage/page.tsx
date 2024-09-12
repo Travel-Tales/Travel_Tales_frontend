@@ -211,7 +211,7 @@ export default function Mypage() {
           ))}
         </article>
         <article className="my-5">
-          <TripCard list={list} />
+          <TripCard list={list} page={"mypage"} />
         </article>
       </section>
     </main>

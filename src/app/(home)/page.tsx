@@ -6,7 +6,27 @@ import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";
 import Banner from "@/components/Banner";
 
-export default function Home() {
+async function getPlans() {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/post`, {
+    method: "GET",
+    headers,
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch plans.");
+  }
+  const json = await response.json();
+  //* 임시방편으로 4개로 자름
+  const suggestionList = json.data.slice(0, 4);
+  return { jsonData: suggestionList, accessToken: "null" };
+}
+
+export default async function Home() {
+  const { jsonData, accessToken } = await getPlans();
+
   function getRefreshToken() {
     const cookieStore = cookies();
     const refreshToken = cookieStore.get("refresh")?.value;
@@ -37,10 +57,10 @@ export default function Home() {
           <p className="text-sm sm:text-base py-4 sm:py-6">
             We recommend necessary travel plans
           </p>
-          <button className="custom-button mb-6 xs:text-xs">
+          {/* <button className="custom-button mb-6 xs:text-xs">
             View Details
-          </button>
-          <TripCard list={recommandPlans} />
+          </button> */}
+          <TripCard list={jsonData} page={"plans"} />
         </section>
       </main>
     </>

@@ -25,9 +25,10 @@ type List = {
 type TripCardProps = {
   list: List[];
   accessToken?: string;
+  page: string;
 };
 
-export default function TripCard({ list, accessToken }: TripCardProps) {
+export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const path = usePathname();
   const router = useRouter();
   const setAccessToken = useStore((state) => state.setAccessToken);
@@ -41,24 +42,24 @@ export default function TripCard({ list, accessToken }: TripCardProps) {
     }
   }, [accessToken, setAccessToken]);
 
-  // 데이터 필터링
-  useEffect(() => {
-    const filterByVisibility = () => {
-      if (path === "/mypage") {
-        return list;
-      }
-      return list.filter((item) => item.visibilityStatus === "Public");
-    };
-    setFilteredData(filterByVisibility());
-  }, [list, path]);
+  // // 데이터 필터링
+  // useEffect(() => {
+  //   const filterByVisibility = () => {
+  //     if (path === "/mypage") {
+  //       return list;
+  //     }
+  //     return list.filter((item) => item.visibilityStatus === "Public");
+  //   };
+  //   setFilteredData(filterByVisibility());
+  // }, [list, path]);
 
   // 상세 페이지로 이동하는 함수
   const handleDetailNavigation = (id: number) => {
-    const targetPage =
-      path === "/mypage"
-        ? `/travel/plans/detail/${id}?page=my`
-        : `/travel/plans/detail/${id}`;
-    router.push(targetPage);
+    if (page === "mypage") {
+      router.push(`/travel/plans/detail/${id}?page=my`);
+    } else {
+      router.push(`/travel/${page}/detail/${id}`);
+    }
   };
 
   // 개별 카드 컴포넌트
@@ -93,7 +94,7 @@ export default function TripCard({ list, accessToken }: TripCardProps) {
       ${path === "/" ? "md:grid-cols-2" : "md:grid-cols-3"}
       lg:grid-cols-4 gap-6`}
     >
-      {filteredData.map((item) => (
+      {list.map((item) => (
         <TripCardItem key={item.id} item={item} />
       ))}
     </ul>

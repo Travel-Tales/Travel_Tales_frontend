@@ -33,7 +33,7 @@ export default async function TravelPlansPage() {
         <SearchBar />
         <Category />
         <section>
-          <TripCard list={jsonData} accessToken={accessToken} />
+          <TripCard list={jsonData} accessToken={accessToken} page={"plans"} />
         </section>
       </section>
     </main>

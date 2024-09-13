@@ -18,8 +18,8 @@ interface DefaultData {
   budget: string;
   startDate: Date;
   endDate: Date;
-  imageUrls: string[];
-  thumbnailFile: string;
+  imageUrl: string[];
+  thumbnail: string;
   visibilityStatus: string;
 }
 
@@ -36,27 +36,29 @@ export default function TravelPlanCreatePage({
     budget: "0",
     startDate: new Date(),
     endDate: new Date(),
-    imageUrls: [],
-    thumbnailFile: "",
+    imageUrl: [],
+    thumbnail: "",
     visibilityStatus: "Public",
   });
   const [markdown, setMarkdown] = useState<string>("# Header");
+  const [fileObj, setFileObj] = useState<File | null>(null);
 
   const imageRef = useRef(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const planId = useStore((state) => state.planId);
-  const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
 
   const matchUrl = (content: string) => {
     if (content) {
       let str = content;
+
+      console.log(content);
+
       let matchUrlArray: string[] = [];
 
-      // 정규식을 통해 공통 패턴의 문자열 추출
+      //* 정규식을 통해 공통 패턴의 문자열 추출
       const regex =
-        /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?_profile/g;
+        /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?.jpeg/g;
 
       // 해당 패턴을 모두 찾기
       const matches = str.match(regex);
@@ -64,6 +66,7 @@ export default function TravelPlanCreatePage({
         matches.forEach((match) => {
           matchUrlArray = [...matchUrlArray, match];
         });
+        console.log(matchUrlArray);
         return matchUrlArray;
       } else {
         console.log("No matches found");
@@ -79,8 +82,8 @@ export default function TravelPlanCreatePage({
       travelArea: data.travelArea,
       travelerCount: Number(data.travelerCount),
       budget: Number(data.budget.replace(/,/g, "")),
-      thumbnailFile: data.thumbnailFile,
-      imageUrl: JSON.stringify(matchUrlArray),
+      thumbnail: data.thumbnail,
+      imageUrl: JSON.stringify(matchUrlArray) || JSON.stringify([]),
       startDate: data.startDate,
       endDate: data.endDate,
       visibilityStatus: data.visibilityStatus,
@@ -90,6 +93,8 @@ export default function TravelPlanCreatePage({
     Object.entries(body).forEach(([key, value]) => {
       if (typeof value === "number" || value instanceof Date) {
         formData.append(key, value.toString());
+      } else if (key === "thumbnail") {
+        fileObj && formData.append(key, fileObj);
       } else {
         formData.append(key, value);
       }
@@ -161,8 +166,8 @@ export default function TravelPlanCreatePage({
 
       setData({
         ...fetchedData,
-        thumbnailFile: fetchedData.thumbnailFile || "",
-        imageUrls: fetchedData.imageUrls || "",
+        thumbnail: fetchedData.thumbnail || "",
+        imageUrl: fetchedData.imageUrl || "",
         content: fetchedData.content || "",
         title: fetchedData.title || "",
         travelArea: fetchedData.travelArea || "",
@@ -218,8 +223,9 @@ export default function TravelPlanCreatePage({
     if (files && files.length > 0) {
       //: 파일 정보를 받아서 obj 와 url을 저장
       const file = files[0];
+      setFileObj(file);
       const objectURL = URL.createObjectURL(file);
-      setData({ ...data, thumbnailFile: objectURL });
+      setData({ ...data, thumbnail: objectURL });
     }
   };
 
@@ -391,7 +397,7 @@ export default function TravelPlanCreatePage({
               />
             </label>
             <Image
-              src={data.thumbnailFile ? data.thumbnailFile : noImg}
+              src={data.thumbnail ? data.thumbnail : noImg}
               alt="대표사진 미리보기"
               width={200}
               height={100}

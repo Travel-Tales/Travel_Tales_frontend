@@ -42,16 +42,16 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     }
   }, [accessToken, setAccessToken]);
 
-  // 데이터 필터링
-  useEffect(() => {
-    const filterByVisibility = () => {
-      if (path === "/mypage") {
-        return list;
-      }
-      return list.filter((item) => item.visibilityStatus === "Public");
-    };
-    setFilteredData(filterByVisibility());
-  }, [list, path]);
+  // // 데이터 필터링
+  // useEffect(() => {
+  //   const filterByVisibility = () => {
+  //     if (path === "/mypage") {
+  //       return list;
+  //     }
+  //     return list.filter((item) => item.visibilityStatus === "Public");
+  //   };
+  //   setFilteredData(filterByVisibility());
+  // }, [list, path]);
 
   // 상세 페이지로 이동하는 함수
   const handleDetailNavigation = (id: number) => {
@@ -94,7 +94,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
       ${path === "/" ? "md:grid-cols-2" : "md:grid-cols-3"}
       lg:grid-cols-4 gap-6`}
     >
-      {filteredData.map((item) => (
+      {list.map((item) => (
         <TripCardItem key={item.id} item={item} />
       ))}
     </ul>

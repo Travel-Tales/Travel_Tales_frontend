@@ -40,7 +40,7 @@ export default function TravelPlanCreatePage({
     thumbnail: "",
     visibilityStatus: "Public",
   });
-  const [markdown, setMarkdown] = useState<string>("# Header");
+  const [markdown, setMarkdown] = useState<string>("");
   const [fileObj, setFileObj] = useState<File | null>(null);
 
   const imageRef = useRef(null);
@@ -48,11 +48,23 @@ export default function TravelPlanCreatePage({
 
   const setAccessToken = useStore((state) => state.setAccessToken);
 
-  const matchUrl = (content: string) => {
+  const locationList = [
+    { id: 1, location: "전체" },
+    { id: 2, location: "국내" },
+    { id: 3, location: "동남아" },
+    { id: 4, location: "일본" },
+    { id: 5, location: "중국" },
+    { id: 6, location: "유럽" },
+    { id: 7, location: "미주" },
+    { id: 8, location: "대양주" },
+    { id: 9, location: "중동" },
+    { id: 10, location: "중남미" },
+    { id: 11, location: "아프리카" },
+  ];
+
+  const markdownImageExtraction = (content: string) => {
     if (content) {
       let str = content;
-
-      console.log(content);
 
       let matchUrlArray: string[] = [];
 
@@ -60,13 +72,12 @@ export default function TravelPlanCreatePage({
       const regex =
         /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?.jpeg/g;
 
-      // 해당 패턴을 모두 찾기
+      //* 해당 패턴을 모두 찾기
       const matches = str.match(regex);
       if (matches) {
         matches.forEach((match) => {
           matchUrlArray = [...matchUrlArray, match];
         });
-        console.log(matchUrlArray);
         return matchUrlArray;
       } else {
         console.log("No matches found");
@@ -75,14 +86,14 @@ export default function TravelPlanCreatePage({
   };
 
   const saveChanges = async () => {
-    const matchUrlArray = matchUrl(markdown);
+    const matchUrlArray = markdownImageExtraction(markdown);
     const body = {
       title: data.title,
       content: markdown,
       travelArea: data.travelArea,
       travelerCount: Number(data.travelerCount),
       budget: Number(data.budget.replace(/,/g, "")),
-      thumbnail: data.thumbnail,
+      thumbnailFile: data.thumbnail,
       imageUrl: JSON.stringify(matchUrlArray) || JSON.stringify([]),
       startDate: data.startDate,
       endDate: data.endDate,
@@ -93,8 +104,9 @@ export default function TravelPlanCreatePage({
     Object.entries(body).forEach(([key, value]) => {
       if (typeof value === "number" || value instanceof Date) {
         formData.append(key, value.toString());
-      } else if (key === "thumbnail") {
+      } else if (key === "thumbnailFile") {
         fileObj && formData.append(key, fileObj);
+        //* !fileObj && formData.append(key, "");
       } else {
         formData.append(key, value);
       }
@@ -270,6 +282,17 @@ export default function TravelPlanCreatePage({
     }
   };
 
+  const deleteThumbnail = () => {
+    setData({ ...data, thumbnail: "" });
+    setFileObj(null);
+  };
+
+  const selectOption = (e: any) => {
+    setData({ ...data, travelArea: e.target.value });
+  };
+
+  //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
+
   return (
     <main>
       <section className="w-3/4 my-10 mx-auto xs-max:text-sm">
@@ -304,8 +327,8 @@ export default function TravelPlanCreatePage({
               className="input-border py-1 px-3"
             />
           </div>
-          <div className="flex flex-col mb-2">
-            <label htmlFor="location">여행 지역</label>
+          <div className="flex flex-col mb-2 xs-max:w-full">
+            {/* <label htmlFor="location">여행 지역</label>
             <input
               type="text"
               id="location"
@@ -313,23 +336,37 @@ export default function TravelPlanCreatePage({
               onChange={(e) => setData({ ...data, travelArea: e.target.value })}
               required
               className="input-border py-1 px-3"
-            />
+            /> */}
+            <label htmlFor="lang">여행 지역</label>
+            <select
+              name="location"
+              id="lo"
+              className="input-border py-1 px-3 s:max-w-52 w-full"
+              onChange={selectOption}
+            >
+              {locationList.map((value) => (
+                <option key={value.id} value={value.location}>
+                  {value.location}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex flex-row flex-wrap justify-start items-center">
-            <div className="flex flex-col mb-2 s:mr-6 xs-max:w-full">
+            <div className="flex flex-col mb-2 s:mr-6 s:max-w-52 w-full">
               <label htmlFor="members">여행 인원</label>
               <input
                 type="number"
                 id="members"
-                value={data.travelerCount}
+                value={data.travelerCount.toString()}
+                required
                 onChange={(e) =>
                   setData({ ...data, travelerCount: +e.target.value })
                 }
-                required
+                min={1}
                 className="input-border py-1 px-3"
               />
             </div>
-            <div className="flex flex-col mb-2 xs-max:w-full">
+            <div className="flex flex-col mb-2 s:max-w-52 w-full">
               <label htmlFor="budget">여행 예산</label>
               <input
                 type="text"
@@ -396,19 +433,29 @@ export default function TravelPlanCreatePage({
                 hover:file:bg-pink-100 mt-2 w-52"
               />
             </label>
-            <Image
-              src={data.thumbnail ? data.thumbnail : noImg}
-              alt="대표사진 미리보기"
-              width={200}
-              height={100}
-              style={{ width: "auto", height: "auto" }}
-            />
+            <div className="max-w-xs relative">
+              <Image
+                src={data.thumbnail ? data.thumbnail : noImg}
+                alt="대표사진 미리보기"
+                width={320}
+                height={100}
+                style={{ width: "100%", height: "auto" }}
+              />
+              {/* {data.thumbnail && (
+                <button
+                  className="absolute top-0 right-2"
+                  onClick={deleteThumbnail}
+                >
+                  X
+                </button>
+              )} */}
+            </div>
           </div>
           <>
             <Toolbar
               onBold={() => insertAtCursor("**bold text**")}
               onItalic={() => insertAtCursor("*italic text*")}
-              onHeading={() => insertAtCursor("# Heading")}
+              onHeading={() => insertAtCursor("")}
               onBlockquote={() => insertAtCursor("> Blockquote")}
               onOrderedList={() => insertAtCursor("1. Item")}
               onUnorderedList={() => insertAtCursor("- Item")}
@@ -427,15 +474,16 @@ export default function TravelPlanCreatePage({
             </div>
           </>
 
-          {/* <div className="flex justify-end">
+          <div className="flex justify-end">
             <button
-              type="submit"
-              className="bg-gray-300 px-6 py-1
+              type="button"
+              className="bg-blue-500 px-6 py-1
              text-white rounded-md mt-3"
+              onClick={saveChanges}
             >
               저장
             </button>
-          </div> */}
+          </div>
         </form>
       </section>
     </main>

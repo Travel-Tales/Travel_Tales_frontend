@@ -3,43 +3,36 @@ import React from "react";
 export default function Category() {
   const locationList = [
     {
-      img: "",
+      nation: "전체",
+    },
+    {
       nation: "국내",
     },
     {
-      img: "",
       nation: "동남아",
     },
     {
-      img: "",
       nation: "일본",
     },
     {
-      img: "",
       nation: "중국",
     },
     {
-      img: "",
       nation: "유럽",
     },
     {
-      img: "",
       nation: "미주",
     },
     {
-      img: "",
       nation: "대양주",
     },
     {
-      img: "",
       nation: "중동",
     },
     {
-      img: "",
       nation: "중남미",
     },
     {
-      img: "",
       nation: "아프리카",
     },
   ];
@@ -49,19 +42,20 @@ export default function Category() {
       <ul className="flex flex-wrap md:flex-nowrap items-center justify-around py-10">
         {locationList.map((value, index) => (
           <li
-            className="cursor-pointer text-center w-1/2 md:w-1/8 box-border"
+            className={`cursor-pointer text-center w-1/2 md:w-1/8 
+            ${index === 0 ? "w-full" : ""} box-border`}
             key={index}
           >
             <button
               className={`border w-full py-2 hover:bg-gray-100
-                ${index === 9 ? "md:border-r-1" : "md:border-r-0"} 
-                ${index % 2 === 0 ? "sm-max:border-r-0" : "sm-max:border-r-1"}
+                ${index === 10 ? "md:border-r-1" : "md:border-r-0"} 
+                ${index % 2 === 1 ? "sm-max:border-r-0" : "sm-max:border-r-1"}
                 ${
-                  index === 8 || index === 9
+                  index === 8 || index === 9 || index === 10
                     ? "sm-max:border-b-1"
                     : "sm-max:border-b-0"
                 }
-
+                ${index === 10 ? "sm-max:border-t-0" : "sm-max:border-t-1"}
               `}
             >
               {value.nation}

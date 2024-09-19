@@ -13,6 +13,7 @@ export default function Header() {
   const checkboxRef = useRef<HTMLInputElement | null>(null);
   const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
+  const setIsLogin = useStore((state) => state.setIsLogin);
 
   useEffect(() => {
     setIsClient(true);
@@ -29,8 +30,9 @@ export default function Header() {
           }
         );
         if (response.ok) {
-          LocalStorage.removeItem("accessToken");
+          localStorage.removeItem("accessToken");
           setAccessToken("");
+          setIsLogin("false");
           alert("로그아웃 되었습니다.");
           location.reload();
         } else {

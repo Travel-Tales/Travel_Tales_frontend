@@ -1,8 +1,6 @@
 import React from "react";
-import { recommandPlans } from "../../data/temporary.js";
 import { introduction } from "../../data/fixed";
 import TripCard from "../../components/TripCard";
-import { cookies } from "next/headers.js";
 import AccessToken from "@/components/Accesstoken";
 import Banner from "@/components/Banner";
 
@@ -27,15 +25,9 @@ async function getPlans() {
 export default async function Home() {
   const { jsonData, accessToken } = await getPlans();
 
-  function getRefreshToken() {
-    const cookieStore = cookies();
-    const refreshToken = cookieStore.get("refresh")?.value;
-    return refreshToken;
-  }
-
   return (
     <>
-      <AccessToken refreshToken={getRefreshToken()} />
+      <AccessToken />
       <main>
         <Banner />
         <section className="page-section py-10 sm:py-20">

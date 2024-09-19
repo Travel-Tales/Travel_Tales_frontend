@@ -8,6 +8,8 @@ interface BearState {
   setAccessToken: (token: string) => void;
   planId: number | null;
   setPlanId: (id: number | null) => void;
+  isLogin: string;
+  setIsLogin: (loginState: string) => void;
 }
 
 const access = LocalStorage.getItem("accessToken");
@@ -20,6 +22,8 @@ const useStore = create<BearState>()(
         setAccessToken: (token: string) => set(() => ({ accessToken: token })),
         planId: null,
         setPlanId: (id: number | null) => set(() => ({ planId: id })),
+        isLogin: "false",
+        setIsLogin: (loginState) => set(() => ({ isLogin: loginState })),
       }),
       {
         name: "bear-storage",

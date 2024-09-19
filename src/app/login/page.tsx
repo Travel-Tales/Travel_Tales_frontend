@@ -5,14 +5,19 @@ import Image from "next/image";
 import kakaoLogin from "./../../../public/kakao_login_large_wide.png";
 import googleLogin from "./../../../public/web_light_sq_ctn@3x.png";
 import logo from "./../../../public/main-logo.png";
+import useStore from "@/store/store";
 
 export default function LoginPage() {
+  const setIsLogin = useStore((state) => state.setIsLogin);
+
   const clickKakaoLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/kakao`;
+    setIsLogin("waiting");
   };
 
   const clickGoogleLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`;
+    setIsLogin("waiting");
   };
 
   return (

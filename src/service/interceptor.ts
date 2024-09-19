@@ -1,4 +1,4 @@
-import LocalStorage from "./localstorage";
+// import LocalStorage from "./localstorage";
 
 const logout = async () => {
   const response = await fetch(
@@ -30,6 +30,7 @@ export const refreshAccessToken = async (baseUrl: string | undefined) => {
       //: 로그아웃 시켜야한다.
       await logout();
       //: 로그아웃 되면 로그인 페이지로 돌아가기
+      localStorage.removeItem("accessToken");
       location.replace(`${process.env.NEXT_PUBLIC_URL}/login`);
     } else {
       //: 리프레시 토큰은 만료가 되지 않아서 액세스 토큰을 재발급 받을 수 있음.
@@ -42,6 +43,7 @@ export const refreshAccessToken = async (baseUrl: string | undefined) => {
     //: throw Error 받거나,
     //: 리프레시 토큰으로 액세스 토큰을 확인하던 와중 에러발생 처리
     await logout();
+    localStorage.removeItem("accessToken");
     //: 무슨에러인지는 모르지만 일단 로그아웃하고 로그인 페이지로 이동
     console.error("토큰 갱신 중 오류 발생", "error");
     alert("오류 발생. 로그아웃 되었습니다");
@@ -51,10 +53,9 @@ export const refreshAccessToken = async (baseUrl: string | undefined) => {
 };
 
 const createApiClient = (baseUrl: string | undefined) => {
-  //   const access = useStore((state) => state.accessToken);
   const apiFetch = async (url: string, options = {}, headers = {}) => {
     try {
-      const access = LocalStorage.getItem("accessToken");
+      const access = localStorage.getItem("accessToken");
       //: content type도 다를 수 있으니 header도 요청쪽에서 Authorization을 제외한 모든 설정을 전달
       const mergedOptions = {
         ...options,

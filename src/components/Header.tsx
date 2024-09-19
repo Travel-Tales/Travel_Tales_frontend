@@ -30,7 +30,7 @@ export default function Header() {
           }
         );
         if (response.ok) {
-          LocalStorage.removeItem("accessToken");
+          localStorage.removeItem("accessToken");
           setAccessToken("");
           setIsLogin("false");
           alert("로그아웃 되었습니다.");

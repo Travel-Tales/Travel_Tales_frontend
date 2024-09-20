@@ -66,7 +66,7 @@ export default function ProfileImg({
               width={96}
               height={96}
               priority={true}
-              className="absolute top-0 left-0"
+              className="absolute top-1/2	left-1/2 -translate-x-2/4 -translate-y-1/2 object-cover h-full"
             />
             <div
               className={`${

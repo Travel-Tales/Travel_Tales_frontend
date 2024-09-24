@@ -216,7 +216,7 @@ export default function Mypage() {
           {list.length ? (
             <TripCard list={list} page={"mypage"} />
           ) : (
-            <div>작성한 리뷰가 없습니다.</div>
+            <div>작성한 게시물이 없습니다.</div>
           )}
         </article>
       </section>

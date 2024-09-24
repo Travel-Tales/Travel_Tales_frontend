@@ -4,26 +4,28 @@ import TripCard from "../../components/TripCard";
 import AccessToken from "@/components/Accesstoken";
 import Banner from "@/components/Banner";
 
-async function getPlans() {
+async function getRecommandPlans() {
   const headers = {
     "Content-Type": "application/json",
   };
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/post`, {
-    method: "GET",
-    headers,
-    cache: "no-store",
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/post/recommand`,
+    {
+      method: "GET",
+      headers,
+      cache: "no-store",
+    }
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch plans.");
   }
   const json = await response.json();
-  //* 임시방편으로 4개로 자름
-  const suggestionList = json.data.slice(0, 4);
-  return { jsonData: suggestionList, accessToken: "null" };
+  const recommandPlanList = json.data.slice(0, 4);
+  return { jsonData: recommandPlanList, accessToken: "null" };
 }
 
 export default async function Home() {
-  const { jsonData, accessToken } = await getPlans();
+  const { jsonData, accessToken } = await getRecommandPlans();
 
   return (
     <>

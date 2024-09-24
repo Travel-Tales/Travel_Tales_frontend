@@ -1,7 +1,7 @@
 # Travel-Tales
 
 <p align="center" style="margin-bottom:60px">
-<img width="500" alt="project-thumbnail" src="https://github.com/user-attachments/assets/c01e2b89-cc87-4812-bf57-6a10efd8c654"></p>
+<img width="500" alt="project-thumbnail" src="https://github.com/user-attachments/assets/cbb3784d-3e61-4ce6-93fa-ce5a46ff663c"></p>
 
 # 여행 계획을 세우는 플랫폼 'Travel-Tales'
 

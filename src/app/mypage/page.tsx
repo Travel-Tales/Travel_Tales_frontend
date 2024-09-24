@@ -81,19 +81,21 @@ export default function Mypage() {
   }
 
   async function getMyReviews() {
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    const options = {};
-    const { data, accessToken } = await apiClient.get(
-      `/api/post/my-post`,
-      options,
-      headers
-    );
-    setList(data.data);
-    if (accessToken !== "null") {
-      setAccessToken(accessToken);
-    }
+    // const headers = {
+    //   "Content-Type": "application/json",
+    // };
+    // const options = {};
+    // const { data, accessToken } = await apiClient.get(
+    //   `/api/post/my-post`,
+    //   options,
+    //   headers
+    // );
+    // setList(data.data);
+    // if (accessToken !== "null") {
+    //   setAccessToken(accessToken);
+    // }
+
+    setList([]);
   }
 
   useEffect(() => {
@@ -211,7 +213,11 @@ export default function Mypage() {
           ))}
         </article>
         <article className="my-5">
-          <TripCard list={list} page={"mypage"} />
+          {list.length ? (
+            <TripCard list={list} page={"mypage"} />
+          ) : (
+            <div>작성한 게시물이 없습니다.</div>
+          )}
         </article>
       </section>
     </main>

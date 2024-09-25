@@ -32,8 +32,10 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const path = usePathname();
   const router = useRouter();
   const setAccessToken = useStore((state) => state.setAccessToken);
+  const plans = useStore((state) => state.plans);
+  const setPlans = useStore((state) => state.setPlans);
 
-  const [filteredData, setFilteredData] = useState<List[]>([]);
+  // const [filteredData, setFilteredData] = useState<List[]>([]);
 
   // Access token 설정
   useEffect(() => {
@@ -41,6 +43,14 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
       setAccessToken(accessToken);
     }
   }, [accessToken, setAccessToken]);
+
+  useEffect(() => {
+    if (page === "plans") {
+      setPlans(list);
+    } else {
+      setPlans(list);
+    }
+  }, []);
 
   // // 데이터 필터링
   // useEffect(() => {
@@ -94,7 +104,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
       ${path === "/" ? "md:grid-cols-2" : "md:grid-cols-3"}
       lg:grid-cols-4 gap-6`}
     >
-      {list.map((item) => (
+      {plans.map((item: List) => (
         <TripCardItem key={item.id} item={item} />
       ))}
     </ul>

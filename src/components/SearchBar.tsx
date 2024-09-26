@@ -9,11 +9,9 @@ import useStore from "@/store/store";
 export default function SearchBar() {
   const path = usePathname();
   const setPlans = useStore((state) => state.setPlans);
-  const [searchKeyword, setSearchKeyword] = useState("");
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-  };
+  const selectedCategory = useStore((state) => state.selectedCategory);
+  const searchKeyword = useStore((state) => state.searchKeyword);
+  const setSearchKeyword = useStore((state) => state.setSearchKeyword);
 
   const getValueByPath = (pathName: string) => {
     return pathName === "/travel/plans" ? "여행 계획" : "여행 후기";
@@ -28,7 +26,11 @@ export default function SearchBar() {
       "Content-Type": "application/json",
     };
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/post?title=${searchKeyword}`,
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/post?title=${searchKeyword}&travelArea=${
+        selectedCategory === "전체" ? "" : selectedCategory
+      }`,
       {
         method: "GET",
         headers,

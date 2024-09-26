@@ -34,8 +34,10 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const setAccessToken = useStore((state) => state.setAccessToken);
   const plans = useStore((state) => state.plans);
   const setPlans = useStore((state) => state.setPlans);
-
-  // const [filteredData, setFilteredData] = useState<List[]>([]);
+  const selectedCategory = useStore((state) => state.selectedCategory);
+  const setSelectedCategory = useStore((state) => state.setSelectedCategory);
+  const searchKeyword = useStore((state) => state.searchKeyword);
+  const setSearchKeyword = useStore((state) => state.setSearchKeyword);
 
   // Access token 설정
   useEffect(() => {
@@ -51,17 +53,6 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
       setPlans(list);
     }
   }, []);
-
-  // // 데이터 필터링
-  // useEffect(() => {
-  //   const filterByVisibility = () => {
-  //     if (path === "/mypage") {
-  //       return list;
-  //     }
-  //     return list.filter((item) => item.visibilityStatus === "Public");
-  //   };
-  //   setFilteredData(filterByVisibility());
-  // }, [list, path]);
 
   // 상세 페이지로 이동하는 함수
   const handleDetailNavigation = (id: number) => {

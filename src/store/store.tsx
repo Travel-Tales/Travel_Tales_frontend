@@ -28,6 +28,10 @@ interface BearState {
   setIsLogin: (loginState: string) => void;
   plans: List[] | [];
   setPlans: (plans: any) => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  searchKeyword: string;
+  setSearchKeyword: (keyword: string) => void;
 }
 
 const access = LocalStorage.getItem("accessToken");
@@ -44,6 +48,11 @@ const useStore = create<BearState>()(
         setIsLogin: (loginState) => set(() => ({ isLogin: loginState })),
         plans: [],
         setPlans: (plans) => set(() => ({ plans: plans })),
+        selectedCategory: "",
+        setSelectedCategory: (category) =>
+          set(() => ({ selectedCategory: category })),
+        searchKeyword: "",
+        setSearchKeyword: (keyword) => set(() => ({ searchKeyword: keyword })),
       }),
       {
         name: "bear-storage",

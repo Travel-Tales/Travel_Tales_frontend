@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import thumbnailImg from "./../../public/thumbnail-img.webp";
 import useStore from "@/store/store";
+import plansStore from "@/store/plansStore";
 
 type List = {
   id: number;
@@ -32,26 +33,21 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const path = usePathname();
   const router = useRouter();
   const setAccessToken = useStore((state) => state.setAccessToken);
-  const plans = useStore((state) => state.plans);
-  const setPlans = useStore((state) => state.setPlans);
-  const selectedCategory = useStore((state) => state.selectedCategory);
-  const setSelectedCategory = useStore((state) => state.setSelectedCategory);
-  const searchKeyword = useStore((state) => state.searchKeyword);
-  const setSearchKeyword = useStore((state) => state.setSearchKeyword);
+  const plans = plansStore((state) => state.plans);
+  const setPlans = plansStore((state) => state.setPlans);
+  const selectedCategory = plansStore((state) => state.selectedCategory);
 
   // Access token 설정
   useEffect(() => {
     if (accessToken && accessToken !== "null") {
       setAccessToken(accessToken);
     }
-  }, [accessToken, setAccessToken]);
-
-  console.log(selectedCategory);
+  }, [accessToken]);
 
   useEffect(() => {
-    if (page === "plans" && selectedCategory === "전체") {
+    if (page === "plans") {
       setPlans(list);
-    } else if (page === "reviews" && selectedCategory === "전체") {
+    } else if (page === "reviews") {
       setPlans(list);
     } else {
       setPlans([]);

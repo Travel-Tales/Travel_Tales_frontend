@@ -5,14 +5,14 @@ import Image from "next/image";
 import searchIcon from "./../../public/search-white.png";
 import close from "./../../public/close.png";
 import { usePathname } from "next/navigation";
-import useStore from "@/store/store";
+import plansStore from "@/store/plansStore";
 
 export default function SearchBar() {
   const path = usePathname();
-  const setPlans = useStore((state) => state.setPlans);
-  const selectedCategory = useStore((state) => state.selectedCategory);
-  const searchKeyword = useStore((state) => state.searchKeyword);
-  const setSearchKeyword = useStore((state) => state.setSearchKeyword);
+  const setPlans = plansStore((state) => state.setPlans);
+  const selectedCategory = plansStore((state) => state.selectedCategory);
+  const searchKeyword = plansStore((state) => state.searchKeyword);
+  const setSearchKeyword = plansStore((state) => state.setSearchKeyword);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

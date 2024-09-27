@@ -46,11 +46,15 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     }
   }, [accessToken, setAccessToken]);
 
+  console.log(selectedCategory);
+
   useEffect(() => {
-    if (page === "plans") {
+    if (page === "plans" && selectedCategory === "전체") {
+      setPlans(list);
+    } else if (page === "reviews" && selectedCategory === "전체") {
       setPlans(list);
     } else {
-      setPlans(list);
+      setPlans([]);
     }
   }, []);
 
@@ -90,14 +94,20 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   );
 
   return (
-    <ul
-      className={`grid grid-cols-1 sm:grid-cols-2 
+    <>
+      {plans.length ? (
+        <ul
+          className={`grid grid-cols-1 sm:grid-cols-2 
       ${path === "/" ? "md:grid-cols-2" : "md:grid-cols-3"}
       lg:grid-cols-4 gap-6`}
-    >
-      {plans.map((item: List) => (
-        <TripCardItem key={item.id} item={item} />
-      ))}
-    </ul>
+        >
+          {plans.map((item: List) => (
+            <TripCardItem key={item.id} item={item} />
+          ))}
+        </ul>
+      ) : (
+        <p>등록된 게시물이 없습니다.</p>
+      )}
+    </>
   );
 }

@@ -10,7 +10,7 @@ type List = {
   content: string;
   travelArea: string;
   travelerCount: number;
-  budget: number;
+  budget: string;
   thumbnail: string;
   startDate: string;
   endDate: string;

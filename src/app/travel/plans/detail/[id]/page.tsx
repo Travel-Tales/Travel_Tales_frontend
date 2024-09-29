@@ -14,7 +14,7 @@ import MarkdownRender from "@/components/MarkdownRender";
 import { refreshAccessToken } from "@/service/interceptor";
 
 interface Info {
-  budget: number;
+  budget: string;
   content: string;
   createdAt: string;
   endDate: string;
@@ -138,7 +138,7 @@ export default function TravelPlansDetailPage({
         content: data.content || "내용없음",
         travelArea: data.travelArea || "지역없음",
         travelerCount: data.travelerCount || 0,
-        budget: data.budget || 0,
+        budget: data.budget || "0",
         thumbnail: data.thumbnail || thumbnail,
       };
     } catch (error) {

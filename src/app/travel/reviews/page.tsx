@@ -9,7 +9,7 @@ export default function TravelReviewList() {
     <main>
       <section className="page-section pt-4 pb-16">
         <SearchBar />
-        <Category />
+        <Category page={"review"} />
         <section>
           <TripCard list={recommandPlans} page={"review"} />
         </section>

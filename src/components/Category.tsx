@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from "react";
 import plansStore from "@/store/plansStore";
 
-export default function Category() {
+type Page = {
+  page: string;
+};
+
+export default function Category({ page }: Page) {
   const locationList = [
     {
       id: 1,
@@ -65,23 +69,27 @@ export default function Category() {
         const headers = {
           "Content-Type": "application/json",
         };
-        const response = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/api/post?title=${searchKeyword}&travelArea=${
-            selectedCategory === "전체" ? "" : selectedCategory
-          }`,
-          {
-            method: "GET",
-            headers,
-            cache: "no-store",
+        if (page === "review") {
+          return;
+        } else {
+          const response = await fetch(
+            `${
+              process.env.NEXT_PUBLIC_API_URL
+            }/api/post?title=${searchKeyword}&travelArea=${
+              selectedCategory === "전체" ? "" : selectedCategory
+            }`,
+            {
+              method: "GET",
+              headers,
+              cache: "no-store",
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch plans.");
           }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch plans.");
+          const json = await response.json();
+          setPlans(json.data);
         }
-        const json = await response.json();
-        setPlans(json.data);
       }
     };
     handleCategory();

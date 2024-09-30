@@ -10,7 +10,7 @@ interface DefaultData {
   content: string;
   travelArea: string;
   travelerCount: number;
-  budget: number;
+  budget: string;
   thumbnail: string;
   startDate: Date;
   endDate: Date;
@@ -28,7 +28,7 @@ export default function CreatePlanButton() {
     content: "",
     travelArea: "",
     travelerCount: 1,
-    budget: 1,
+    budget: "1",
     thumbnail: "",
     startDate: new Date(),
     endDate: new Date(),

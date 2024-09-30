@@ -92,7 +92,7 @@ export default function TravelPlanCreatePage({
       content: markdown,
       travelArea: data.travelArea,
       travelerCount: Number(data.travelerCount),
-      budget: Number(data.budget.replace(/,/g, "")),
+      budget: data.budget.replace(/,/g, ""),
       thumbnailFile: data.thumbnail,
       imageUrl: JSON.stringify(matchUrlArray) || JSON.stringify([]),
       startDate: data.startDate,
@@ -270,7 +270,7 @@ export default function TravelPlanCreatePage({
         body: formData,
       };
       const { data } = await apiClient.post(
-        `/api/post/upload-image`,
+        `/api/post/upload-image/${id}`,
         options,
         headers
       );

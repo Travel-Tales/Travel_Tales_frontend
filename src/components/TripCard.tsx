@@ -15,7 +15,7 @@ type List = {
   content: string;
   travelArea: string;
   travelerCount: number;
-  budget: number;
+  budget: string;
   thumbnail: string;
   startDate: string;
   endDate: string;
@@ -47,10 +47,10 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   useEffect(() => {
     if (page === "plans") {
       setPlans(list);
-    } else if (page === "reviews") {
+    } else if (page === "review") {
       setPlans(list);
-    } else {
-      setPlans([]);
+    } else if (page === "mypage") {
+      setPlans(list);
     }
   }, []);
 

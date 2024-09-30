@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import useStore from "@/store/store";
+import plansStore from "@/store/plansStore";
 
 export default function Category() {
   const locationList = [
@@ -50,10 +50,10 @@ export default function Category() {
     },
   ];
 
-  const setPlans = useStore((state) => state.setPlans);
-  const selectedCategory = useStore((state) => state.selectedCategory);
-  const setSelectedCategory = useStore((state) => state.setSelectedCategory);
-  const searchKeyword = useStore((state) => state.searchKeyword);
+  const setPlans = plansStore((state) => state.setPlans);
+  const selectedCategory = plansStore((state) => state.selectedCategory);
+  const setSelectedCategory = plansStore((state) => state.setSelectedCategory);
+  const searchKeyword = plansStore((state) => state.searchKeyword);
 
   const handleClick = (category: string) => {
     setSelectedCategory(category);

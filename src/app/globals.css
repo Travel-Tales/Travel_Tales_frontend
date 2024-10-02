@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* @layer base {
+  img {
+    width: auto;
+    height: auto;
+  }
+} */
+
 * {
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
@@ -123,7 +130,19 @@ img.object-fit {
   margin-bottom: 10px;
   line-height: normal;
 }
+
+.preview h1 span {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  line-height: normal;
+}
+
 .preview h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+.preview h2 span {
   font-size: 24px;
   font-weight: bold;
 }
@@ -131,7 +150,16 @@ img.object-fit {
   font-size: 18.7333px;
   font-weight: bold;
 }
+.preview h3 span {
+  font-size: 18.7333px;
+  font-weight: bold;
+}
 .preview h4 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.preview h4 span {
   font-size: 16px;
   font-weight: bold;
 }
@@ -139,10 +167,22 @@ img.object-fit {
   font-size: 13.2667px;
   font-weight: bold;
 }
+
+.preview h5 span {
+  font-size: 13.2667px;
+  font-weight: bold;
+}
+
 .preview h6 {
   font-size: 10.7333px;
   font-weight: bold;
 }
+
+.preview h6 span {
+  font-size: 10.7333px;
+  font-weight: bold;
+}
+
 .preview p,
 .preview span {
   font-size: 16px;
@@ -150,10 +190,17 @@ img.object-fit {
 
 .preview ul {
   list-style: disc;
+  margin-top: 10px;
 }
 .preview ol {
   list-style: decimal;
 }
+
+.preview div img {
+  /* margin: 0 auto; */
+  max-width: 500px;
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -299,4 +346,8 @@ input[type="number"] {
     max-width: 500px;
     margin: 0 auto;
   }
+}
+.quill .ql-align-justify img {
+  max-width: 400px !important; /* 원하는 최대 너비 설정 */
+  width: auto; /* 비율에 맞게 조절 */
 }

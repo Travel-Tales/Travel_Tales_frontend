@@ -12,6 +12,7 @@ import { apiClient } from "@/service/interceptor";
 import { useRouter, useSearchParams } from "next/navigation";
 import MarkdownRender from "@/components/MarkdownRender";
 import { refreshAccessToken } from "@/service/interceptor";
+import DOMPurify from "dompurify";
 
 interface Info {
   budget: string;
@@ -261,8 +262,15 @@ export default function TravelPlansDetailPage({
                   />
                 </div>
               </article>
-              <article className="preview text-center my-8 xs-max:text-sm mx-auto border-solid border-y py-8">
-                <MarkdownRender markdown={info.content} />
+              <article className="preview my-8 xs-max:text-sm mx-auto border-solid border-y py-8">
+                {/* <MarkdownRender markdown={info.content} /> */}
+                {process && (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(String(info.content)),
+                    }}
+                  />
+                )}
               </article>
               {params === "my" ? (
                 <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">

@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState, ChangeEvent, useRef, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
 import noImg from "./../../../../../../public/no-img.jpg";
-import MarkdownEditor from "@/components/MarkdownEditor";
-import Toolbar from "@/components/Toolbar";
+
 import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
+import ReactQuill from "react-quill";
+import QuillNoSSRWrapper from "@/components/quillMarkdown";
 
 interface DefaultData {
   title: string;
@@ -47,6 +54,8 @@ export default function TravelPlanCreatePage({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const setAccessToken = useStore((state) => state.setAccessToken);
+  const quillInstance = useRef<ReactQuill>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const locationList = [
     { id: 1, location: "전체" },
@@ -69,8 +78,10 @@ export default function TravelPlanCreatePage({
       let matchUrlArray: string[] = [];
 
       //* 정규식을 통해 공통 패턴의 문자열 추출
+      // const regex =
+      //   /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?.jpeg/g;
       const regex =
-        /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?.jpeg/g;
+        /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?\.(jpeg|jpg|png|webp|gif)/g;
 
       //* 해당 패턴을 모두 찾기
       const matches = str.match(regex);
@@ -157,13 +168,6 @@ export default function TravelPlanCreatePage({
   }, [id, data, markdown]);
 
   useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) {
-      console.error("Textarea element not found");
-    }
-  }, []);
-
-  useEffect(() => {
     const getPostInfo = async () => {
       const headers = {
         "Content-Type": "application/json",
@@ -209,26 +213,6 @@ export default function TravelPlanCreatePage({
     e.preventDefault();
   };
 
-  const insertAtCursor = (text: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    if (markdown) {
-      const length = markdown.length;
-      textareaRef.current.setSelectionRange(length, length);
-    }
-    // 포커스 주기
-    textareaRef.current.focus();
-
-    const startPos = textarea.selectionStart;
-    const endPos = textarea.selectionEnd;
-
-    setMarkdown(
-      (prev) =>
-        prev.substring(0, startPos) + text + prev.substring(endPos, prev.length)
-    );
-  };
-
   const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     //: 이미지를 교체했을 때
     const files = e.target.files;
@@ -241,10 +225,6 @@ export default function TravelPlanCreatePage({
     }
   };
 
-  const handleChange = (event: any) => {
-    setMarkdown(event.target.value);
-  };
-
   const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, "");
     const formattedValue = formatNumberWithCommas(value);
@@ -255,30 +235,58 @@ export default function TravelPlanCreatePage({
     return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  const uploadImage = async (e: ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // file input을 프로그래밍적으로 클릭
+    }
+  };
+
+  const handleFileChange = async (e: { target: { files: any } }) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      //: 파일 정보를 받아서 obj 와 url을 저장
       const file = files[0];
-      // const objectURL = URL.createObjectURL(file);
-
       const formData = new FormData();
       formData.append("imageFile", file);
-
       const headers = {};
       const options = {
         body: formData,
       };
-      const { data } = await apiClient.post(
-        `/api/post/upload-image/${id}`,
-        options,
-        headers
-      );
-      const fetchData = data;
-      // setData({ ...data, imageUrls: [...data.imageUrls, fetchData.data] });
+      try {
+        const { data } = await apiClient.post(
+          `/api/post/upload-image/${id}`,
+          options,
+          headers
+        );
+        const fetchData = data;
+        console.log(fetchData);
+        const IMG_URL = fetchData.data;
 
-      const markdownImg = `![](${fetchData.data})`;
-      insertAtCursor(markdownImg);
+        if (quillInstance.current) {
+          const editor = quillInstance.current.getEditor(); // 에디터 객체 가져오기
+
+          const range = editor.getSelection();
+          if (range) {
+            editor.insertEmbed(range.index, "image", IMG_URL);
+
+            // editor.container.querySelectorAll("img").forEach((img) => {
+            //   if (img.src === IMG_URL) {
+            //     img.style.maxWidth = "400px"; // 최대 너비 설정
+            //     img.style.width = "auto";
+            //   }
+            // });
+
+            const imgElement = editor.root.querySelector(
+              `img[src="${IMG_URL}"]`
+            );
+
+            if (imgElement) {
+              imgElement.setAttribute("alt", `${id}게시물${range.index}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.log("이미지 업로드 실패", error);
+      }
     }
   };
 
@@ -290,6 +298,128 @@ export default function TravelPlanCreatePage({
   const selectOption = (e: any) => {
     setData({ ...data, travelArea: e.target.value });
   };
+
+  useEffect(() => {
+    const quill = document.querySelector(".ql-container");
+
+    if (quill) {
+      // DOMNodeInserted 리스너 제거
+      quill.removeEventListener("DOMNodeInserted", () => {});
+    }
+
+    return () => {
+      if (quill) {
+        quill.removeEventListener("DOMNodeInserted", () => {});
+      }
+    };
+  }, []);
+
+  const colors = [
+    "transparent",
+    "white",
+    "red",
+    "yellow",
+    "green",
+    "blue",
+    "purple",
+    "gray",
+    "black",
+  ];
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "color",
+    "image",
+    "align",
+  ];
+
+  // // 이미지 처리를 하는 핸들러
+  // const imageHandler = () => {
+  //   console.log("에디터에서 이미지 버튼을 클릭하면 이 핸들러가 시작됩니다!");
+
+  //   // 1. 이미지를 저장할 input type=file DOM을 만든다.
+  //   const input = document.createElement("input");
+  //   // 속성 써주기
+  //   input.setAttribute("type", "file");
+  //   input.setAttribute("accept", "image/*");
+  //   input.click(); // 에디터 이미지버튼을 클릭하면 이 input이 클릭된다.
+  //   // input이 클릭되면 파일 선택창이 나타난다.
+
+  //   // input에 변화가 생긴다면 = 이미지를 선택
+  //   input.addEventListener("change", async () => {
+  //     console.log("온체인지");
+  //     if (input.files && input.files.length > 0) {
+  //       const file = input.files[0];
+  //       // multer에 맞는 형식으로 데이터 만들어준다.
+  //       const formData = new FormData();
+  //       formData.append("imageFile", file); // formData는 키-밸류 구조
+  //       const headers = {};
+  //       const options = {
+  //         body: formData,
+  //       };
+  //       // 백엔드 multer라우터에 이미지를 보낸다.
+  //       try {
+  //         const { data } = await apiClient.post(
+  //           `/api/post/upload-image/${id}`,
+  //           options,
+  //           headers
+  //         );
+  //         const fetchData = data;
+
+  //         console.log("성공 시, 백엔드가 보내주는 데이터", fetchData.data);
+  //         const IMG_URL = fetchData.data;
+  //         // 이 URL을 img 태그의 src에 넣은 요소를 현재 에디터의 커서에 넣어주면 에디터 내에서 이미지가 나타난다
+  //         // src가 base64가 아닌 짧은 URL이기 때문에 데이터베이스에 에디터의 전체 글 내용을 저장할 수있게된다
+  //         // 이미지는 꼭 로컬 백엔드 uploads 폴더가 아닌 다른 곳에 저장해 URL로 사용하면된다.
+
+  //         // 이미지 태그를 에디터에 써주기 - 여러 방법이 있다.
+  //         if (quillInstance.current) {
+  //           const editor = quillInstance.current.getEditor(); // 에디터 객체 가져오기
+  //           // 1. 에디터 root의 innerHTML을 수정해주기
+  //           // editor의 root는 에디터 컨텐츠들이 담겨있다. 거기에 img태그를 추가해준다.
+  //           // 이미지를 업로드하면 -> 멀터에서 이미지 경로 URL을 받아와 -> 이미지 요소로 만들어 에디터 안에 넣어준다.
+  //           // editor.root.innerHTML =
+  //           //   editor.root.innerHTML + `<img src=${IMG_URL} /><br/>`; // 현재 있는 내용들 뒤에 써줘야한다.
+
+  //           // 2. 현재 에디터 커서 위치값을 가져온다
+  //           const range = editor.getSelection();
+  //           // 가져온 위치에 이미지를 삽입한다
+  //           if (range) {
+  //             editor.insertEmbed(range.index, "image", IMG_URL);
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.log("실패했어요ㅠ");
+  //       }
+  //     }
+  //   });
+  // };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, 3, 4, 5, false] }],
+          ["bold", "italic", "underline", "strike", "blockquote"],
+          [{ align: ["right", "center", "justify"] }],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ color: colors }],
+          ["image"],
+        ],
+        handlers: {
+          image: uploadImage,
+        },
+      },
+    }),
+    []
+  );
 
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
 
@@ -414,7 +544,7 @@ export default function TravelPlanCreatePage({
               </div>
             )}
           </div>
-          <div className="mb-6">
+          <div>
             <label htmlFor="file_upload" className="inline-block mb-2">
               대표사진 선택 (썸네일)
               <input
@@ -433,45 +563,35 @@ export default function TravelPlanCreatePage({
                 hover:file:bg-pink-100 mt-2 w-52"
               />
             </label>
-            <div className="max-w-xs relative">
+            <div className="max-w-xs relative w-80 h-60">
+              {/* 320px 고정 */}
               <Image
-                src={data.thumbnail ? data.thumbnail : noImg}
+                src={data.thumbnail || noImg}
                 alt="대표사진 미리보기"
-                width={320}
-                height={100}
-                style={{ width: "100%", height: "auto" }}
+                fill
+                priority={true}
+                className="object-contain" // 비율 유지하며 잘라내기
+                sizes="320px" // 고정 너비
               />
-              {/* {data.thumbnail && (
-                <button
-                  className="absolute top-0 right-2"
-                  onClick={deleteThumbnail}
-                >
-                  X
-                </button>
-              )} */}
             </div>
           </div>
           <>
-            <Toolbar
-              onBold={() => insertAtCursor("**bold text**")}
-              onItalic={() => insertAtCursor("*italic text*")}
-              onHeading={() => insertAtCursor("")}
-              onBlockquote={() => insertAtCursor("> Blockquote")}
-              onOrderedList={() => insertAtCursor("1. Item")}
-              onUnorderedList={() => insertAtCursor("- Item")}
-              onLink={() => insertAtCursor("[link](url)")}
-              onImage={(e) => uploadImage(e)}
+            <QuillNoSSRWrapper
+              forwardedRef={quillInstance}
+              value={markdown}
+              onChange={setMarkdown}
+              modules={modules}
+              theme="snow"
+              placeholder="내용을 입력해주세요."
+              formats={formats}
             />
-            <div className="preview flex flex-row w-full border">
-              <textarea
-                ref={textareaRef}
-                className="editor min-h-48 w-1/2 border-r p-2"
-                value={markdown}
-                onChange={handleChange}
-                placeholder="계획이나 후기를 작성해주세요!"
-              />
-              <MarkdownEditor markdown={markdown} />
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
           </>
 
           <div className="flex justify-end">

@@ -46,6 +46,8 @@ const config: Config = {
       colors: {
         "main-color": "#000e76",
         "border-color": "#e5e7eb",
+        "black-54": "rgba(0, 0, 0, 0.54)",
+        "black-85": "rgba(0, 0, 0, 0.85)",
       },
       top: {
         "-7": "-7px",
@@ -57,6 +59,9 @@ const config: Config = {
       },
       width: {
         "1/8": "12.5%",
+      },
+      borderRadius: {
+        "12": "12px",
       },
     },
   },

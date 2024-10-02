@@ -2,10 +2,16 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
-import kakaoLogin from "./../../../public/kakao_login_large_wide.png";
-import googleLogin from "./../../../public/web_light_sq_ctn@3x.png";
 import logo from "./../../../public/main-logo.png";
 import useStore from "@/store/store";
+import { Roboto } from "next/font/google";
+import kakaoSymbol from "./../../../public/kakao-symbol.png";
+import googleSymbol from "./../../../public/g-logo.png";
+
+const roboto = Roboto({
+  weight: "500", // Medium
+  subsets: ["latin"], // 필요한 서브셋
+});
 
 export default function LoginPage() {
   const setIsLogin = useStore((state) => state.setIsLogin);
@@ -28,7 +34,7 @@ export default function LoginPage() {
   return (
     <>
       <main className="relative">
-        <section className="absolute top-1/2 left-1/2 -translate-x-2/4 -translate-y-2/4">
+        <section className="absolute top-1/2 left-1/2 -translate-x-2/4 -translate-y-2/4 md:w-6/12 w-10/12">
           <div>
             <h2 className="font-bold text-2xl text-center text-main-color mb-2">
               <Image
@@ -47,36 +53,40 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <button
-            aria-label="카카오 로그인"
-            className="block"
+          {/* <button
+            className="flex items-center justify-center bg-[#FEE500] rounded-[12px]
+           py-3 px-4 shadow-md hover:shadow-xs transition m-auto sm:w-72 sm:mb-8 mb-4 w-[195px]"
             onClick={clickKakaoLogin}
           >
-            <div>
-              <Image
-                src={kakaoLogin}
-                alt="카카오 로그인 버튼 이미지"
-                width={300}
-                height={200}
-                priority={true}
-              />
-            </div>
-          </button>
+            <Image
+              src={kakaoSymbol} // 카카오 로고 URL
+              width={20}
+              height={20}
+              alt="Kakao"
+              className="sm:w-[25px] sm:h-[25px] w-[18px] h-[18px] mr-3"
+            />
+            <span className={`text-black-85 sm:text-[18px] text-[14px]`}>
+              Login with Kakao
+            </span>
+          </button> */}
+
           <button
-            aria-label="구글 로그인"
-            className="block mt-4"
-            id="my-signin2"
+            className="flex items-center bg-white rounded-sm 
+          py-2 px-4 shadow-md hover:shadow-xs transition m-auto sm:w-72 w-[195px]"
             onClick={clickGoogleLogin}
           >
-            <div style={{ maxWidth: "300px", minWidth: "250px" }}>
-              <Image
-                src={googleLogin}
-                alt="구글 로그인 버튼 이미지"
-                width={300}
-                height={200}
-                priority={true}
-              />
-            </div>
+            <Image
+              src={googleSymbol}
+              alt="Google"
+              className="sm:w-[30px] sm:h-[30px] w-[18px] h-[18px] sm:mr-[50px] mr-[24px]"
+              width={20}
+              height={20}
+            />
+            <span
+              className={`text-black-54 ${roboto.className} sm:text-[18px] text-[14px]`}
+            >
+              Sign in with Google
+            </span>
           </button>
         </section>
       </main>

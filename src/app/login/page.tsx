@@ -53,9 +53,9 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* <button
+          <button
             className="flex items-center justify-center bg-[#FEE500] rounded-[12px]
-           py-3 px-4 shadow-md hover:shadow-xs transition m-auto sm:w-72 sm:mb-8 mb-4 w-[195px]"
+           py-3 px-4 hover:shadow-xs transition m-auto sm:w-72 sm:mb-8 mb-4 w-[211px]"
             onClick={clickKakaoLogin}
           >
             <Image
@@ -66,26 +66,26 @@ export default function LoginPage() {
               className="sm:w-[25px] sm:h-[25px] w-[18px] h-[18px] mr-3"
             />
             <span className={`text-black-85 sm:text-[18px] text-[14px]`}>
-              Login with Kakao
+              카카오 로그인
             </span>
-          </button> */}
+          </button>
 
           <button
             className="flex items-center bg-white rounded-sm 
-          py-2 px-4 shadow-md hover:shadow-xs transition m-auto sm:w-72 w-[195px]"
+          py-2 px-4 shadow-md hover:shadow-xs transition m-auto sm:w-72 w-[211px] justify-between"
             onClick={clickGoogleLogin}
           >
             <Image
               src={googleSymbol}
               alt="Google"
-              className="sm:w-[30px] sm:h-[30px] w-[18px] h-[18px] sm:mr-[50px] mr-[24px]"
+              className="sm:w-[30px] sm:h-[30px] w-[18px] h-[18px] sm:mr-[30px] mr-[24px]"
               width={20}
               height={20}
             />
             <span
               className={`text-black-54 ${roboto.className} sm:text-[18px] text-[14px]`}
             >
-              Sign in with Google
+              Google 계정으로 로그인
             </span>
           </button>
         </section>

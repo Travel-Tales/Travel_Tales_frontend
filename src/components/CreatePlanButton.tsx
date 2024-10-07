@@ -17,7 +17,9 @@ interface DefaultData {
   visibilityStatus: string;
 }
 
-export default function CreatePlanButton() {
+type Page = { page: string };
+
+export default function CreatePlanButton({ page }: Page) {
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
   const setAccessToken = useStore((state) => state.setAccessToken);
@@ -70,8 +72,19 @@ export default function CreatePlanButton() {
   };
 
   return (
-    <button onClick={movePage} className="custom-button xs:text-xs">
-      Create New Travel Plan
-    </button>
+    <div
+      className={`flex ${
+        page === "main" ? "justify-center" : "justify-end mb-4"
+      }`}
+    >
+      <button
+        onClick={movePage}
+        className={`${
+          page === "main" ? "custom-button" : "custom-button2"
+        } xs:text-xs`}
+      >
+        {page === "main" ? "새로운 여행 계획 작성하기" : "게시물 작성"}
+      </button>
+    </div>
   );
 }

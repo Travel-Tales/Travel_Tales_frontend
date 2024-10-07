@@ -9,9 +9,9 @@ bg-center md:bg-bottom-1 p-10 sm:p-20 xs:p-7 text-white bg-no-repeat"
     >
       <h2 className="text-h3 sm:text-h2 font-bold">Your Travel Plans</h2>
       <p className="my-5 text-sm sm:text-base">
-        Plan your next adventure with ease
+        다음 여행을 Travel Talse와 쉽게 계획하세요
       </p>
-      <CreatePlanButton />
+      <CreatePlanButton page={"main"} />
     </section>
   );
 }

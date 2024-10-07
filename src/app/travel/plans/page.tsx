@@ -2,6 +2,7 @@ import React from "react";
 import SearchBar from "@/components/SearchBar";
 import TripCard from "@/components/TripCard";
 import Category from "@/components/Category";
+import CreatePlanButton from "@/components/CreatePlanButton";
 
 async function getPlans() {
   // try {
@@ -32,6 +33,7 @@ export default async function TravelPlansPage() {
         <SearchBar />
         <Category page={"plans"} />
         <section>
+          <CreatePlanButton page={"plan"} />
           <TripCard list={jsonData} accessToken={accessToken} page={"plans"} />
         </section>
       </section>

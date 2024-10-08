@@ -49,7 +49,7 @@ export default async function Home() {
         >
           <h2 className="text-h3 sm:text-h2 font-semibold">추천 여행 계획</h2>
           <p className="text-sm sm:text-base py-4 sm:py-6">
-            We recommend necessary travel plans
+            딱 맞는 여행 계획을 추천해 드립니다!
           </p>
           {/* <button className="custom-button mb-6 xs:text-xs">
             View Details

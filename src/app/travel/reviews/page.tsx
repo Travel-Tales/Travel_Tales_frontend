@@ -11,7 +11,8 @@ export default function TravelReviewList() {
         <SearchBar />
         <Category page={"review"} />
         <section>
-          <TripCard list={recommandPlans} page={"review"} />
+          {/* <TripCard list={recommandPlans} page={"review"} /> */}
+          준비 중입니다.
         </section>
       </section>
     </main>

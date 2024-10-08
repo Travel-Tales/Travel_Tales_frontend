@@ -40,14 +40,41 @@ export default function TravelPlanCreatePage({
     content: "",
     travelArea: "",
     travelerCount: 1,
-    budget: "0",
+    budget: "1",
     startDate: new Date(),
     endDate: new Date(),
     imageUrl: [],
     thumbnail: "",
     visibilityStatus: "Public",
   });
-  const [markdown, setMarkdown] = useState<string>("");
+  const [markdown, setMarkdown] = useState<string>(
+    `<h1 class="ql-align-justify">
+    <span style="color: blue;">여행 제목 작성</span>
+    </h1>
+    <p class="ql-align-justify"><br></p>
+    <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
+    <p class="ql-align-justify"><br></p>
+    <h3 class="ql-align-justify">
+    <span style="color:black;">여행 준비물</span>
+    </h3>
+    <ul>
+    <li class="ql-align-justify">수건</li>
+    <li class="ql-align-justify">옷</li>
+    <li class="ql-align-justify">세안도구</li>
+    <li class="ql-align-justify">모자</li>
+    </ul>
+    <p class="ql-align-justify"><br></p>
+    <p class="ql-align-justify">
+    <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
+    </p>
+    <p class="ql-align-justify">
+    <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
+    </p>
+    <p class="ql-align-justify"><br></p>
+    <p class="ql-align-justify">
+    <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
+    </p>`
+  );
   const [fileObj, setFileObj] = useState<File | null>(null);
 
   const imageRef = useRef(null);
@@ -498,7 +525,7 @@ export default function TravelPlanCreatePage({
                 file:mr-4 file:py-2 file:px-4 file:rounded-md
                 file:border-0 file:text-sm file:font-semibold
                 file:bg-pink-50 file:text-pink-700
-                hover:file:bg-pink-100 mt-2 w-52"
+                hover:file:bg-pink-100 mt-2 w-52 cursor-pointer hover:cursor-pointer"
               />
             </label>
             <div className="max-w-xs relative w-80 h-60">

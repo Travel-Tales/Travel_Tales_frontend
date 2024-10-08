@@ -82,25 +82,25 @@ export default function Header() {
           <nav className="pc-menu hidden md:block">
             <ul className="nav">
               <li className="menu">
-                <Link href={"/travel/reviews"}>Reviews</Link>
+                <Link href={"/travel/reviews"}>여행 리뷰</Link>
               </li>
               <li className="menu">
-                <Link href={"/travel/plans"}>Travel Plans</Link>
+                <Link href={"/travel/plans"}>여행 계획</Link>
               </li>
               {isClient && access ? (
                 <>
                   <li className="menu">
-                    <Link href={"/mypage"}>MyPage</Link>
+                    <Link href={"/mypage"}>마이페이지</Link>
                   </li>
                   <li className="menu">
                     <Link href={"/"} onClick={logout}>
-                      Logout
+                      로그아웃
                     </Link>
                   </li>
                 </>
               ) : (
                 <li className="menu">
-                  <Link href={"/login"}>Login</Link>
+                  <Link href={"/login"}>로그인</Link>
                 </li>
               )}
             </ul>

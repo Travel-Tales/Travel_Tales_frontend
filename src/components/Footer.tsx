@@ -25,16 +25,16 @@ export default function Footer() {
       <nav className="footer-nav" aria-label="Footer">
         <ul className="s:flex s:flex-row text-sm text-neutral-700">
           <li className="footer-menu">
-            <Link href="/about">About Us</Link>
+            <Link href="/">About Us</Link>
           </li>
           <li className="footer-menu">
-            <Link href="/contact">Contact</Link>
+            <Link href="/">Contact</Link>
           </li>
           <li className="footer-menu">
-            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/">Privacy Policy</Link>
           </li>
           <li className="footer-menu">
-            <Link href="/terms">Terms of Service</Link>
+            <Link href="/">Terms of Service</Link>
           </li>
         </ul>
       </nav>

@@ -47,6 +47,7 @@ export default function TravelPlanCreatePage({
     thumbnail: "",
     visibilityStatus: "Public",
   });
+
   const [markdown, setMarkdown] = useState<string>(
     `<h1 class="ql-align-justify">
     <span style="color: blue;">여행 제목 작성</span>
@@ -76,13 +77,14 @@ export default function TravelPlanCreatePage({
     </p>`
   );
   const [fileObj, setFileObj] = useState<File | null>(null);
+  const [selectedTab, setSelectedTab] = useState(1);
 
   const imageRef = useRef(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const setAccessToken = useStore((state) => state.setAccessToken);
   const quillInstance = useRef<ReactQuill>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const setAccessToken = useStore((state) => state.setAccessToken);
 
   const locationList = [
     { id: 1, location: "전체" },
@@ -97,6 +99,93 @@ export default function TravelPlanCreatePage({
     { id: 10, location: "중남미" },
     { id: 11, location: "아프리카" },
   ];
+
+  const tabList = [
+    { id: 1, tabName: "test1" },
+    { id: 2, tabName: "test2" },
+    { id: 3, tabName: "test3" },
+  ];
+
+  const [testMarkdown, setTestMarkdown] = useState([
+    `<h1 class="ql-align-justify">
+  <span style="color: blue;">여행 제목 작성1</span>
+  </h1>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
+  <p class="ql-align-justify"><br></p>
+  <h3 class="ql-align-justify">
+  <span style="color:black;">여행 준비물</span>
+  </h3>
+  <ul>
+  <li class="ql-align-justify">수건</li>
+  <li class="ql-align-justify">옷</li>
+  <li class="ql-align-justify">세안도구</li>
+  <li class="ql-align-justify">모자</li>
+  </ul>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">
+  <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
+  </p>
+  <p class="ql-align-justify">
+  <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
+  </p>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">
+  <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
+  </p>`,
+    `<h1 class="ql-align-justify">
+  <span style="color: blue;">여행 제목 작성2</span>
+  </h1>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
+  <p class="ql-align-justify"><br></p>
+  <h3 class="ql-align-justify">
+  <span style="color:black;">여행 준비물</span>
+  </h3>
+  <ul>
+  <li class="ql-align-justify">수건</li>
+  <li class="ql-align-justify">옷</li>
+  <li class="ql-align-justify">세안도구</li>
+  <li class="ql-align-justify">모자</li>
+  </ul>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">
+  <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
+  </p>
+  <p class="ql-align-justify">
+  <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
+  </p>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">
+  <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
+  </p>`,
+    `<h1 class="ql-align-justify">
+  <span style="color: blue;">여행 제목 작성3</span>
+  </h1>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
+  <p class="ql-align-justify"><br></p>
+  <h3 class="ql-align-justify">
+  <span style="color:black;">여행 준비물</span>
+  </h3>
+  <ul>
+  <li class="ql-align-justify">수건</li>
+  <li class="ql-align-justify">옷</li>
+  <li class="ql-align-justify">세안도구</li>
+  <li class="ql-align-justify">모자</li>
+  </ul>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">
+  <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
+  </p>
+  <p class="ql-align-justify">
+  <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
+  </p>
+  <p class="ql-align-justify"><br></p>
+  <p class="ql-align-justify">
+  <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
+  </p>`,
+  ]);
 
   const markdownImageExtraction = (content: string) => {
     if (content) {
@@ -386,6 +475,13 @@ export default function TravelPlanCreatePage({
     []
   );
 
+  const selectTab = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: number
+  ) => {
+    setSelectedTab(id);
+  };
+
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
 
   return (
@@ -418,6 +514,7 @@ export default function TravelPlanCreatePage({
               onChange={(e) => {
                 setData({ ...data, title: e.target.value });
               }}
+              placeholder="여행 제목을 입력해주세요."
               // required
               className="input-border py-1 px-3"
             />
@@ -461,7 +558,7 @@ export default function TravelPlanCreatePage({
                 className="input-border py-1 px-3"
               />
             </div>
-            <div className="flex flex-col mb-2 s:max-w-52 w-full">
+            {/* <div className="flex flex-col mb-2 s:max-w-52 w-full">
               <label htmlFor="budget">여행 예산</label>
               <input
                 type="text"
@@ -471,7 +568,7 @@ export default function TravelPlanCreatePage({
                 required
                 className="input-border py-1 px-3"
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-col my-6 border-y py-6">
@@ -540,24 +637,35 @@ export default function TravelPlanCreatePage({
               />
             </div>
           </div>
-          <>
-            <QuillNoSSRWrapper
-              forwardedRef={quillInstance}
-              value={markdown}
-              onChange={setMarkdown}
-              modules={modules}
-              theme="snow"
-              placeholder="내용을 입력해주세요."
-              formats={formats}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-          </>
+          <div>
+            <ul>
+              {tabList.map((value) => (
+                <li key={value.id}>
+                  <button type="button" onClick={(e) => selectTab(e, value.id)}>
+                    {value.tabName}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div>
+              <QuillNoSSRWrapper
+                forwardedRef={quillInstance}
+                value={testMarkdown[selectedTab - 1]}
+                // onChange={setTestMarkdown}
+                modules={modules}
+                theme="snow"
+                placeholder="내용을 입력해주세요."
+                formats={formats}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+            </div>
+          </div>
 
           <div className="flex justify-end">
             <button

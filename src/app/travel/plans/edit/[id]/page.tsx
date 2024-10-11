@@ -76,6 +76,7 @@ export default function TravelPlanCreatePage({
     <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
     </p>`
   );
+
   const [fileObj, setFileObj] = useState<File | null>(null);
   const [selectedTab, setSelectedTab] = useState(1);
 
@@ -106,85 +107,54 @@ export default function TravelPlanCreatePage({
     { id: 3, tabName: "test3" },
   ];
 
+  const initialEditer = (id: number) => {
+    return `<h1 class="ql-align-justify">
+    <span style="color: blue;">여행 제목 작성${id}</span>
+    </h1>
+    <p class="ql-align-justify"><br></p>
+    <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
+    <p class="ql-align-justify"><br></p>
+    <h3 class="ql-align-justify">
+    <span style="color:black;">여행 준비물</span>
+    </h3>
+    <ul>
+    <li class="ql-align-justify">수건</li>
+    <li class="ql-align-justify">옷</li>
+    <li class="ql-align-justify">세안도구</li>
+    <li class="ql-align-justify">모자</li>
+    </ul>
+    <p class="ql-align-justify"><br></p>
+    <p class="ql-align-justify">
+    <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
+    </p>
+    <p class="ql-align-justify">
+    <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
+    </p>
+    <p class="ql-align-justify"><br></p>
+    <p class="ql-align-justify">
+    <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
+    </p>`;
+  };
+
   const [testMarkdown, setTestMarkdown] = useState([
-    `<h1 class="ql-align-justify">
-  <span style="color: blue;">여행 제목 작성1</span>
-  </h1>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
-  <p class="ql-align-justify"><br></p>
-  <h3 class="ql-align-justify">
-  <span style="color:black;">여행 준비물</span>
-  </h3>
-  <ul>
-  <li class="ql-align-justify">수건</li>
-  <li class="ql-align-justify">옷</li>
-  <li class="ql-align-justify">세안도구</li>
-  <li class="ql-align-justify">모자</li>
-  </ul>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">
-  <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
-  </p>
-  <p class="ql-align-justify">
-  <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
-  </p>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">
-  <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
-  </p>`,
-    `<h1 class="ql-align-justify">
-  <span style="color: blue;">여행 제목 작성2</span>
-  </h1>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
-  <p class="ql-align-justify"><br></p>
-  <h3 class="ql-align-justify">
-  <span style="color:black;">여행 준비물</span>
-  </h3>
-  <ul>
-  <li class="ql-align-justify">수건</li>
-  <li class="ql-align-justify">옷</li>
-  <li class="ql-align-justify">세안도구</li>
-  <li class="ql-align-justify">모자</li>
-  </ul>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">
-  <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
-  </p>
-  <p class="ql-align-justify">
-  <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
-  </p>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">
-  <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
-  </p>`,
-    `<h1 class="ql-align-justify">
-  <span style="color: blue;">여행 제목 작성3</span>
-  </h1>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
-  <p class="ql-align-justify"><br></p>
-  <h3 class="ql-align-justify">
-  <span style="color:black;">여행 준비물</span>
-  </h3>
-  <ul>
-  <li class="ql-align-justify">수건</li>
-  <li class="ql-align-justify">옷</li>
-  <li class="ql-align-justify">세안도구</li>
-  <li class="ql-align-justify">모자</li>
-  </ul>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">
-  <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
-  </p>
-  <p class="ql-align-justify">
-  <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
-  </p>
-  <p class="ql-align-justify"><br></p>
-  <p class="ql-align-justify">
-  <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
-  </p>`,
+    // {
+    //   budget: "1",
+    //   traffic: "대중교통",
+    //   lodging: "신라호텔",
+    //   markdown: initialEditer(1),
+    // },
+    // {
+    //   budget: "1000",
+    //   traffic: "대중교통",
+    //   lodging: "신라호텔",
+    //   markdown: initialEditer(2),
+    // },
+    // {
+    //   budget: "1000000",
+    //   traffic: "대중교통",
+    //   lodging: "신라호텔",
+    //   markdown: initialEditer(3),
+    // },
   ]);
 
   const markdownImageExtraction = (content: string) => {
@@ -284,6 +254,7 @@ export default function TravelPlanCreatePage({
   }, [id, data, markdown]);
 
   useEffect(() => {
+    //* 게시물 전체적인 내용 가져오기
     const getPostInfo = async () => {
       const headers = {
         "Content-Type": "application/json",
@@ -344,7 +315,7 @@ export default function TravelPlanCreatePage({
   const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, "");
     const formattedValue = formatNumberWithCommas(value);
-    setData({ ...data, budget: formattedValue });
+    // setData({ ...data, budget: formattedValue });
   };
 
   const formatNumberWithCommas = (value: string) => {
@@ -520,15 +491,6 @@ export default function TravelPlanCreatePage({
             />
           </div>
           <div className="flex flex-col mb-2 xs-max:w-full">
-            {/* <label htmlFor="location">여행 지역</label>
-            <input
-              type="text"
-              id="location"
-              value={data.travelArea}
-              onChange={(e) => setData({ ...data, travelArea: e.target.value })}
-              required
-              className="input-border py-1 px-3"
-            /> */}
             <label htmlFor="lang">여행 지역</label>
             <select
               name="location"
@@ -648,9 +610,37 @@ export default function TravelPlanCreatePage({
               ))}
             </ul>
             <div>
+              <div className="mb-2 flex flex-col">
+                <label htmlFor="budget">예산</label>
+                <input
+                  type="text"
+                  id="budget"
+                  value={testMarkdown[selectedTab - 1].budget}
+                  onChange={handleBudgetChange}
+                  required
+                  placeholder={`${selectedTab}일차 예산을 입력해주세요.`}
+                  className="input-border py-1 px-3 mr-1 mb-2"
+                />
+                <label htmlFor="traffic">교통수단</label>
+                <input
+                  type="text"
+                  id="traffic"
+                  value={testMarkdown[selectedTab - 1].traffic}
+                  placeholder={`${selectedTab}일차 교통편을 입력해주세요.`}
+                  className="input-border py-1 px-3 mb-2"
+                />
+                <label htmlFor="lodging">숙소</label>
+                <input
+                  type="text"
+                  id="lodging"
+                  value={testMarkdown[selectedTab - 1].lodging}
+                  placeholder={`${selectedTab}일차 숙소를 입력해주세요.`}
+                  className="input-border py-1 px-3"
+                />
+              </div>
               <QuillNoSSRWrapper
                 forwardedRef={quillInstance}
-                value={testMarkdown[selectedTab - 1]}
+                value={testMarkdown[selectedTab - 1].markdown}
                 // onChange={setTestMarkdown}
                 modules={modules}
                 theme="snow"

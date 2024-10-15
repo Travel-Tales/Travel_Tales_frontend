@@ -53,21 +53,31 @@ export default function CreatePlanButton({ page }: Page) {
       if (accessToken !== "null") {
         setAccessToken(accessToken);
       }
-      return "success";
+      return { error: null, statusExpressText: "success" };
     } catch (error) {
-      console.log(error);
-      return "fail";
+      if (error) {
+        return { error, statusExpressText: "fail" };
+      } else {
+        return { error, statusExpressText: "fail" };
+      }
     }
   };
 
   const router = useRouter();
 
   const movePage = async () => {
-    const status = await createPlan(defaultData);
-    if (status === "success" && planId) {
+    const { error, statusExpressText } = await createPlan(defaultData);
+
+    if (statusExpressText === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
     } else {
-      alert("에러발생, 페이지 생성하지 못했습니다.");
+      if (error instanceof Response) {
+        if (error.status === 401) {
+          alert("로그인이 필요한 서비스 입니다.");
+        } else {
+          alert(`${error.status}에러:${error.statusText}`);
+        }
+      }
     }
   };
 

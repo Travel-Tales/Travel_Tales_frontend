@@ -10,14 +10,16 @@ interface DefaultData {
   content: string;
   travelArea: string;
   travelerCount: number;
-  budget: number;
+  budget: string;
   thumbnail: string;
   startDate: Date;
   endDate: Date;
   visibilityStatus: string;
 }
 
-export default function CreatePlanButton() {
+type Page = { page: string };
+
+export default function CreatePlanButton({ page }: Page) {
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
   const setAccessToken = useStore((state) => state.setAccessToken);
@@ -28,7 +30,7 @@ export default function CreatePlanButton() {
     content: "",
     travelArea: "",
     travelerCount: 1,
-    budget: 1,
+    budget: "1",
     thumbnail: "",
     startDate: new Date(),
     endDate: new Date(),
@@ -51,27 +53,48 @@ export default function CreatePlanButton() {
       if (accessToken !== "null") {
         setAccessToken(accessToken);
       }
-      return "success";
+      return { error: null, statusExpressText: "success" };
     } catch (error) {
-      console.log(error);
-      return "fail";
+      if (error) {
+        return { error, statusExpressText: "fail" };
+      } else {
+        return { error, statusExpressText: "fail" };
+      }
     }
   };
 
   const router = useRouter();
 
   const movePage = async () => {
-    const status = await createPlan(defaultData);
-    if (status === "success" && planId) {
+    const { error, statusExpressText } = await createPlan(defaultData);
+
+    if (statusExpressText === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
     } else {
-      alert("에러발생, 페이지 생성하지 못했습니다.");
+      if (error instanceof Response) {
+        if (error.status === 401) {
+          alert("로그인이 필요한 서비스 입니다.");
+        } else {
+          alert(`${error.status}에러:${error.statusText}`);
+        }
+      }
     }
   };
 
   return (
-    <button onClick={movePage} className="custom-button xs:text-xs">
-      Create New Travel Plan
-    </button>
+    <div
+      className={`flex ${
+        page === "main" ? "justify-center" : "justify-end mb-4"
+      }`}
+    >
+      <button
+        onClick={movePage}
+        className={`${
+          page === "main" ? "custom-button" : "custom-button2"
+        } xs:text-xs`}
+      >
+        {page === "main" ? "새로운 여행 계획 작성하기" : "게시물 작성"}
+      </button>
+    </div>
   );
 }

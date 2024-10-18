@@ -1,8 +1,22 @@
 import React from "react";
+import type { Metadata } from "next";
 import { introduction } from "../../data/fixed";
 import TripCard from "../../components/TripCard";
 import AccessToken from "@/components/Accesstoken";
 import Banner from "@/components/Banner";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Welcome Travel Tales",
+  robots: "index",
+  openGraph: {
+    title: "Travel Tales",
+    description:
+      "쉽고 간편하게 여행 계획을 세우고, 일정과 여행지를 공유해보세요.",
+    siteName: "Travel Tales",
+    // url: "https://www.traveltales.kr",
+  },
+};
 
 async function getRecommandPlans() {
   const headers = {

@@ -30,63 +30,23 @@ interface DefaultData {
   visibilityStatus: string;
 }
 
+interface TabContent {
+  id: number;
+  budget: string;
+  lodging: string;
+  markdown: string;
+}
+
+interface TabList {
+  id: number;
+  tabName: string;
+}
+
 export default function TravelPlanCreatePage({
   params: { id },
 }: {
   params: { id: number };
 }) {
-  const [data, setData] = useState<DefaultData>({
-    title: "",
-    content: "",
-    travelArea: "",
-    travelerCount: 1,
-    budget: "1",
-    startDate: new Date(),
-    endDate: new Date(),
-    imageUrl: [],
-    thumbnail: "",
-    visibilityStatus: "Public",
-  });
-
-  const [markdown, setMarkdown] = useState<string>(
-    `<h1 class="ql-align-justify">
-    <span style="color: blue;">여행 제목 작성</span>
-    </h1>
-    <p class="ql-align-justify"><br></p>
-    <p class="ql-align-justify">자유로운 여행 계획을 작성해보세요!</p>
-    <p class="ql-align-justify"><br></p>
-    <h3 class="ql-align-justify">
-    <span style="color:black;">여행 준비물</span>
-    </h3>
-    <ul>
-    <li class="ql-align-justify">수건</li>
-    <li class="ql-align-justify">옷</li>
-    <li class="ql-align-justify">세안도구</li>
-    <li class="ql-align-justify">모자</li>
-    </ul>
-    <p class="ql-align-justify"><br></p>
-    <p class="ql-align-justify">
-    <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
-    </p>
-    <p class="ql-align-justify">
-    <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
-    </p>
-    <p class="ql-align-justify"><br></p>
-    <p class="ql-align-justify">
-    <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
-    </p>`
-  );
-
-  const [fileObj, setFileObj] = useState<File | null>(null);
-  const [selectedTab, setSelectedTab] = useState(1);
-
-  const imageRef = useRef(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const quillInstance = useRef<ReactQuill>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const setAccessToken = useStore((state) => state.setAccessToken);
-
   const locationList = [
     { id: 1, location: "전체" },
     { id: 2, location: "국내" },
@@ -101,13 +61,18 @@ export default function TravelPlanCreatePage({
     { id: 11, location: "아프리카" },
   ];
 
-  const tabList = [
-    { id: 1, tabName: "test1" },
-    { id: 2, tabName: "test2" },
-    { id: 3, tabName: "test3" },
+  const accommodations = [
+    "호텔",
+    "게스트하우스",
+    "펜션",
+    "리조트",
+    "모텔",
+    "캠핑장",
+    "민박",
   ];
 
   const initialEditer = (id: number) => {
+    //* 만약 새로 작성하는 게시물이거나 작성된 게시물에 마크다운이 비었다면, 기본적으로 나타나게 될 내용
     return `<h1 class="ql-align-justify">
     <span style="color: blue;">여행 제목 작성${id}</span>
     </h1>
@@ -125,9 +90,6 @@ export default function TravelPlanCreatePage({
     </ul>
     <p class="ql-align-justify"><br></p>
     <p class="ql-align-justify">
-    <strong style="color:black;">숙소 : </strong><span style="color:black;">호텔</span>
-    </p>
-    <p class="ql-align-justify">
     <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
     </p>
     <p class="ql-align-justify"><br></p>
@@ -136,57 +98,75 @@ export default function TravelPlanCreatePage({
     </p>`;
   };
 
-  const [testMarkdown, setTestMarkdown] = useState([
-    // {
-    //   budget: "1",
-    //   traffic: "대중교통",
-    //   lodging: "신라호텔",
-    //   markdown: initialEditer(1),
-    // },
-    // {
-    //   budget: "1000",
-    //   traffic: "대중교통",
-    //   lodging: "신라호텔",
-    //   markdown: initialEditer(2),
-    // },
-    // {
-    //   budget: "1000000",
-    //   traffic: "대중교통",
-    //   lodging: "신라호텔",
-    //   markdown: initialEditer(3),
-    // },
-  ]);
+  const [data, setData] = useState<DefaultData>({
+    title: "",
+    content: "",
+    travelArea: "",
+    travelerCount: 1,
+    budget: "1",
+    startDate: new Date(),
+    endDate: new Date(),
+    imageUrl: [],
+    thumbnail: "",
+    visibilityStatus: "Public",
+  });
 
-  const markdownImageExtraction = (content: string) => {
+  const [fileObj, setFileObj] = useState<File | null>(null);
+  const [selectedTab, setSelectedTab] = useState(1);
+  const [tabList, setTabList] = useState<TabList[] | []>([]);
+
+  const imageRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const quillInstance = useRef<ReactQuill>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const setAccessToken = useStore((state) => state.setAccessToken);
+  const [tabContent, setTabContent] = useState<TabContent[] | []>([]);
+
+  const [dateObj, setDateObj] = useState({
+    startDate: data.startDate,
+    endDate: data.endDate,
+  });
+
+  //* 마크다운에서 이미지를 추출하여 배열로 저장할 함수
+  const markdownImageExtraction = (content: string[]) => {
     if (content) {
-      let str = content;
-
       let matchUrlArray: string[] = [];
-
       //* 정규식을 통해 공통 패턴의 문자열 추출
       // const regex =
       //   /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?.jpeg/g;
       const regex =
         /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?\.(jpeg|jpg|png|webp|gif)/g;
-
       //* 해당 패턴을 모두 찾기
-      const matches = str.match(regex);
-      if (matches) {
-        matches.forEach((match) => {
-          matchUrlArray = [...matchUrlArray, match];
-        });
-        return matchUrlArray;
-      } else {
-        console.log("No matches found");
-      }
+
+      content.map((value) => {
+        const matches = value.match(regex);
+        if (matches) {
+          matches.forEach((match) => {
+            matchUrlArray = [...matchUrlArray, match];
+          });
+          return matchUrlArray;
+        } else {
+          console.log("No matches found");
+        }
+      });
     }
   };
 
+  //* 게시물 내용 변경하는 함수
   const saveChanges = async () => {
-    const matchUrlArray = markdownImageExtraction(markdown);
+    //* 마크다운에서 이미지 Array 추출해는 함수
+
+    /**
+     * [{ id: 1, budget: '', traffic: '', lodging: '', markdown: '<h1>...</h1>'}, ...]
+     */
+    const imagesArray = tabContent.map((value) => {
+      return value.markdown;
+    });
+    const matchUrlArray = markdownImageExtraction(imagesArray);
     const body = {
       title: data.title,
-      content: markdown,
+      content: JSON.stringify(tabContent),
       travelArea: data.travelArea,
       travelerCount: Number(data.travelerCount),
       budget: data.budget.replace(/,/g, ""),
@@ -233,6 +213,7 @@ export default function TravelPlanCreatePage({
   };
 
   useEffect(() => {
+    //* ctrl + s 저장 버튼
     const handleSaveShortcut = (e: {
       ctrlKey: any;
       metaKey: any;
@@ -247,14 +228,16 @@ export default function TravelPlanCreatePage({
 
     window.addEventListener("keydown", handleSaveShortcut);
 
-    // Clean up event listener on component unmount
+    //* Clean up event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleSaveShortcut);
     };
-  }, [id, data, markdown]);
+  }, [id, data, tabContent]);
+
+  useEffect(() => {}, [dateObj]);
 
   useEffect(() => {
-    //* 게시물 전체적인 내용 가져오기
+    //* 페이지에 처음 들어온 후, 게시물 정보 가져오기
     const getPostInfo = async () => {
       const headers = {
         "Content-Type": "application/json",
@@ -266,18 +249,14 @@ export default function TravelPlanCreatePage({
         headers
       );
       const fetchedData = data.data[0];
-
       setData({
         ...fetchedData,
         thumbnail: fetchedData.thumbnail || "",
         imageUrl: fetchedData.imageUrl || "",
-        content: fetchedData.content || "",
+        content: fetchedData.content ? JSON.parse(fetchedData.content) : "",
         title: fetchedData.title || "",
         travelArea: fetchedData.travelArea || "",
         travelerCount: fetchedData.travelerCount || 1,
-        budget: fetchedData.budget
-          ? formatNumberWithCommas(`${fetchedData.budget}`)
-          : "1",
         startDate: fetchedData.startDate
           ? new Date(fetchedData.startDate)
           : new Date(),
@@ -287,7 +266,23 @@ export default function TravelPlanCreatePage({
         visibilityStatus: fetchedData.visibilityStatus || "Public",
       });
       if (fetchedData.content) {
-        setMarkdown(fetchedData.content);
+        const parseContent = JSON.parse(fetchedData.content);
+        setTabContent(parseContent);
+        const tabLength = parseContent.map((value: any) => {
+          return { id: value.id, tabName: `test${value.id}` };
+        });
+        setTabList(tabLength);
+      } else {
+        //: tab length 만큼 배열 만들기
+        setTabContent([
+          {
+            id: 1,
+            budget: "1",
+            lodging: "",
+            markdown: initialEditer(1),
+          },
+        ]);
+        setTabList([{ id: 1, tabName: "test1" }]);
       }
       if (accessToken !== "null") {
         setAccessToken(accessToken);
@@ -296,11 +291,8 @@ export default function TravelPlanCreatePage({
     getPostInfo();
   }, []);
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-  };
-
-  const hanedleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  //* 이미지 변경하는 함수
+  const handleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     //: 이미지를 교체했을 때
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -312,22 +304,45 @@ export default function TravelPlanCreatePage({
     }
   };
 
-  const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/,/g, "");
-    const formattedValue = formatNumberWithCommas(value);
-    // setData({ ...data, budget: formattedValue });
+  //* 예산 변경하는 함수
+  const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>, id: number) => {
+    const budgetValue = e.target.value.replace(/,/g, "");
+    const formattedBudget = formatNumberWithCommas(budgetValue);
+    /**
+     * [{ id: 1, budget: '', traffic: '', lodging: '', markdown: '<h1>...</h1>'}, ...]
+     */
+    const formattedTabContent = tabContent.map((value) => {
+      if (value.id === id) {
+        return { ...value, budget: formattedBudget };
+      } else {
+        return value;
+      }
+    });
+    setTabContent(formattedTabContent);
   };
 
+  //* 숙소 선택하는 함수
+  const handleLodging = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    id: number
+  ) => {
+    const targetValue = e.target.value;
+    const formattedTabContent = tabContent.map((value) => {
+      if (value.id === id) {
+        return { ...value, lodging: targetValue };
+      } else {
+        return value;
+      }
+    });
+    setTabContent(formattedTabContent);
+  };
+
+  //* 예산 포멧 방식 변경하기
   const formatNumberWithCommas = (value: string) => {
     return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  const uploadImage = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click(); // file input을 프로그래밍적으로 클릭
-    }
-  };
-
+  //* 파일 포멧 변경하기
   const handleFileChange = async (e: { target: { files: any } }) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -345,7 +360,6 @@ export default function TravelPlanCreatePage({
           headers
         );
         const fetchData = data;
-        console.log(fetchData);
         const IMG_URL = fetchData.data;
 
         if (quillInstance.current) {
@@ -377,13 +391,17 @@ export default function TravelPlanCreatePage({
     }
   };
 
-  const deleteThumbnail = () => {
-    setData({ ...data, thumbnail: "" });
-    setFileObj(null);
-  };
-
+  //* 여행 지역 선택하는 함수
   const selectOption = (e: any) => {
     setData({ ...data, travelArea: e.target.value });
+  };
+
+  //* 탭 콘텐트 선택하는 함수
+  const selectTab = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: number
+  ) => {
+    setSelectedTab(id);
   };
 
   useEffect(() => {
@@ -427,6 +445,14 @@ export default function TravelPlanCreatePage({
     "align",
   ];
 
+  //* 에디터(마크다운)에서 이미지 추가하기
+  const uploadImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // file input을 프로그래밍적으로 클릭
+    }
+  };
+
+  //* quill 에디터 모듈 설정하기
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -446,11 +472,25 @@ export default function TravelPlanCreatePage({
     []
   );
 
-  const selectTab = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    id: number
-  ) => {
-    setSelectedTab(id);
+  const deleteThumbnail = () => {
+    setData({ ...data, thumbnail: "" });
+    setFileObj(null);
+  };
+
+  //* form 데이터 동작안하게 막기
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+  };
+
+  const handleMarkdown = (e: string, id: number) => {
+    const formattedTabContent = tabContent.map((value) => {
+      if (value.id === id) {
+        return { ...value, markdown: e };
+      } else {
+        return value;
+      }
+    });
+    setTabContent(formattedTabContent);
   };
 
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
@@ -520,17 +560,6 @@ export default function TravelPlanCreatePage({
                 className="input-border py-1 px-3"
               />
             </div>
-            {/* <div className="flex flex-col mb-2 s:max-w-52 w-full">
-              <label htmlFor="budget">여행 예산</label>
-              <input
-                type="text"
-                id="budget"
-                value={data.budget}
-                onChange={handleBudgetChange}
-                required
-                className="input-border py-1 px-3"
-              />
-            </div> */}
           </div>
 
           <div className="flex flex-col my-6 border-y py-6">
@@ -540,9 +569,10 @@ export default function TravelPlanCreatePage({
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
                   selected={data.startDate}
-                  onChange={(date) =>
-                    date && setData({ ...data, startDate: date })
-                  }
+                  onChange={(date) => {
+                    date && setData({ ...data, startDate: date });
+                    date && setDateObj({ ...dateObj, startDate: date });
+                  }}
                   selectsStart
                   startDate={data.startDate}
                   endDate={data.endDate}
@@ -556,9 +586,10 @@ export default function TravelPlanCreatePage({
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
                   selected={data.endDate}
-                  onChange={(date) =>
-                    date && setData({ ...data, endDate: date })
-                  }
+                  onChange={(date) => {
+                    date && setData({ ...data, endDate: date });
+                    date && setDateObj({ ...dateObj, endDate: date });
+                  }}
                   selectsEnd
                   startDate={data.startDate}
                   endDate={data.endDate}
@@ -573,7 +604,7 @@ export default function TravelPlanCreatePage({
               대표사진 선택 (썸네일)
               <input
                 id="file_upload"
-                onChange={hanedleImgChange}
+                onChange={handleImgChange}
                 ref={imageRef}
                 type="file"
                 alt="profile-image"
@@ -615,33 +646,49 @@ export default function TravelPlanCreatePage({
                 <input
                   type="text"
                   id="budget"
-                  value={testMarkdown[selectedTab - 1].budget}
-                  onChange={handleBudgetChange}
+                  value={
+                    tabContent.length !== 0
+                      ? tabContent[selectedTab - 1].budget
+                      : ""
+                  }
+                  onChange={(e) =>
+                    handleBudgetChange(e, tabContent[selectedTab - 1].id)
+                  }
                   required
                   placeholder={`${selectedTab}일차 예산을 입력해주세요.`}
                   className="input-border py-1 px-3 mr-1 mb-2"
                 />
-                <label htmlFor="traffic">교통수단</label>
-                <input
-                  type="text"
-                  id="traffic"
-                  value={testMarkdown[selectedTab - 1].traffic}
-                  placeholder={`${selectedTab}일차 교통편을 입력해주세요.`}
-                  className="input-border py-1 px-3 mb-2"
-                />
-                <label htmlFor="lodging">숙소</label>
-                <input
-                  type="text"
-                  id="lodging"
-                  value={testMarkdown[selectedTab - 1].lodging}
-                  placeholder={`${selectedTab}일차 숙소를 입력해주세요.`}
-                  className="input-border py-1 px-3"
-                />
+                <select
+                  value={
+                    tabContent.length !== 0
+                      ? tabContent[selectedTab - 1].lodging
+                      : ""
+                  }
+                  onChange={(e) =>
+                    handleLodging(e, tabContent[selectedTab - 1].id)
+                  }
+                >
+                  <option value="">숙소를 선택하세요</option>
+                  {accommodations.map((accommodation) => (
+                    <option key={accommodation} value={accommodation}>
+                      {accommodation}
+                    </option>
+                  ))}
+                </select>
               </div>
               <QuillNoSSRWrapper
                 forwardedRef={quillInstance}
-                value={testMarkdown[selectedTab - 1].markdown}
-                // onChange={setTestMarkdown}
+                value={
+                  tabContent.length !== 0
+                    ? tabContent[selectedTab - 1].markdown
+                    : ""
+                }
+                onChange={(e) => {
+                  const currentTabContent = tabContent[selectedTab - 1];
+                  if (currentTabContent) {
+                    handleMarkdown(e, currentTabContent.id);
+                  }
+                }}
                 modules={modules}
                 theme="snow"
                 placeholder="내용을 입력해주세요."

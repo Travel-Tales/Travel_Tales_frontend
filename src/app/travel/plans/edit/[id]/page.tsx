@@ -6,6 +6,7 @@ import React, {
   useRef,
   useEffect,
   useMemo,
+  useCallback,
 } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -122,10 +123,11 @@ export default function TravelPlanCreatePage({
 
   const setAccessToken = useStore((state) => state.setAccessToken);
   const [tabContent, setTabContent] = useState<TabContent[] | []>([]);
+  const selectedTabRef = useRef(selectedTab);
 
   const [dateObj, setDateObj] = useState({
-    startDate: data.startDate,
-    endDate: data.endDate,
+    startDate: new Date(),
+    endDate: new Date(),
   });
 
   //* 마크다운에서 이미지를 추출하여 배열로 저장할 함수
@@ -234,7 +236,96 @@ export default function TravelPlanCreatePage({
     };
   }, [id, data, tabContent]);
 
-  useEffect(() => {}, [dateObj]);
+  const editTabContent = (dates: TabList[]) => {
+    if (dates.length) {
+      const resultTabContent = dates.map((date) => {
+        for (let i = 0; i < tabContent.length; i++) {
+          if (date.id === tabContent[i].id) {
+            return tabContent[i];
+          } else {
+            return {
+              id: date.id,
+              budget: "1",
+              lodging: "",
+              markdown: initialEditer(date.id),
+            };
+          }
+        }
+      });
+
+      resultTabContent[0] && setSelectedTab(resultTabContent[0].id);
+      setTabContent(resultTabContent as TabContent[]); // undefined가 없음을 보장
+    }
+  };
+
+  //* 탭 날짜 길이만큼 만들기
+  //* 여기서 dateObj 변경될 때 마다 내용은 그대로 두고 날짜만 추가하기
+  useEffect(() => {
+    const firstDate = dateObj.startDate;
+    const lastDate = dateObj.endDate;
+
+    const getAllDatesBetween = () => {
+      //: 두 날짜가 같으면 해당 날짜만 배열로 반환
+      if (firstDate.toDateString() === lastDate.toDateString()) {
+        const year = firstDate.getFullYear(); // 년도 추출
+        const month = String(firstDate.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
+        const day = String(firstDate.getDate()).padStart(2, "0"); // 일 추출
+        const dateArray = [
+          { id: +`${year}${month}${day}`, tabName: `${year}-${month}-${day}` },
+        ];
+        setTabList(dateArray); // 'YYYY-MM-DD' 형식으로 반환
+        editTabContent(dateArray);
+      } else {
+        let dates: any[] = [];
+        let currentDate = new Date(firstDate);
+        //: startDate와 endDate 사이의 모든 날짜를 배열에 추가
+        const isSameDate = (date: Date) => {
+          const year = date.getFullYear(); // 년도 추출
+          const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
+          const day = String(date.getDate()).padStart(2, "0"); // 일 추출
+          const resultDate = `${year}-${month}-${day}`;
+          return resultDate;
+        };
+        while (isSameDate(currentDate) <= isSameDate(lastDate)) {
+          const year = currentDate.getFullYear(); // 년도 추출
+          const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
+          const day = String(currentDate.getDate()).padStart(2, "0"); // 일 추출
+          const resultDate = `${year}-${month}-${day}`;
+          dates = [
+            ...dates,
+            { id: +`${year}${month}${day}`, tabName: resultDate },
+          ];
+          currentDate.setDate(currentDate.getDate() + 1); // 하루를 더함
+        }
+        if (dates.length) {
+          setTabList(dates);
+          editTabContent(dates);
+        } else {
+          alert("시작날짜가 종료날짜보다 더 뒤에 있습니다.");
+        }
+      }
+    };
+    //: tabList length가 0이 아닐때
+    if (tabList.length) {
+      getAllDatesBetween();
+    } else {
+      //: tabList length가 0일때
+      const year = firstDate.getFullYear(); // 년도 추출
+      const month = String(firstDate.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
+      const day = String(firstDate.getDate()).padStart(2, "0"); // 일 추출
+      setTabList([
+        { id: +`${year}${month}${day}`, tabName: `${year}-${month}-${day}` },
+      ]); // 'YYYY-MM-DD' 형식으로 반환
+      setTabContent([
+        {
+          id: +`${year}${month}${day}`,
+          budget: "1",
+          lodging: "",
+          markdown: initialEditer(+`${year}${month}${day}`),
+        },
+      ]);
+    }
+  }, [dateObj]);
 
   useEffect(() => {
     //* 페이지에 처음 들어온 후, 게시물 정보 가져오기
@@ -265,24 +356,20 @@ export default function TravelPlanCreatePage({
           : new Date(),
         visibilityStatus: fetchedData.visibilityStatus || "Public",
       });
+      setDateObj({
+        startDate: fetchedData.startDate
+          ? new Date(fetchedData.startDate)
+          : new Date(),
+        endDate: fetchedData.endDate
+          ? new Date(fetchedData.endDate)
+          : new Date(),
+      });
       if (fetchedData.content) {
         const parseContent = JSON.parse(fetchedData.content);
-        setTabContent(parseContent);
         const tabLength = parseContent.map((value: any) => {
           return { id: value.id, tabName: `test${value.id}` };
         });
         setTabList(tabLength);
-      } else {
-        //: tab length 만큼 배열 만들기
-        setTabContent([
-          {
-            id: 1,
-            budget: "1",
-            lodging: "",
-            markdown: initialEditer(1),
-          },
-        ]);
-        setTabList([{ id: 1, tabName: "test1" }]);
       }
       if (accessToken !== "null") {
         setAccessToken(accessToken);
@@ -482,17 +569,37 @@ export default function TravelPlanCreatePage({
     e.preventDefault();
   };
 
+  useEffect(() => {
+    selectedTabRef.current = selectedTab;
+  }, [selectedTab]);
+
+  //* 마크다운 컨트롤
   const handleMarkdown = (e: string, id: number) => {
-    const formattedTabContent = tabContent.map((value) => {
-      if (value.id === id) {
-        return { ...value, markdown: e };
-      } else {
-        return value;
-      }
-    });
-    setTabContent(formattedTabContent);
+    console.log(e, id);
+    if (selectedTabRef.current !== id) return;
+    setTabContent((prevTabContent) =>
+      prevTabContent.map((value) => {
+        if (value.id === id) {
+          return { ...value, markdown: e };
+        } else {
+          return value;
+        }
+      })
+    );
   };
 
+  // useEffect(() => {
+  //   const currentTabContent = tabContent.find((tab) => tab.id === selectedTab);
+  //   if (currentTabContent && quillInstance.current) {
+  //     const quillRef = quillInstance.current.getEditor();
+
+  //     // HTML을 Delta로 변환하여 setContents에 전달
+  //     const delta = quillRef.clipboard.convert({
+  //       html: currentTabContent.markdown || "",
+  //     });
+  //     quillRef.setContents(delta); // Delta로 설정
+  //   }
+  // }, [selectedTab, tabContent]);
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
 
   return (
@@ -563,37 +670,37 @@ export default function TravelPlanCreatePage({
           </div>
 
           <div className="flex flex-col my-6 border-y py-6">
-            {data.startDate && data.endDate && (
+            {dateObj.startDate && dateObj.endDate && (
               <div className="s:flex s:flex-row items-center mb-2">
                 <p className="mr-2 xs-max:mb-1">여행 시작일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
-                  selected={data.startDate}
+                  selected={dateObj.startDate}
                   onChange={(date) => {
                     date && setData({ ...data, startDate: date });
                     date && setDateObj({ ...dateObj, startDate: date });
                   }}
                   selectsStart
-                  startDate={data.startDate}
-                  endDate={data.endDate}
+                  startDate={dateObj.startDate}
+                  endDate={dateObj.endDate}
                   className="input-border px-2 py-1"
                 />
               </div>
             )}
-            {data.startDate && data.endDate && (
+            {dateObj.startDate && dateObj.endDate && (
               <div className="s:flex s:flex-row items-center">
                 <p className="mr-2 xs-max:mb-1">여행 종료일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
-                  selected={data.endDate}
+                  selected={dateObj.endDate}
                   onChange={(date) => {
                     date && setData({ ...data, endDate: date });
                     date && setDateObj({ ...dateObj, endDate: date });
                   }}
                   selectsEnd
-                  startDate={data.startDate}
-                  endDate={data.endDate}
-                  minDate={data.startDate}
+                  startDate={dateObj.startDate}
+                  endDate={dateObj.endDate}
+                  minDate={dateObj.startDate}
                   className="input-border px-2 py-1"
                 />
               </div>
@@ -641,59 +748,61 @@ export default function TravelPlanCreatePage({
               ))}
             </ul>
             <div>
-              <div className="mb-2 flex flex-col">
-                <label htmlFor="budget">예산</label>
-                <input
-                  type="text"
-                  id="budget"
-                  value={
-                    tabContent.length !== 0
-                      ? tabContent[selectedTab - 1].budget
-                      : ""
-                  }
-                  onChange={(e) =>
-                    handleBudgetChange(e, tabContent[selectedTab - 1].id)
-                  }
-                  required
-                  placeholder={`${selectedTab}일차 예산을 입력해주세요.`}
-                  className="input-border py-1 px-3 mr-1 mb-2"
-                />
-                <select
-                  value={
-                    tabContent.length !== 0
-                      ? tabContent[selectedTab - 1].lodging
-                      : ""
-                  }
-                  onChange={(e) =>
-                    handleLodging(e, tabContent[selectedTab - 1].id)
-                  }
-                >
-                  <option value="">숙소를 선택하세요</option>
-                  {accommodations.map((accommodation) => (
-                    <option key={accommodation} value={accommodation}>
-                      {accommodation}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <QuillNoSSRWrapper
-                forwardedRef={quillInstance}
-                value={
-                  tabContent.length !== 0
-                    ? tabContent[selectedTab - 1].markdown
-                    : ""
-                }
-                onChange={(e) => {
-                  const currentTabContent = tabContent[selectedTab - 1];
-                  if (currentTabContent) {
-                    handleMarkdown(e, currentTabContent.id);
-                  }
-                }}
-                modules={modules}
-                theme="snow"
-                placeholder="내용을 입력해주세요."
-                formats={formats}
-              />
+              {tabContent.length !== 0 && selectedTab !== null ? (
+                <>
+                  <div className="mb-2 flex flex-col">
+                    <label htmlFor="budget">예산</label>
+                    <input
+                      type="text"
+                      id="budget"
+                      value={
+                        tabContent.find((tab) => tab.id === selectedTab)
+                          ?.budget || ""
+                      }
+                      onChange={(e) => handleBudgetChange(e, selectedTab)}
+                      required
+                      placeholder={`${selectedTab}일차 예산을 입력해주세요.`}
+                      className="input-border py-1 px-3 mr-1 mb-2"
+                    />
+                    <select
+                      value={
+                        tabContent.find((tab) => tab.id === selectedTab)
+                          ?.lodging || ""
+                      }
+                      onChange={(e) => handleLodging(e, selectedTab)}
+                    >
+                      <option value="">숙소를 선택하세요</option>
+                      {accommodations.map((accommodation) => (
+                        <option key={accommodation} value={accommodation}>
+                          {accommodation}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <QuillNoSSRWrapper
+                    forwardedRef={quillInstance}
+                    value={
+                      tabContent.find((tab) => tab.id === selectedTab)
+                        ?.markdown || ""
+                    }
+                    onChange={(e) => {
+                      console.log(e);
+                      // const currentTabContent = tabContent.find(
+                      //   (tab) => tab.id === selectedTab
+                      // );
+                      // if (currentTabContent) {
+                      handleMarkdown(e, selectedTabRef.current);
+                      // }
+                    }}
+                    modules={modules}
+                    theme="snow"
+                    placeholder="내용을 입력해주세요."
+                    formats={formats}
+                  />
+                </>
+              ) : (
+                <p>선택된 탭이 없습니다.</p>
+              )}
               <input
                 type="file"
                 accept="image/*"

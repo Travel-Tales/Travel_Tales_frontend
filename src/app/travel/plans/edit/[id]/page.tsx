@@ -12,7 +12,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
 import noImg from "./../../../../../../public/no-img.jpg";
-
 import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
 import ReactQuill from "react-quill";
@@ -113,7 +112,9 @@ export default function TravelPlanCreatePage({
   });
 
   const [fileObj, setFileObj] = useState<File | null>(null);
+  //* 선택된 탭(클릭한 탭)
   const [selectedTab, setSelectedTab] = useState(1);
+  //* 날짜별 탭 리스트
   const [tabList, setTabList] = useState<TabList[] | []>([]);
 
   const imageRef = useRef(null);
@@ -122,9 +123,11 @@ export default function TravelPlanCreatePage({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const setAccessToken = useStore((state) => state.setAccessToken);
+  //* 탭별 콘텐트
   const [tabContent, setTabContent] = useState<TabContent[] | []>([]);
-  const selectedTabRef = useRef(selectedTab);
+  const selectedTabRef = useRef<number | null>(null);
 
+  //* 시작날짜 종료날짜 들어있는 객체
   const [dateObj, setDateObj] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -239,22 +242,29 @@ export default function TravelPlanCreatePage({
   const editTabContent = (dates: TabList[]) => {
     if (dates.length) {
       const resultTabContent = dates.map((date) => {
+        let found = false;
+
+        // tabContent 배열을 순회하면서 일치하는 id를 찾음
         for (let i = 0; i < tabContent.length; i++) {
           if (date.id === tabContent[i].id) {
-            return tabContent[i];
-          } else {
-            return {
-              id: date.id,
-              budget: "1",
-              lodging: "",
-              markdown: initialEditer(date.id),
-            };
+            found = true;
+            return tabContent[i]; // 일치하는 요소를 찾았을 경우 바로 반환
           }
+        }
+
+        // 일치하는 요소가 없을 경우 새로운 객체 반환
+        if (!found) {
+          return {
+            id: date.id,
+            budget: "1",
+            lodging: "",
+            markdown: initialEditer(date.id),
+          };
         }
       });
 
       resultTabContent[0] && setSelectedTab(resultTabContent[0].id);
-      setTabContent(resultTabContent as TabContent[]); // undefined가 없음을 보장
+      setTabContent(resultTabContent as TabContent[]);
     }
   };
 
@@ -366,6 +376,7 @@ export default function TravelPlanCreatePage({
       });
       if (fetchedData.content) {
         const parseContent = JSON.parse(fetchedData.content);
+        setTabContent(parseContent);
         const tabLength = parseContent.map((value: any) => {
           return { id: value.id, tabName: `test${value.id}` };
         });
@@ -488,6 +499,7 @@ export default function TravelPlanCreatePage({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: number
   ) => {
+    selectedTabRef.current = id;
     setSelectedTab(id);
   };
 
@@ -569,14 +581,12 @@ export default function TravelPlanCreatePage({
     e.preventDefault();
   };
 
-  useEffect(() => {
-    selectedTabRef.current = selectedTab;
-  }, [selectedTab]);
+  // useEffect(() => {
+  //   selectedTabRef.current = selectedTab;
+  // }, [selectedTab]);
 
   //* 마크다운 컨트롤
   const handleMarkdown = (e: string, id: number) => {
-    console.log(e, id);
-    if (selectedTabRef.current !== id) return;
     setTabContent((prevTabContent) =>
       prevTabContent.map((value) => {
         if (value.id === id) {
@@ -588,18 +598,6 @@ export default function TravelPlanCreatePage({
     );
   };
 
-  // useEffect(() => {
-  //   const currentTabContent = tabContent.find((tab) => tab.id === selectedTab);
-  //   if (currentTabContent && quillInstance.current) {
-  //     const quillRef = quillInstance.current.getEditor();
-
-  //     // HTML을 Delta로 변환하여 setContents에 전달
-  //     const delta = quillRef.clipboard.convert({
-  //       html: currentTabContent.markdown || "",
-  //     });
-  //     quillRef.setContents(delta); // Delta로 설정
-  //   }
-  // }, [selectedTab, tabContent]);
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
 
   return (
@@ -623,7 +621,7 @@ export default function TravelPlanCreatePage({
               />
             </label>
           </div>
-          <div className="mb-2 flex flex-col ">
+          <div className="mb-2 flex flex-col">
             <label htmlFor="title">계획 제목</label>
             <input
               type="text"
@@ -638,12 +636,13 @@ export default function TravelPlanCreatePage({
             />
           </div>
           <div className="flex flex-col mb-2 xs-max:w-full">
-            <label htmlFor="lang">여행 지역</label>
+            <label htmlFor="lo">여행 지역</label>
             <select
               name="location"
               id="lo"
               className="input-border py-1 px-3 s:max-w-52 w-full"
               onChange={selectOption}
+              value={data.travelArea}
             >
               {locationList.map((value) => (
                 <option key={value.id} value={value.location}>
@@ -737,11 +736,22 @@ export default function TravelPlanCreatePage({
               />
             </div>
           </div>
-          <div>
-            <ul>
+          <div className="tab-list">
+            <ul className="flex border-b mt-4 mb-2 overflow-x-auto max-w-full border-gray-400">
               {tabList.map((value) => (
-                <li key={value.id}>
-                  <button type="button" onClick={(e) => selectTab(e, value.id)}>
+                <li
+                  key={value.id}
+                  className={`box-border flex-1 ${
+                    selectedTab === value.id
+                      ? "border border-b-0 border-gray-400 rounded-tr-sm rounded-tl-sm"
+                      : ""
+                  }`}
+                >
+                  <button
+                    className="text-sm block w-full p-2 text-center whitespace-nowrap"
+                    type="button"
+                    onClick={(e) => selectTab(e, value.id)}
+                  >
                     {value.tabName}
                   </button>
                 </li>
@@ -762,14 +772,19 @@ export default function TravelPlanCreatePage({
                       onChange={(e) => handleBudgetChange(e, selectedTab)}
                       required
                       placeholder={`${selectedTab}일차 예산을 입력해주세요.`}
-                      className="input-border py-1 px-3 mr-1 mb-2"
+                      className="input-border py-1 px-3"
                     />
+                  </div>
+                  <div className="mb-2 flex flex-col">
+                    <label htmlFor="lodging">숙소</label>
                     <select
                       value={
                         tabContent.find((tab) => tab.id === selectedTab)
                           ?.lodging || ""
                       }
                       onChange={(e) => handleLodging(e, selectedTab)}
+                      className="input-border py-1 px-3 s:max-w-52 w-full"
+                      id="lodging"
                     >
                       <option value="">숙소를 선택하세요</option>
                       {accommodations.map((accommodation) => (
@@ -786,13 +801,15 @@ export default function TravelPlanCreatePage({
                         ?.markdown || ""
                     }
                     onChange={(e) => {
-                      console.log(e);
                       // const currentTabContent = tabContent.find(
                       //   (tab) => tab.id === selectedTab
                       // );
                       // if (currentTabContent) {
-                      handleMarkdown(e, selectedTabRef.current);
+                      // handleMarkdown(e, selectedTabRef.current);
                       // }
+                      if (selectedTabRef.current !== null) {
+                        handleMarkdown(e, selectedTabRef.current);
+                      }
                     }}
                     modules={modules}
                     theme="snow"

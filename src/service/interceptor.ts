@@ -53,6 +53,7 @@ export const refreshAccessToken = async (baseUrl: string | undefined) => {
 };
 
 const createApiClient = (baseUrl: string | undefined) => {
+  let apiResponse: Response;
   const apiFetch = async (url: string, options = {}, headers = {}) => {
     try {
       const access = localStorage.getItem("accessToken");
@@ -65,7 +66,7 @@ const createApiClient = (baseUrl: string | undefined) => {
         },
       };
       const response = await fetch(baseUrl + url, mergedOptions);
-
+      apiResponse = response;
       if (!response.ok) {
         //: 에러 공통 처리 (액세스 토큰 만료시 재발급 로직)
         if (response.status === 401 && access) {
@@ -97,6 +98,9 @@ const createApiClient = (baseUrl: string | undefined) => {
     } catch (error) {
       //: api 요청 중 오류 발생 throw Error 받는 곳
       console.error("API 요청 중 오류 발생:", error);
+      if (url === "/api/post" && apiResponse.statusText === "Unauthorized") {
+        throw apiResponse;
+      }
       throw error; // 필요에 따라 호출자에게 오류를 다시 던질 수 있음
     }
   };

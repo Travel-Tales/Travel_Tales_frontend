@@ -14,9 +14,16 @@ import MarkdownRender from "@/components/MarkdownRender";
 import { refreshAccessToken } from "@/service/interceptor";
 import DOMPurify from "dompurify";
 
+interface TabContent {
+  budget: "11,111,111";
+  id: 20241101;
+  lodging: "리조트";
+  markdown: "";
+}
+
 interface Info {
   budget: string;
-  content: string;
+  content: TabContent[];
   createdAt: string;
   endDate: string;
   id: number;
@@ -41,6 +48,15 @@ export default function TravelPlansDetailPage({
   const [socket, setSocket] = useState<any | null>(null);
   const access = LocalStorage.getItem("accessToken");
   const setAccessToken = useStore((state) => state.setAccessToken);
+
+  const [content, setContent] = useState({
+    budget: "",
+    id: 0,
+    lodging: "",
+    markdown: "",
+  });
+  const [tabList, setTabList] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(1);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -133,13 +149,25 @@ export default function TravelPlansDetailPage({
       );
       const json = await response.json();
       const data = json.data[0];
+      const parseContent = JSON.parse(data.content);
+      const resultTapList = parseContent.map((value: any) => {
+        const dateId = value.id.toString();
+        const year = dateId.substr(0, 4);
+        const month = dateId.substr(4, 2);
+        const day = dateId.substr(6, 2);
+        const date = `${year}-${month}-${day}`;
+        return { tabName: date, id: value.id };
+      });
+      setTabList(resultTapList);
+      setSelectedTab(resultTapList[0].id);
+
       return {
         ...data,
         title: data.title || "제목없음",
-        content: data.content || "내용없음",
+        content: parseContent || "내용없음",
         travelArea: data.travelArea || "지역없음",
         travelerCount: data.travelerCount || 0,
-        budget: data.budget || "0",
+        // budget: data.budget || "0",
         thumbnail: data.thumbnail || thumbnail,
       };
     } catch (error) {
@@ -189,6 +217,17 @@ export default function TravelPlansDetailPage({
     router.push(`/travel/plans/edit/${id}`);
   };
 
+  useEffect(() => {
+    if (info) {
+      const selectTabContent = info.content.filter((value) => {
+        return selectedTab === value.id;
+      });
+      setContent(selectTabContent[0]);
+    }
+  }, [selectedTab]);
+
+  console.log(content);
+
   return (
     <main>
       {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
@@ -213,7 +252,7 @@ export default function TravelPlansDetailPage({
                   {info.visibilityStatus}
                 </span>
               </h2>
-              <article className="xs-max:text-sm">
+              <article className="xs-max:text-sm mb-20">
                 <p className="pb-2">
                   <span>지역: </span>
                   {info.travelArea ? info.travelArea : "지역없음"}
@@ -227,10 +266,10 @@ export default function TravelPlansDetailPage({
                   {formatingDate(info.startDate)} ~{" "}
                   {formatingDate(info.endDate)}
                 </p>
-                <p className="pb-2">
+                {/* <p className="pb-2">
                   <span>총 예산: </span>
                   {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
-                </p>
+                </p> */}
                 <p></p>
                 {/* <div className="flex items-center space-x-2 pb-2">
                   <span className="">키워드:</span>
@@ -262,12 +301,41 @@ export default function TravelPlansDetailPage({
                   />
                 </div>
               </article>
-              <article className="preview my-8 xs-max:text-sm mx-auto border-solid border-y py-8">
+              <div>
+                <ul className="flex border-b overflow-x-auto max-w-full border-gray-400">
+                  {tabList.map((value: any) => (
+                    <li
+                      key={value.id}
+                      className={`box-border flex-1 ${
+                        selectedTab === value.id
+                          ? "border border-b-0 border-gray-400 rounded-tr-sm rounded-tl-sm"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        className="text-sm block w-full p-2 text-center whitespace-nowrap"
+                        type="button"
+                        onClick={() => setSelectedTab(value.id)}
+                      >
+                        {value.tabName}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <article className="preview mb-8 xs-max:text-sm mx-auto border-solid border-b py-8">
                 {/* <MarkdownRender markdown={info.content} /> */}
+                <div className="mb-10 border-b pb-8">
+                  <p className="mb-2">
+                    예산: {content.budget ? content.budget : 0}원
+                  </p>
+                  <p>숙소: {content.lodging ? content.lodging : "없음"}</p>
+                </div>
+
                 {process && (
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(String(info.content)),
+                      __html: DOMPurify.sanitize(String(content.markdown)),
                     }}
                   />
                 )}

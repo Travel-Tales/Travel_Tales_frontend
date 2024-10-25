@@ -598,6 +598,8 @@ export default function TravelPlanCreatePage({
     );
   };
 
+  console.log("ttt");
+
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
 
   return (
@@ -741,9 +743,7 @@ export default function TravelPlanCreatePage({
               {tabList.map((value) => (
                 <li
                   key={value.id}
-                  className={`box-border ${
-                    tabList.length <= 4 ? "w-fit" : "flex-1"
-                  } ${
+                  className={`box-border w-fit ${
                     selectedTab === value.id
                       ? "border border-b-0 border-gray-400 rounded-tr-sm rounded-tl-sm"
                       : ""

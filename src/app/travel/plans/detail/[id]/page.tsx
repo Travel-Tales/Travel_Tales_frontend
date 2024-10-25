@@ -306,7 +306,7 @@ export default function TravelPlansDetailPage({
                   {tabList.map((value: any) => (
                     <li
                       key={value.id}
-                      className={`box-border flex-1 ${
+                      className={`box-border w-fit ${
                         selectedTab === value.id
                           ? "border border-b-0 border-gray-400 rounded-tr-sm rounded-tl-sm"
                           : ""

@@ -741,7 +741,9 @@ export default function TravelPlanCreatePage({
               {tabList.map((value) => (
                 <li
                   key={value.id}
-                  className={`box-border flex-1 ${
+                  className={`box-border ${
+                    tabList.length <= 4 ? "w-fit" : "flex-1"
+                  } ${
                     selectedTab === value.id
                       ? "border border-b-0 border-gray-400 rounded-tr-sm rounded-tl-sm"
                       : ""
@@ -845,4 +847,3 @@ export default function TravelPlanCreatePage({
     </main>
   );
 }
-

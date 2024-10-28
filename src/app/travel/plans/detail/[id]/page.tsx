@@ -15,10 +15,10 @@ import { refreshAccessToken } from "@/service/interceptor";
 import DOMPurify from "dompurify";
 
 interface TabContent {
-  budget: "11,111,111";
-  id: 20241101;
-  lodging: "리조트";
-  markdown: "";
+  budget: string;
+  id: number;
+  lodging: string;
+  markdown: string;
 }
 
 interface Info {
@@ -49,12 +49,7 @@ export default function TravelPlansDetailPage({
   const access = LocalStorage.getItem("accessToken");
   const setAccessToken = useStore((state) => state.setAccessToken);
 
-  const [content, setContent] = useState({
-    budget: "",
-    id: 0,
-    lodging: "",
-    markdown: "",
-  });
+  const [content, setContent] = useState<TabContent | null>(null);
   const [tabList, setTabList] = useState([]);
   const [selectedTab, setSelectedTab] = useState(1);
 
@@ -149,27 +144,37 @@ export default function TravelPlansDetailPage({
       );
       const json = await response.json();
       const data = json.data[0];
-      const parseContent = JSON.parse(data.content);
-      const resultTapList = parseContent.map((value: any) => {
-        const dateId = value.id.toString();
-        const year = dateId.substr(0, 4);
-        const month = dateId.substr(4, 2);
-        const day = dateId.substr(6, 2);
-        const date = `${year}-${month}-${day}`;
-        return { tabName: date, id: value.id };
-      });
-      setTabList(resultTapList);
-      setSelectedTab(resultTapList[0].id);
+      if (data.content) {
+        const parseContent = JSON.parse(data.content);
+        const resultTapList = parseContent.map((value: any) => {
+          const dateId = value.id.toString();
+          const year = dateId.substr(0, 4);
+          const month = dateId.substr(4, 2);
+          const day = dateId.substr(6, 2);
+          const date = `${year}-${month}-${day}`;
+          return { tabName: date, id: value.id };
+        });
+        setTabList(resultTapList);
+        setSelectedTab(resultTapList[0].id);
 
-      return {
-        ...data,
-        title: data.title || "제목없음",
-        content: parseContent || "내용없음",
-        travelArea: data.travelArea || "지역없음",
-        travelerCount: data.travelerCount || 0,
-        // budget: data.budget || "0",
-        thumbnail: data.thumbnail || thumbnail,
-      };
+        return {
+          ...data,
+          title: data.title || "제목없음",
+          content: parseContent,
+          travelArea: data.travelArea || "지역없음",
+          travelerCount: data.travelerCount || 0,
+          thumbnail: data.thumbnail || thumbnail,
+        };
+      } else {
+        return {
+          ...data,
+          title: data.title || "제목없음",
+          content: "",
+          travelArea: data.travelArea || "지역없음",
+          travelerCount: data.travelerCount || 0,
+          thumbnail: data.thumbnail || thumbnail,
+        };
+      }
     } catch (error) {
       console.log(error);
     }
@@ -225,8 +230,6 @@ export default function TravelPlansDetailPage({
       setContent(selectTabContent[0]);
     }
   }, [selectedTab]);
-
-  console.log(content);
 
   return (
     <main>
@@ -323,23 +326,28 @@ export default function TravelPlansDetailPage({
                   ))}
                 </ul>
               </div>
-              <article className="preview mb-8 xs-max:text-sm mx-auto border-solid border-b py-8">
-                {/* <MarkdownRender markdown={info.content} /> */}
-                <div className="mb-10 border-b pb-8">
-                  <p className="mb-2">
-                    예산: {content.budget ? content.budget : 0}원
-                  </p>
-                  <p>숙소: {content.lodging ? content.lodging : "없음"}</p>
-                </div>
+              {content ? (
+                <article className="preview mb-8 xs-max:text-sm mx-auto border-solid border-b py-8">
+                  {/* <MarkdownRender markdown={info.content} /> */}
+                  <div className="mb-10 border-b pb-8">
+                    <p className="mb-2">
+                      예산: {content.budget ? content.budget : 0}원
+                    </p>
+                    <p>숙소: {content.lodging ? content.lodging : "없음"}</p>
+                  </div>
 
-                {process && (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(String(content.markdown)),
-                    }}
-                  />
-                )}
-              </article>
+                  {process && (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(String(content.markdown)),
+                      }}
+                    />
+                  )}
+                </article>
+              ) : (
+                <div className="pt-10">내용없음</div>
+              )}
+
               {params === "my" ? (
                 <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">
                   <button

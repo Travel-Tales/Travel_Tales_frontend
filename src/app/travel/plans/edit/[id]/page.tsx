@@ -598,8 +598,6 @@ export default function TravelPlanCreatePage({
     );
   };
 
-  console.log("ttt");
-
   //! 여행 지역 input select 로 변경해야 한다. (지역을 선택할 수 있도록)
 
   return (

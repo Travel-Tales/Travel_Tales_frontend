@@ -603,6 +603,8 @@ export default function TravelPlanCreatePage({
   return (
     <main>
       <section className="w-3/4 my-10 mx-auto xs-max:text-sm">
+        <h2 className="h2 a11y-hidden">{id}번 계획 작성페이지</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="toggle-switch mb-6">
             <label className="inline-flex items-center cursor-pointer">

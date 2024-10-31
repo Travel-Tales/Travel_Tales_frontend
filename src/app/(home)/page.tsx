@@ -47,7 +47,7 @@ export default async function Home() {
       <main>
         <Banner />
         <section className="page-section py-10 sm:py-20">
-          <h2 className="h2 a11y-hidden">페이지 소개</h2>
+          <h2 className="h2 a11y-hidden">메인페이지</h2>
           <ul className="flex-none sm:flex sm:flex-row sm:justify-between sm:items-top">
             {introduction.map((value) => (
               <li key={value.id} className="introduce last:mb-0 mb-10 sm:mb-0">

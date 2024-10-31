@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
+import loadingStore from "@/store/loadingStore";
 
 interface DefaultData {
   title: string;
@@ -23,6 +24,8 @@ export default function CreatePlanButton({ page }: Page) {
   const access = useStore((state) => state.accessToken);
   const setPlanId = useStore((state) => state.setPlanId);
   const setAccessToken = useStore((state) => state.setAccessToken);
+  const setIsLoading = loadingStore((state) => state.setIsLoading);
+
   let planId: number;
 
   const defaultData = {
@@ -39,25 +42,34 @@ export default function CreatePlanButton({ page }: Page) {
 
   const createPlan = async (defaultData: DefaultData) => {
     try {
+      setIsLoading(true);
       const headers = {
         "Content-Type": "application/json",
       };
       const options = { body: JSON.stringify(defaultData) };
-      const { data, accessToken } = await apiClient.post(
-        `/api/post`,
-        options,
-        headers
-      );
+      // const { data, accessToken } = await apiClient.post(
+      //   `/api/post`,
+      //   options,
+      //   headers
+      // );
+      const apiRequest = apiClient.post(`/api/post`, options, headers);
+      const delay = new Promise((resolve) => setTimeout(resolve, 1000)); // 최소 1초 대기
+
+      const [{ data, accessToken }] = await Promise.all([apiRequest, delay]);
       setPlanId(data.data.id);
       planId = data.data.id;
       if (accessToken !== "null") {
         setAccessToken(accessToken);
       }
+
+      setIsLoading(false);
       return { error: null, statusExpressText: "success" };
     } catch (error) {
       if (error) {
+        setIsLoading(false);
         return { error, statusExpressText: "fail" };
       } else {
+        setIsLoading(false);
         return { error, statusExpressText: "fail" };
       }
     }

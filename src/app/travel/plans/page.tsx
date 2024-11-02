@@ -43,6 +43,8 @@ export default async function TravelPlansPage() {
   return (
     <main>
       <section className="page-section pt-4 pb-16">
+        {" "}
+        <h2 className="h2 a11y-hidden">계획 리스트 페이지</h2>
         <SearchBar />
         <Category page={"plans"} />
         <section>

@@ -4,7 +4,9 @@ export default function TravelReviewDetailPage() {
   return (
     <main>
       <section className="page-section py-14">
-        <h2 className="text-3xl font-bold pb-3 flex items-center">
+        <h2 className="h2 a11y-hidden">리뷰 상세 페이지</h2>
+
+        <h3 className="text-3xl font-bold pb-3 flex items-center">
           당일치기 당진 여행 후기!{" "}
           <span
             className="ml-2 bg-gray-100 text-xs text-gray-500
@@ -12,7 +14,7 @@ export default function TravelReviewDetailPage() {
           >
             Public
           </span>
-        </h2>
+        </h3>
         <article className="">
           <p className="pb-2">
             <span>지역: </span>국내

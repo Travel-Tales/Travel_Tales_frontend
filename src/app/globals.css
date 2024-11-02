@@ -364,3 +364,41 @@ input[type="number"] {
   border-radius: 8px;
   background-color: #ccc;
 }
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: block;
+  margin: 15px auto;
+  position: relative;
+  background: #fff;
+  box-shadow: -24px 0 #fff, 24px 0 #fff;
+  box-sizing: border-box;
+  animation: shadowPulse 2s linear infinite;
+}
+
+@keyframes shadowPulse {
+  33% {
+    background: #fff;
+    box-shadow: -24px 0 #1100ff, 24px 0 #fff;
+  }
+  66% {
+    background: #1100ff;
+    box-shadow: -24px 0 #fff, 24px 0 #fff;
+  }
+  100% {
+    background: #fff;
+    box-shadow: -24px 0 #fff, 24px 0 #1100ff;
+  }
+}
+
+.blurBg {
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  background: #000;
+  opacity: 0.5;
+  z-index: 20;
+}

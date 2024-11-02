@@ -157,6 +157,8 @@ export default function Mypage() {
   return (
     <main>
       <section className="page-section">
+        <h2 className="h2 a11y-hidden">마이페이지</h2>
+
         <article
           className="s:flex s:flex-row s:justify-between s:items-center 
        sm:px-0 md:px-24 lg:px-44 pt-5"

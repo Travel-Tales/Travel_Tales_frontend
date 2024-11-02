@@ -236,6 +236,8 @@ export default function TravelPlansDetailPage({
       {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
       <div className="max-w-5xl mx-auto px-10 py-14 box-border">
         <section className="relative">
+          <h2 className="h2 a11y-hidden">{id}번 계획 상세페이지</h2>
+
           {info && (
             <>
               <h2

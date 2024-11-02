@@ -35,6 +35,7 @@ export default function LoginPage() {
     <>
       <main className="relative">
         <section className="absolute top-1/2 left-1/2 -translate-x-2/4 -translate-y-2/4 md:w-6/12 w-10/12">
+          <h2 className="h2 a11y-hidden">로그인페이지</h2>
           <div>
             <h2 className="font-bold text-2xl text-center text-main-color mb-2">
               <Image

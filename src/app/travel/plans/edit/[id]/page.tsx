@@ -726,14 +726,14 @@ export default function TravelPlanCreatePage({
                 hover:file:bg-pink-100 mt-2 w-52 cursor-pointer hover:cursor-pointer"
               />
             </label>
-            <div className="max-w-xs relative w-80 h-60">
+            <div className="max-w-xs relative sm:w-80 h-60">
               {/* 320px 고정 */}
               <Image
                 src={data.thumbnail || noImg}
                 alt="대표사진 미리보기"
                 fill
                 priority={true}
-                className="object-contain" // 비율 유지하며 잘라내기
+                className="object-contain " // 비율 유지하며 잘라내기
                 sizes="320px" // 고정 너비
               />
             </div>

@@ -9,6 +9,14 @@ export default function Blur() {
   const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
+    // const handleScroll = () => {
+    //   setScrollPosition(window.scrollY);
+    // };
+
+    // window.addEventListener("scroll", handleScroll);
+    // return () => {
+    //   window.removeEventListener("scroll", handleScroll);
+    // };
     if (!isLoading) return;
     setScrollPosition(window.scrollY);
   }, [isLoading]);

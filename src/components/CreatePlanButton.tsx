@@ -47,15 +47,15 @@ export default function CreatePlanButton({ page }: Page) {
         "Content-Type": "application/json",
       };
       const options = { body: JSON.stringify(defaultData) };
-      // const { data, accessToken } = await apiClient.post(
-      //   `/api/post`,
-      //   options,
-      //   headers
-      // );
-      const apiRequest = apiClient.post(`/api/post`, options, headers);
-      const delay = new Promise((resolve) => setTimeout(resolve, 1000)); // 최소 1초 대기
+      const { data, accessToken } = await apiClient.post(
+        `/api/post`,
+        options,
+        headers
+      );
+      // const apiRequest = apiClient.post(`/api/post`, options, headers);
+      // const delay = new Promise((resolve) => setTimeout(resolve, 1000)); // 최소 1초 대기
 
-      const [{ data, accessToken }] = await Promise.all([apiRequest, delay]);
+      // const [{ data, accessToken }] = await Promise.all([apiRequest, delay]);
       setPlanId(data.data.id);
       planId = data.data.id;
       if (accessToken !== "null") {

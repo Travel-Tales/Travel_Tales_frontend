@@ -6,6 +6,7 @@ import Image from "next/image";
 import mainLogo from "./../../public/main-logo.png";
 import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
@@ -14,6 +15,7 @@ export default function Header() {
   const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
   const setIsLogin = useStore((state) => state.setIsLogin);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
@@ -34,7 +36,7 @@ export default function Header() {
           setAccessToken("");
           setIsLogin("false");
           alert("로그아웃 되었습니다.");
-          location.reload();
+          router.replace("/"); // 이전 페이지 URL로 대체
         } else {
           throw new Error("Network response was not ok");
         }
@@ -93,7 +95,7 @@ export default function Header() {
                     <Link href={"/mypage"}>마이페이지</Link>
                   </li>
                   <li className="menu">
-                    <Link href={"/"} onClick={logout}>
+                    <Link href={"#"} onClick={logout}>
                       로그아웃
                     </Link>
                   </li>

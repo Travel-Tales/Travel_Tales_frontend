@@ -41,8 +41,8 @@ export default function CreatePlanButton({ page }: Page) {
   };
 
   const createPlan = async (defaultData: DefaultData) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const headers = {
         "Content-Type": "application/json",
       };
@@ -62,7 +62,6 @@ export default function CreatePlanButton({ page }: Page) {
         setAccessToken(accessToken);
       }
 
-      setIsLoading(false);
       return { error: null, statusExpressText: "success" };
     } catch (error) {
       if (error) {
@@ -82,12 +81,15 @@ export default function CreatePlanButton({ page }: Page) {
 
     if (statusExpressText === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
+      setIsLoading(false);
     } else {
       if (error instanceof Response) {
         if (error.status === 401) {
           alert("로그인이 필요한 서비스 입니다.");
+          setIsLoading(false);
         } else {
           alert(`${error.status}에러:${error.statusText}`);
+          setIsLoading(false);
         }
       }
     }

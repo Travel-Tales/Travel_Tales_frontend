@@ -66,9 +66,11 @@ export default function CreatePlanButton({ page }: Page) {
     } catch (error) {
       if (error) {
         setIsLoading(false);
+        console.log("실행 확인3", error);
         return { error, statusExpressText: "fail" };
       } else {
         setIsLoading(false);
+        console.log("실행 확인4", error);
         return { error, statusExpressText: "fail" };
       }
     }
@@ -84,10 +86,13 @@ export default function CreatePlanButton({ page }: Page) {
       setIsLoading(false);
     } else {
       if (error instanceof Response) {
+        console.log("실행 확인1");
         if (error.status === 401) {
+          console.log("실행 확인2");
           alert("로그인이 필요한 서비스 입니다.");
           setIsLoading(false);
         } else {
+          console.log("실행 확인5");
           alert(`${error.status}에러:${error.statusText}`);
           setIsLoading(false);
         }

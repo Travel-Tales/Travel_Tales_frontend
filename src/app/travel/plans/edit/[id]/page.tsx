@@ -243,7 +243,6 @@ export default function TravelPlanCreatePage({
     if (dates.length) {
       const resultTabContent = dates.map((date) => {
         let found = false;
-
         // tabContent 배열을 순회하면서 일치하는 id를 찾음
         for (let i = 0; i < tabContent.length; i++) {
           if (date.id === tabContent[i].id) {
@@ -263,7 +262,10 @@ export default function TravelPlanCreatePage({
         }
       });
 
-      resultTabContent[0] && setSelectedTab(resultTabContent[0].id);
+      if (resultTabContent[0]) {
+        setSelectedTab(resultTabContent[0].id);
+        selectedTabRef.current = resultTabContent[0].id;
+      }
       setTabContent(resultTabContent as TabContent[]);
     }
   };
@@ -510,7 +512,6 @@ export default function TravelPlanCreatePage({
       // DOMNodeInserted 리스너 제거
       quill.removeEventListener("DOMNodeInserted", () => {});
     }
-
     return () => {
       if (quill) {
         quill.removeEventListener("DOMNodeInserted", () => {});
@@ -585,11 +586,12 @@ export default function TravelPlanCreatePage({
   //   selectedTabRef.current = selectedTab;
   // }, [selectedTab]);
 
+  //! 여기서 에러남
   //* 마크다운 컨트롤
-  const handleMarkdown = (e: string, id: number) => {
+  const handleMarkdown = (e: string) => {
     setTabContent((prevTabContent) =>
       prevTabContent.map((value) => {
-        if (value.id === id) {
+        if (value.id === selectedTab && value.markdown !== e) {
           return { ...value, markdown: e };
         } else {
           return value;
@@ -809,8 +811,11 @@ export default function TravelPlanCreatePage({
                       // if (currentTabContent) {
                       // handleMarkdown(e, selectedTabRef.current);
                       // }
-                      if (selectedTabRef.current !== null) {
-                        handleMarkdown(e, selectedTabRef.current);
+                      if (
+                        selectedTab !== null &&
+                        selectedTab === selectedTabRef.current
+                      ) {
+                        handleMarkdown(e);
                       }
                     }}
                     modules={modules}

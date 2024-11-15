@@ -76,7 +76,7 @@ export default function Header() {
               width={180}
               height={38}
               priority={true}
-              style={{ width: "auto", height: "auto" }}
+              style={{ width: "auto", height: "auto", maxWidth: "80%" }}
             />
           </Link>
         </h1>

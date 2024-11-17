@@ -99,8 +99,10 @@ const createApiClient = (baseUrl: string | undefined) => {
       //: api 요청 중 오류 발생 throw Error 받는 곳
       console.error("API 요청 중 오류 발생:", error);
       if (url === "/api/post" && apiResponse.statusText === "Unauthorized") {
+        console.log("dkdk", apiResponse);
         throw apiResponse;
       }
+      console.log("!!!", error);
       throw error; // 필요에 따라 호출자에게 오류를 다시 던질 수 있음
     }
   };
@@ -108,7 +110,16 @@ const createApiClient = (baseUrl: string | undefined) => {
   return {
     //: options에는 header제외 모든 내용
     get: (url: string, options: any, headers: any) =>
-      apiFetch(url, { ...options, method: "GET", cache: "no-store" }, headers),
+      apiFetch(
+        url,
+        {
+          ...options,
+          method: "GET",
+          cache: "no-store",
+          credentials: "include",
+        },
+        headers
+      ),
     post: (url: string, options: any, headers: any) =>
       apiFetch(
         url,
@@ -116,6 +127,7 @@ const createApiClient = (baseUrl: string | undefined) => {
           ...options,
           method: "POST",
           cache: "no-store",
+          credentials: "include",
         },
         headers
       ),
@@ -126,13 +138,19 @@ const createApiClient = (baseUrl: string | undefined) => {
           ...options,
           method: "PATCH",
           cache: "no-store",
+          credentials: "include",
         },
         headers
       ),
     delete: (url: string, options: any, headers: any) =>
       apiFetch(
         url,
-        { ...options, method: "DELETE", cache: "no-store" },
+        {
+          ...options,
+          method: "DELETE",
+          cache: "no-store",
+          credentials: "include",
+        },
         headers
       ),
   };

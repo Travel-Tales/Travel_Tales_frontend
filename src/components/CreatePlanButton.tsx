@@ -80,7 +80,7 @@ export default function CreatePlanButton({ page }: Page) {
 
   const movePage = async () => {
     const { error, statusExpressText } = await createPlan(defaultData);
-
+    console.log("fdfd");
     if (statusExpressText === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
       setIsLoading(false);

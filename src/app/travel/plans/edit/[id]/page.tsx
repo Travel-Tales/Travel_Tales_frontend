@@ -735,6 +735,7 @@ export default function TravelPlanCreatePage({
                 alt="대표사진 미리보기"
                 fill
                 priority={true}
+                unoptimized={true}
                 className="object-contain " // 비율 유지하며 잘라내기
                 sizes="320px" // 고정 너비
               />

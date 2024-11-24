@@ -65,6 +65,8 @@ export default function LoginPage() {
               height={20}
               alt="Kakao"
               className="sm:w-[25px] sm:h-[25px] w-[18px] h-[18px] mr-3"
+              unoptimized={true}
+              priority={true} // 우선 로드 설정
             />
             <span className={`text-black-85 sm:text-[18px] text-[14px]`}>
               카카오 로그인
@@ -82,6 +84,8 @@ export default function LoginPage() {
               className="sm:w-[30px] sm:h-[30px] w-[18px] h-[18px] sm:mr-[30px] mr-[24px]"
               width={20}
               height={20}
+              unoptimized={true}
+              priority={true} // 우선 로드 설정
             />
             <span
               className={`text-black-54 ${roboto.className} sm:text-[18px] text-[14px]`}

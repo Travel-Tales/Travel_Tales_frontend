@@ -300,8 +300,7 @@ export default function TravelPlansDetailPage({
                     width={300}
                     height={300}
                     alt={info.thumbnail}
-                    className="mx-auto lg:mx-0"
-                    style={{ width: "auto", height: "auto" }}
+                    unoptimized={true}
                     priority={true} // 우선 로드 설정
                   />
                 </div>

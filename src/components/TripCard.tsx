@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import Image, { ImageLoaderProps } from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import thumbnailImg from "./../../public/thumbnail-img.webp";
 import useStore from "@/store/store";
@@ -63,6 +63,10 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     }
   };
 
+  const myLoader = ({ src, width, quality = 75 }: ImageLoaderProps) => {
+    return `${src}?w=${width}&q=${quality}`;
+  };
+
   // 개별 카드 컴포넌트
   const TripCardItem = ({ item }: { item: List }) => (
     <li
@@ -72,11 +76,14 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     >
       <div className="relative card">
         <Image
+          loader={item.thumbnail ? myLoader : undefined}
           src={item.thumbnail || thumbnailImg}
           width={640}
           height={428}
           alt="계획 리스트 썸네일"
+          // placeholder="blur" // Optional blur-up while loading
           priority={true} // 우선 로드 설정
+          unoptimized={true}
           className="object-cover"
         />
       </div>

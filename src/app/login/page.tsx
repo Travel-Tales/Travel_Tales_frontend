@@ -38,14 +38,11 @@ export default function LoginPage() {
           <h2 className="h2 a11y-hidden">로그인페이지</h2>
           <div>
             <h2 className="font-bold text-2xl text-center text-main-color mb-2">
-              <Image
-                src={logo}
+              <img
+                src="./main-logo.png"
                 alt="logo"
-                width={200}
-                height={100}
-                priority={true}
                 className="mx-auto"
-                style={{ width: "auto", height: "auto" }}
+                style={{ width: "200px" }}
               />
               Login
             </h2>
@@ -59,7 +56,7 @@ export default function LoginPage() {
            py-3 px-4 hover:shadow-xs transition m-auto sm:w-72 sm:mb-8 mb-4 w-[211px]"
             onClick={clickKakaoLogin}
           >
-            <Image
+            {/* <Image
               src={kakaoSymbol} // 카카오 로고 URL
               width={20}
               height={20}
@@ -67,6 +64,11 @@ export default function LoginPage() {
               className="sm:w-[25px] sm:h-[25px] w-[18px] h-[18px] mr-3"
               unoptimized={true}
               priority={true} // 우선 로드 설정
+            /> */}
+            <img
+              src="./kakao-symbol.png"
+              alt="Kakao"
+              className="sm:w-[25px] sm:h-[25px] w-[18px] h-[18px] mr-3"
             />
             <span className={`text-black-85 sm:text-[18px] text-[14px]`}>
               카카오 로그인
@@ -78,7 +80,7 @@ export default function LoginPage() {
           py-2 px-4 shadow-md hover:shadow-xs transition m-auto sm:w-72 w-[211px] justify-between"
             onClick={clickGoogleLogin}
           >
-            <Image
+            {/* <Image
               src={googleSymbol}
               alt="Google"
               className="sm:w-[30px] sm:h-[30px] w-[18px] h-[18px] sm:mr-[30px] mr-[24px]"
@@ -86,6 +88,11 @@ export default function LoginPage() {
               height={20}
               unoptimized={true}
               priority={true} // 우선 로드 설정
+            /> */}
+            <img
+              src="./g-logo.png"
+              alt="Google"
+              className="sm:w-[30px] sm:h-[30px] w-[18px] h-[18px] sm:mr-[30px] mr-[24px]"
             />
             <span
               className={`text-black-54 ${roboto.className} sm:text-[18px] text-[14px]`}

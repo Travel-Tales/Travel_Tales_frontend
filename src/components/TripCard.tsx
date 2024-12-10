@@ -78,10 +78,11 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
         <Image
           loader={item.thumbnail ? myLoader : undefined}
           src={item.thumbnail || thumbnailImg}
-          width={640}
-          height={428}
+          // width={640}
+          // height={428}
+          fill
           alt="계획 리스트 썸네일"
-          // placeholder="blur" // Optional blur-up while loading
+          placeholder="blur" // Optional blur-up while loading
           priority={true} // 우선 로드 설정
           unoptimized={true}
           className="object-cover"

@@ -6,7 +6,7 @@ import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
 import loadingStore from "@/store/loadingStore";
 
-interface DefaultData {
+interface DefaultPlanData {
   title: string;
   content: string;
   travelArea: string;
@@ -16,6 +16,13 @@ interface DefaultData {
   startDate: Date;
   endDate: Date;
   visibilityStatus: string;
+}
+
+interface DefaultReviewData {
+  postId: number;
+  title: string;
+  content: string;
+  thumbnail: string;
 }
 
 type Page = { page: string };
@@ -36,7 +43,7 @@ export default function CreatePostButton({ page }: Page) {
   let planId: number;
   let reviewId: number;
 
-  const defaultData = {
+  const defaultPlanData = {
     title: "",
     content: "",
     travelArea: "",
@@ -48,7 +55,16 @@ export default function CreatePostButton({ page }: Page) {
     visibilityStatus: "Public",
   };
 
-  const createPost = async (defaultData: DefaultData) => {
+  const defaultReviewData = {
+    postId: 0,
+    title: "",
+    content: "",
+    thumbnail: "",
+  };
+
+  const createPost = async (
+    defaultData: DefaultReviewData | DefaultPlanData
+  ) => {
     setIsLoading(true);
     let apiPath = "";
     try {
@@ -92,7 +108,7 @@ export default function CreatePostButton({ page }: Page) {
   const router = useRouter();
 
   const createPlanPost = async () => {
-    const { error, statusExpressText } = await createPost(defaultData);
+    const { error, statusExpressText } = await createPost(defaultPlanData);
     if (statusExpressText === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
       setIsLoading(false);
@@ -110,7 +126,7 @@ export default function CreatePostButton({ page }: Page) {
   };
 
   const createReviewPost = async () => {
-    const { error, statusExpressText } = await createPost(defaultData);
+    const { error, statusExpressText } = await createPost(defaultReviewData);
     if (statusExpressText === "success" && reviewId) {
       router.push(`/travel/reviews/edit/${reviewId}`);
       setIsLoading(false);

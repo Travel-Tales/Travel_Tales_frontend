@@ -18,12 +18,11 @@ interface DefaultPlanData {
   visibilityStatus: string;
 }
 
-interface DefaultReviewData {
-  postId: number;
-  title: string;
-  content: string;
-  thumbnail: string;
-}
+// interface DefaultReviewData {
+//   title: string;
+//   content: string;
+//   thumbnail: string;
+// }
 
 type Page = { page: string };
 
@@ -41,7 +40,7 @@ export default function CreatePostButton({ page }: Page) {
   });
 
   let planId: number;
-  let reviewId: number;
+  // let reviewId: number;
 
   const defaultPlanData = {
     title: "",
@@ -55,16 +54,13 @@ export default function CreatePostButton({ page }: Page) {
     visibilityStatus: "Public",
   };
 
-  const defaultReviewData = {
-    postId: 0,
-    title: "",
-    content: "",
-    thumbnail: "",
-  };
+  // const defaultReviewData = {
+  //   title: "",
+  //   content: "",
+  //   thumbnail: "",
+  // };
 
-  const createPost = async (
-    defaultData: DefaultReviewData | DefaultPlanData
-  ) => {
+  const createPost = async (defaultData: DefaultPlanData) => {
     setIsLoading(true);
     let apiPath = "";
     try {
@@ -74,8 +70,6 @@ export default function CreatePostButton({ page }: Page) {
       const options = { body: JSON.stringify(defaultData) };
       if (page === "main" || page === "plan") {
         apiPath = "/api/post";
-      } else if (page === "review") {
-        apiPath = "/api/review";
       }
       const { data, accessToken } = await apiClient.post(
         apiPath,
@@ -85,9 +79,6 @@ export default function CreatePostButton({ page }: Page) {
       if (page === "main" || page === "plan") {
         setPlanId(data.data.id);
         planId = data.data.id;
-      } else if (page === "review") {
-        setPlanId(data.data.id);
-        reviewId = data.data.id;
       }
       if (accessToken !== "null") {
         setAccessToken(accessToken);
@@ -109,6 +100,7 @@ export default function CreatePostButton({ page }: Page) {
 
   const createPlanPost = async () => {
     const { error, statusExpressText } = await createPost(defaultPlanData);
+
     if (statusExpressText === "success" && planId) {
       router.push(`/travel/plans/edit/${planId}`);
       setIsLoading(false);
@@ -125,23 +117,24 @@ export default function CreatePostButton({ page }: Page) {
     }
   };
 
-  const createReviewPost = async () => {
-    const { error, statusExpressText } = await createPost(defaultReviewData);
-    if (statusExpressText === "success" && reviewId) {
-      router.push(`/travel/reviews/edit/${reviewId}`);
-      setIsLoading(false);
-    } else {
-      if (error instanceof Response) {
-        if (error.status === 401) {
-          alert("로그인이 필요한 서비스 입니다.");
-          setIsLoading(false);
-        } else {
-          alert(`${error.status}에러:${error.statusText}`);
-          setIsLoading(false);
-        }
-      }
-    }
-  };
+  // const createReviewPost = async () => {
+  //   const { error, statusExpressText } = await createPost(defaultReviewData);
+
+  //   if (statusExpressText === "success" && reviewId) {
+  //     router.push(`/travel/reviews/edit/${reviewId}`);
+  //     setIsLoading(false);
+  //   } else {
+  //     if (error instanceof Response) {
+  //       if (error.status === 401) {
+  //         alert("로그인이 필요한 서비스 입니다.");
+  //         setIsLoading(false);
+  //       } else {
+  //         alert(`${error.status}에러:${error.statusText}`);
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (page === "main") {
@@ -157,13 +150,6 @@ export default function CreatePostButton({ page }: Page) {
         style2: "custom-button2",
         text: "게시물 작성",
         clickFunc: createPlanPost,
-      });
-    } else if (page === "review") {
-      setButtonText({
-        style1: "justify-end mb-4",
-        style2: "custom-button2",
-        text: "게시물 작성",
-        clickFunc: createReviewPost,
       });
     }
   }, []);

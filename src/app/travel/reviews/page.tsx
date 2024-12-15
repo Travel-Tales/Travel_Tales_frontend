@@ -53,7 +53,7 @@ export default async function TravelReviewList() {
         <SearchBar />
         <Category page={"review"} />
         <section>
-          <CreatePostButton page={"review"} />
+          {/* <CreatePostButton page={"review"} /> */}
           <TripCard list={jsonData} accessToken={accessToken} page={"review"} />
         </section>
       </section>

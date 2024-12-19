@@ -97,7 +97,7 @@ export default function CreatePlanButton({ page }: Page) {
   return (
     <div
       className={`flex ${
-        page === "main" ? "justify-center container" : "justify-end mb-4"
+        page === "main" ? "justify-center" : "justify-end mb-4"
       }`}
     >
       <button

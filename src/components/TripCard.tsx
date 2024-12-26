@@ -71,7 +71,8 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const TripCardItem = ({ item }: { item: List }) => (
     <li
       key={item.id}
-      className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer"
+      className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
+      transition-all duration-200 hover:-translate-y-2"
       onClick={() => handleDetailNavigation(item.id)}
     >
       <div className="relative card">
@@ -82,7 +83,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
           // height={428}
           fill
           alt="계획 리스트 썸네일"
-          placeholder="blur" // Optional blur-up while loading
+          // placeholder="blur" // Optional blur-up while loading
           priority={true} // 우선 로드 설정
           unoptimized={true}
           className="object-cover"

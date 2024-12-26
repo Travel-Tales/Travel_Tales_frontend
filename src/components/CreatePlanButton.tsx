@@ -103,10 +103,13 @@ export default function CreatePlanButton({ page }: Page) {
       <button
         onClick={movePage}
         className={`${
-          page === "main" ? "custom-button" : "custom-button2"
+          page === "main"
+            ? "custom-button main-btn shadow-sm"
+            : "custom-button2 shadow-sm transition-all duration-300 hover:bg-blue-700"
         } xs:text-xs`}
       >
         {page === "main" ? "새로운 여행 계획 작성하기" : "게시물 작성"}
+        {page === "main" && <div className="fill-one"></div>}
       </button>
     </div>
   );

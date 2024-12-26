@@ -98,7 +98,10 @@ const createApiClient = (baseUrl: string | undefined) => {
     } catch (error) {
       //: api 요청 중 오류 발생 throw Error 받는 곳
       console.error("API 요청 중 오류 발생:", error);
-      if (url === "/api/post" && apiResponse.status === 401) {
+      if (
+        (url === "/api/post" || url === "/api/review") &&
+        apiResponse.status === 401
+      ) {
         throw apiResponse;
       }
       throw error; // 필요에 따라 호출자에게 오류를 다시 던질 수 있음

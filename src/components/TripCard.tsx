@@ -49,7 +49,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   useEffect(() => {
     if (page === "plans") {
       setPlans(list);
-    } else if (page === "review") {
+    } else if (page === "reviews") {
       setPlans(list);
     } else if (page === "mypage") {
       setPlans(list);
@@ -88,7 +88,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
           // height={428}
           fill
           alt="계획 리스트 썸네일"
-          placeholder="blur" // Optional blur-up while loading
+          // placeholder="blur"
           // priority={true} // 우선 로드 설정
           // unoptimized={true}
           className="object-cover rounded-t"
@@ -137,7 +137,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
                     createReview(item.id);
                   }}
                 >
-                  <a href="#action1">여행 리뷰 쓰기</a>
+                  <button type="button">여행 리뷰 쓰기</button>
                 </li>
               </ul>
             )}

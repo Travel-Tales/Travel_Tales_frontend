@@ -1,54 +1,342 @@
-import React from "react";
+"use client";
 
-export default function TravelReviewDetailPage() {
+import React, { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
+import useStore from "@/store/store";
+import thumbnail from "./../../../../../../public/thumbnail-img.webp";
+import deleteButton from "./../../../../../../public/delete.png";
+import editButton from "./../../../../../../public/edit.png";
+import { apiClient } from "@/service/interceptor";
+import { useRouter, useSearchParams } from "next/navigation";
+import DOMPurify from "dompurify";
+
+interface TabContent {
+  budget: string;
+  id: number;
+  lodging: string;
+  markdown: string;
+}
+
+interface Info {
+  budget: string;
+  content: TabContent[];
+  createdAt: string;
+  endDate: string;
+  id: number;
+  startDate: string;
+  thumbnail: string;
+  title: string;
+  travelArea: string;
+  travelerCount: number;
+  updatedAt: string;
+  visibilityStatus: string;
+}
+
+export default function TravelReviewDetailPage({
+  params: { id },
+}: {
+  params: { id: number };
+}) {
+  // const info = await getDetailInfo();
+  const [info, setInfo] = useState<Info | null>(null);
+  const setAccessToken = useStore((state) => state.setAccessToken);
+
+  const [content, setContent] = useState<TabContent | null>(null);
+  const [tabList, setTabList] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(1);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const params = searchParams.get("page");
+
+  async function getDetailInfo() {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/review/${id}`,
+        {
+          cache: "no-store",
+        }
+      );
+      const json = await response.json();
+      const data = json.data;
+
+      const {
+        travelPost: {
+          travelArea = "지역없음",
+          travelerCount = 0,
+          startDate = "",
+          endDate = "",
+          visibilityStatus = "",
+        } = {},
+        thumbnail: rawThumbnail,
+        title: rawTitle,
+      } = data;
+
+      const finalThumbnail = rawThumbnail || thumbnail;
+      const title = rawTitle || "제목없음";
+
+      if (data.content) {
+        const parseContent = JSON.parse(data.content);
+        const resultTapList = parseContent.map((value: any) => {
+          const dateId = value.id.toString();
+          const year = dateId.substr(0, 4);
+          const month = dateId.substr(4, 2);
+          const day = dateId.substr(6, 2);
+          const date = `${year}-${month}-${day}`;
+          return { tabName: date, id: value.id };
+        });
+        setTabList(resultTapList);
+        setSelectedTab(resultTapList[0].id);
+
+        return {
+          ...data,
+          title,
+          content: parseContent,
+          travelArea,
+          travelerCount,
+          startDate,
+          endDate,
+          visibilityStatus,
+          finalThumbnail,
+        };
+      }
+      return {
+        ...data,
+        title,
+        content: "",
+        travelArea,
+        travelerCount,
+        startDate,
+        endDate,
+        visibilityStatus,
+        finalThumbnail,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const initialData = await getDetailInfo();
+      setInfo(initialData);
+    };
+    fetchData();
+  }, []);
+
+  const formatingDate = (date: string) => {
+    const newDate = new Date(date);
+    const year = newDate.getFullYear();
+    const month = newDate.getMonth();
+    const day = newDate.getDate();
+
+    return (
+      year +
+      "." +
+      (+month < 9 ? "0" + (month + 1) : month + 1) +
+      "." +
+      (day < 10 ? "0" + day : day)
+    );
+  };
+
+  const deletePost = async () => {
+    if (confirm("삭제하시겠습니까?") === true) {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const options = {};
+      const { data, accessToken } = await apiClient.delete(
+        `/api/post/${id}`,
+        options,
+        headers
+      );
+      if (accessToken !== "null") {
+        setAccessToken(accessToken);
+      }
+      if (data.success) {
+        alert("삭제되었습니다.");
+        router.replace("/mypage"); // 이전 페이지 URL로 대체
+      }
+    } else {
+      return;
+    }
+  };
+
+  const editPost = async () => {
+    router.push(`/travel/plans/edit/${id}`);
+  };
+
+  useEffect(() => {
+    if (info) {
+      const selectTabContent = info.content.filter((value) => {
+        return selectedTab === value.id;
+      });
+      setContent(selectTabContent[0]);
+    }
+  }, [selectedTab]);
+
   return (
     <main>
-      <section className="page-section py-14">
-        <h2 className="h2 a11y-hidden">리뷰 상세 페이지</h2>
+      {/* <p>Status: {isConnected ? "connected" : "disconnected"}</p> */}
+      <div className="max-w-5xl mx-auto px-10 py-14 box-border">
+        <section className="relative">
+          <h2 className="h2 a11y-hidden">{id}번 계획 상세페이지</h2>
 
-        <h3 className="text-3xl font-bold pb-3 flex items-center">
-          당일치기 당진 여행 후기!{" "}
-          <span
-            className="ml-2 bg-gray-100 text-xs text-gray-500
-           rounded-full px-3 py-1"
-          >
-            Public
-          </span>
-        </h3>
-        <article className="">
-          <p className="pb-2">
-            <span>지역: </span>국내
-          </p>
-          <p className="pb-2">
-            <span>인원: </span>4명
-          </p>
-          <p className="pb-2">
-            <span>날짜: </span>2024.05.12 ~ 2024.05.12
-          </p>
-          <p className="pb-2">
-            <span>총 예산: </span>340,000원
-          </p>
-          <p></p>
-          <div className="flex items-center space-x-2 pb-2">
-            <span className="">키워드:</span>
-            <div className="flex space-x-2">
-              <span
-                className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
-                aria-label="당진 해시태그"
+          {info && (
+            <>
+              <h2
+                className="lg:w-9/12 text-3xl font-bold pb-3 flex items-center
+       xs-max:text-2xl"
               >
-                #당진
-              </span>
-              <span
-                className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
-                aria-label="당일치기 해시태그"
-              >
-                #당일치기
-              </span>
-            </div>
-          </div>
-        </article>
-        <article className="text-center">본문내용</article>
-      </section>
+                {info.title ? info.title : "제목없음"}
+                <span
+                  className={`ml-2  text-xs
+
+              rounded-full px-3 py-1 ${
+                info.visibilityStatus === "Public"
+                  ? "bg-gray-100 text-gray-500"
+                  : "bg-red-100 text-red-500"
+              }`}
+                >
+                  {info.visibilityStatus}
+                </span>
+              </h2>
+              <article className="xs-max:text-sm mb-20">
+                <p className="pb-2">
+                  <span>지역: </span>
+                  {info.travelArea ? info.travelArea : "지역없음"}
+                </p>
+                <p className="pb-2">
+                  <span>인원: </span>
+                  {info.travelerCount}명
+                </p>
+                <p className="pb-2">
+                  <span>날짜: </span>
+                  {formatingDate(info.startDate)} ~{" "}
+                  {formatingDate(info.endDate)}
+                </p>
+                {/* <p className="pb-2">
+                  <span>총 예산: </span>
+                  {`${info.budget}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
+                </p> */}
+                <p></p>
+                {/* <div className="flex items-center space-x-2 pb-2">
+                  <span className="">키워드:</span>
+                  <div className="flex space-x-2">
+                    <span
+                      className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
+                      aria-label="당진 해시태그"
+                    >
+                      #당진
+                    </span>
+                    <span
+                      className="bg-blue-100 text-xs text-blue-500 rounded-full px-3 py-1"
+                      aria-label="당일치기 해시태그"
+                    >
+                      #당일치기
+                    </span>
+                  </div>
+                </div> */}
+                <div className="">
+                  <span className="">대표이미지</span>
+                  <Image
+                    src={info.thumbnail || thumbnail}
+                    width={300}
+                    height={300}
+                    alt={info.thumbnail}
+                    unoptimized={true}
+                    priority={true} // 우선 로드 설정
+                  />
+                </div>
+              </article>
+              <div>
+                <ul className="flex border-b overflow-x-auto max-w-full border-gray-400">
+                  {tabList.map((value: any) => (
+                    <li
+                      key={value.id}
+                      className={`box-border w-fit ${
+                        selectedTab === value.id
+                          ? "border border-b-0 border-gray-400 rounded-tr-sm rounded-tl-sm"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        className="text-sm block w-full p-2 text-center whitespace-nowrap"
+                        type="button"
+                        onClick={() => setSelectedTab(value.id)}
+                      >
+                        {value.tabName}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {content ? (
+                <article className="preview mb-8 xs-max:text-sm mx-auto border-solid border-b py-8">
+                  {/* <MarkdownRender markdown={info.content} /> */}
+                  <div className="mb-10 border-b pb-8">
+                    <p className="mb-2">
+                      예산: {content.budget ? content.budget : 0}원
+                    </p>
+                    <p>숙소: {content.lodging ? content.lodging : "없음"}</p>
+                  </div>
+
+                  {process && (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(String(content.markdown)),
+                      }}
+                    />
+                  )}
+                </article>
+              ) : (
+                <div className="pt-10">내용없음</div>
+              )}
+
+              {params === "my" ? (
+                <div className="lg:absolute lg:top-0 lg:right-0 flex justify-end">
+                  <button
+                    onClick={editPost}
+                    className="lg:px-0 lg:py-3 lg:mr-6
+
+         lg:rounded-none lg:bg-transparent lg:text-black
+         px-8 py-3 mr-3 rounded bg-blue-500 text-white
+         flex items-center text-sm"
+                  >
+                    <Image
+                      src={editButton}
+                      width={21}
+                      height={21}
+                      alt="edit"
+                      className="mr-1 hidden lg:block"
+                    />
+                    수정하기
+                  </button>
+                  <button
+                    onClick={deletePost}
+                    className="lg:px-0 lg:py-3 lg:mr-0
+           lg:rounded-none lg:bg-transparent lg:text-black
+           px-8 py-3 rounded bg-zinc-400 text-white
+          flex items-center text-sm"
+                  >
+                    <Image
+                      src={deleteButton}
+                      width={20}
+                      height={20}
+                      alt="delete"
+                      className="mr-1 hidden lg:block"
+                    />
+                    삭제하기
+                  </button>
+                </div>
+              ) : (
+                <></>
+              )}
+            </>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

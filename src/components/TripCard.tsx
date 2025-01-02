@@ -57,7 +57,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   }, []);
 
   // 상세 페이지로 이동하는 함수
-  const handleDetailNavigation = (e: any, id: number) => {
+  const handleDetailNavigation = (id: number) => {
     if (page === "mypage") {
       router.push(`/travel/plans/detail/${id}?page=my`);
     } else {
@@ -77,8 +77,11 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const TripCardItem = ({ item }: { item: List }) => (
     <li
       key={item.id}
-      className="rounded shadow-md text-left hover:cursor-pointer"
-      onClick={(e) => handleDetailNavigation(e, item.id)}
+      // className="rounded shadow-md text-left hover:cursor-pointer"
+      // onClick={(e) => handleDetailNavigation(e, item.id)}
+      className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
+      transition-all duration-200 hover:-translate-y-2"
+      onClick={() => handleDetailNavigation(item.id)}
     >
       <div className="relative card">
         <Image

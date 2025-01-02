@@ -21,7 +21,7 @@
 }
 
 .custom-button {
-  @apply bg-blue-950 text-white px-4 py-2 rounded-md;
+  @apply text-white px-8 py-3 rounded-md;
 }
 .custom-button2 {
   @apply bg-blue-950 text-white px-4 py-2 rounded-md text-xs;

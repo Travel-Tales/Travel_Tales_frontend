@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import SearchBar from "@/components/SearchBar";
 import TripCard from "@/components/TripCard";
 import Category from "@/components/Category";
-import CreatePostButton from "@/components/CreatePostButton";
+import CreatePostButton from "@/components/CreatePlanButton";
 
 export const metadata: Metadata = {
   title: "Plans",

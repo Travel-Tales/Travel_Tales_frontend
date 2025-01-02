@@ -4,7 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import TripCard from "@/components/TripCard";
 import { recommandPlans } from "@/data/temporary";
 import Category from "@/components/Category";
-import CreatePostButton from "@/components/CreatePostButton";
+import CreatePostButton from "@/components/CreatePlanButton";
 
 export const metadata: Metadata = {
   title: "Reviews",

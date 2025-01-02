@@ -1,5 +1,5 @@
 import React from "react";
-import CreatePostButton from "./CreatePostButton";
+import CreatePostButton from "./CreatePlanButton";
 
 export default async function Banner() {
   return (

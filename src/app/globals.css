@@ -9,6 +9,8 @@
   }
 } */
 
+/* reset */
+
 * {
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
@@ -30,6 +32,8 @@ main {
 footer {
   height: 120px; /* footer 높이 */
 }
+
+/* reset */
 
 @media all and (max-width: 469px) {
   footer {

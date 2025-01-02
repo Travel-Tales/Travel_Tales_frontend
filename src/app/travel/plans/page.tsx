@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import SearchBar from "@/components/SearchBar";
 import TripCard from "@/components/TripCard";
 import Category from "@/components/Category";
-import CreatePlanButton from "@/components/CreatePlanButton";
+import CreatePostButton from "@/components/CreatePlanButton";
 
 export const metadata: Metadata = {
   title: "Plans",
@@ -48,7 +48,7 @@ export default async function TravelPlansPage() {
         <SearchBar />
         <Category page={"plans"} />
         <section>
-          <CreatePlanButton page={"plan"} />
+          <CreatePostButton page={"plan"} />
           <TripCard list={jsonData} accessToken={accessToken} page={"plans"} />
         </section>
       </section>

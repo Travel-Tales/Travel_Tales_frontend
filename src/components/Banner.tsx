@@ -1,5 +1,5 @@
 import React from "react";
-import CreatePlanButton from "./CreatePlanButton";
+import CreatePostButton from "./CreatePlanButton";
 
 export default async function Banner() {
   return (
@@ -11,7 +11,7 @@ bg-center md:bg-bottom-1 p-10 sm:p-20 xs:p-7 text-white bg-no-repeat"
       <p className="my-5 text-sm sm:text-base">
         다음 여행을 Travel Talse와 쉽게 계획하세요
       </p>
-      <CreatePlanButton page={"main"} />
+      <CreatePostButton page={"main"} />
     </section>
   );
 }

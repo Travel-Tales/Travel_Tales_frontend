@@ -34,3 +34,16 @@
 .input-border {
   @apply border border-gray-300 rounded-md;
 }
+
+.additional-menu button span {
+  width: 4px;
+  height: 4px;
+  display: inline-block;
+  background-color: black;
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+
+.additional-menu-options {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 15px -2px rgb(0 0 0 / 0.1);
+}

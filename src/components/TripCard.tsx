@@ -37,6 +37,8 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const setPlans = plansStore((state) => state.setPlans);
   const selectedCategory = plansStore((state) => state.selectedCategory);
 
+  const [isOpen, setIsOpen] = useState(false);
+
   // Access token 설정
   useEffect(() => {
     if (accessToken && accessToken !== "null") {
@@ -47,7 +49,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   useEffect(() => {
     if (page === "plans") {
       setPlans(list);
-    } else if (page === "review") {
+    } else if (page === "reviews") {
       setPlans(list);
     } else if (page === "mypage") {
       setPlans(list);
@@ -67,10 +69,16 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     return `${src}?w=${width}&q=${quality}`;
   };
 
+  const createReview = (id: number) => {
+    router.push(`/travel/reviews/edit/${id}`);
+  };
+
   // 개별 카드 컴포넌트
   const TripCardItem = ({ item }: { item: List }) => (
     <li
       key={item.id}
+      // className="rounded shadow-md text-left hover:cursor-pointer"
+      // onClick={(e) => handleDetailNavigation(e, item.id)}
       className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
       transition-all duration-200 hover:-translate-y-2"
       onClick={() => handleDetailNavigation(item.id)}
@@ -83,17 +91,61 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
           // height={428}
           fill
           alt="계획 리스트 썸네일"
-          // placeholder="blur" // Optional blur-up while loading
-          priority={true} // 우선 로드 설정
-          unoptimized={true}
-          className="object-cover"
+          // placeholder="blur"
+          // priority={true} // 우선 로드 설정
+          // unoptimized={true}
+          className="object-cover rounded-t"
         />
       </div>
-      <div className="p-3">
+      <div className="p-3 relative">
         <p className="text-sm sm:text-base">{item.title || "제목없음"}</p>
         <p className="font-semibold text-xs sm:text-sm">
           {item.travelArea || "지역없음"}
         </p>
+        {page === "mypage" && (
+          <>
+            <nav
+              aria-label="additional options"
+              className={`additional-menu absolute top-0 right-0 p-4 ${
+                isOpen ? "z-1" : ""
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen((prev: boolean) => !prev);
+              }}
+            >
+              <button
+                id="menu-button"
+                aria-controls="menu-options"
+                className="flex flex-col"
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            </nav>
+            {isOpen && (
+              <ul
+                id="menu-options"
+                role="menu"
+                className={`additional-menu-options absolute top-9 right-0 bg-white 
+              rounded-md px-3 py-2 text-sm ${isOpen ? "z-10" : ""}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <li
+                  role="menuitem"
+                  className="hover:bg-slate-100 p-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    createReview(item.id);
+                  }}
+                >
+                  <button type="button">여행 리뷰 쓰기</button>
+                </li>
+              </ul>
+            )}
+          </>
+        )}
       </div>
     </li>
   );

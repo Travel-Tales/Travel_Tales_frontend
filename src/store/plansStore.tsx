@@ -19,7 +19,7 @@ type List = {
 };
 
 interface plansState {
-  plans: List[] | [];
+  plans: List[] | null;
   setPlans: (plans: any) => void;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
@@ -30,7 +30,7 @@ interface plansState {
 const plansStore = create<plansState>()(
   devtools(
     (set) => ({
-      plans: [],
+      plans: null,
       setPlans: (plans) => set(() => ({ plans: plans })),
       selectedCategory: "전체",
       setSelectedCategory: (category) =>

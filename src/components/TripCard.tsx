@@ -73,97 +73,172 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     router.push(`/travel/reviews/edit/${id}`);
   };
 
-  // 개별 카드 컴포넌트
-  const TripCardItem = ({ item }: { item: List }) => (
-    <li
-      key={item.id}
-      // className="rounded shadow-md text-left hover:cursor-pointer"
-      // onClick={(e) => handleDetailNavigation(e, item.id)}
-      className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
-      transition-all duration-200 hover:-translate-y-2"
-      onClick={() => handleDetailNavigation(item.id)}
-    >
-      <div className="relative card">
-        <Image
-          loader={item.thumbnail ? myLoader : undefined}
-          src={item.thumbnail || thumbnailImg}
-          // width={640}
-          // height={428}
-          fill
-          alt="계획 리스트 썸네일"
-          // placeholder="blur"
-          // priority={true} // 우선 로드 설정
-          // unoptimized={true}
-          className="object-cover rounded-t"
-        />
-      </div>
-      <div className="p-3 relative">
-        <p className="text-sm sm:text-base">{item.title || "제목없음"}</p>
-        <p className="font-semibold text-xs sm:text-sm">
-          {item.travelArea || "지역없음"}
-        </p>
-        {page === "mypage" && (
-          <>
-            <nav
-              aria-label="additional options"
-              className={`additional-menu absolute top-0 right-0 p-4 ${
-                isOpen ? "z-1" : ""
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen((prev: boolean) => !prev);
-              }}
-            >
-              <button
-                id="menu-button"
-                aria-controls="menu-options"
-                className="flex flex-col"
-              >
-                <span></span>
-                <span></span>
-                <span></span>
-              </button>
-            </nav>
-            {isOpen && (
-              <ul
-                id="menu-options"
-                role="menu"
-                className={`additional-menu-options absolute top-9 right-0 bg-white 
-              rounded-md px-3 py-2 text-sm ${isOpen ? "z-10" : ""}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <li
-                  role="menuitem"
-                  className="hover:bg-slate-100 p-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    createReview(item.id);
-                  }}
-                >
-                  <button type="button">여행 리뷰 쓰기</button>
-                </li>
-              </ul>
-            )}
-          </>
-        )}
-      </div>
-    </li>
-  );
+  // // 개별 카드 컴포넌트
+  // const TripCardItem = ({ item }: { item: List }) => (
+  //   <li
+  //     key={item.id}
+  //     // className="rounded shadow-md text-left hover:cursor-pointer"
+  //     // onClick={(e) => handleDetailNavigation(e, item.id)}
+  //     className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
+  //     transition-all duration-200 hover:-translate-y-2"
+  //     onClick={() => handleDetailNavigation(item.id)}
+  //   >
+  //     <div className="relative card">
+  //       <Image
+  //         loader={item.thumbnail ? myLoader : undefined}
+  //         src={item.thumbnail || thumbnailImg}
+  //         // width={640}
+  //         // height={428}
+  //         fill
+  //         alt="계획 리스트 썸네일"
+  //         // placeholder="blur"
+  //         // priority={true} // 우선 로드 설정
+  //         // unoptimized={true}
+  //         className="object-cover rounded-t"
+  //       />
+  //     </div>
+  //     <div className="p-3 relative">
+  //       <p className="text-sm sm:text-base">{item.title || "제목없음"}</p>
+  //       <p className="font-semibold text-xs sm:text-sm">
+  //         {item.travelArea || "지역없음"}
+  //       </p>
+  //       {page === "mypage" && (
+  //         <>
+  //           <nav
+  //             aria-label="additional options"
+  //             className={`additional-menu absolute top-0 right-0 p-4 ${
+  //               isOpen ? "z-1" : ""
+  //             }`}
+  //             onClick={(e) => {
+  //               e.stopPropagation();
+  //               setIsOpen((prev: boolean) => !prev);
+  //             }}
+  //           >
+  //             <button
+  //               id="menu-button"
+  //               aria-controls="menu-options"
+  //               className="flex flex-col"
+  //             >
+  //               <span></span>
+  //               <span></span>
+  //               <span></span>
+  //             </button>
+  //           </nav>
+  //           {isOpen && (
+  //             <ul
+  //               id="menu-options"
+  //               role="menu"
+  //               className={`additional-menu-options absolute top-9 right-0 bg-white
+  //             rounded-md px-3 py-2 text-sm ${isOpen ? "z-10" : ""}`}
+  //               onClick={(e) => e.stopPropagation()}
+  //             >
+  //               <li
+  //                 role="menuitem"
+  //                 className="hover:bg-slate-100 p-1"
+  //                 onClick={(e) => {
+  //                   e.stopPropagation();
+  //                   createReview(item.id);
+  //                 }}
+  //               >
+  //                 <button type="button">여행 리뷰 쓰기</button>
+  //               </li>
+  //             </ul>
+  //           )}
+  //         </>
+  //       )}
+  //     </div>
+  //   </li>
+  // );
 
   return (
     <>
-      {plans.length ? (
+      {plans !== null && plans.length !== 0 ? (
         <ul
           className={`grid grid-cols-1 sm:grid-cols-2 
       ${path === "/" ? "md:grid-cols-2" : "md:grid-cols-3"}
       lg:grid-cols-4 gap-6`}
         >
           {plans.map((item: List) => (
-            <TripCardItem key={item.id} item={item} />
+            // <TripCardItem key={item.id} item={item} />
+            <li
+              key={item.id}
+              // className="rounded shadow-md text-left hover:cursor-pointer"
+              // onClick={(e) => handleDetailNavigation(e, item.id)}
+              className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
+            transition-all duration-200 hover:-translate-y-2"
+              onClick={() => handleDetailNavigation(item.id)}
+            >
+              <div className="relative card">
+                <Image
+                  loader={item.thumbnail ? myLoader : undefined}
+                  src={item.thumbnail || thumbnailImg}
+                  // width={640}
+                  // height={428}
+                  fill
+                  alt="계획 리스트 썸네일"
+                  // placeholder="blur"
+                  // priority={true} // 우선 로드 설정
+                  // unoptimized={true}
+                  className="object-cover rounded-t"
+                />
+              </div>
+              <div className="p-3 relative">
+                <p className="text-sm sm:text-base">
+                  {item.title || "제목없음"}
+                </p>
+                <p className="font-semibold text-xs sm:text-sm">
+                  {item.travelArea || "지역없음"}
+                </p>
+                {page === "mypage" && (
+                  <>
+                    <nav
+                      aria-label="additional options"
+                      className={`additional-menu absolute top-0 right-0 p-4 ${
+                        isOpen ? "z-1" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsOpen((prev: boolean) => !prev);
+                      }}
+                    >
+                      <button
+                        id="menu-button"
+                        aria-controls="menu-options"
+                        className="flex flex-col"
+                      >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </button>
+                    </nav>
+                    {isOpen && (
+                      <ul
+                        id="menu-options"
+                        role="menu"
+                        className={`additional-menu-options absolute top-9 right-0 bg-white 
+                    rounded-md px-3 py-2 text-sm ${isOpen ? "z-10" : ""}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <li
+                          role="menuitem"
+                          className="hover:bg-slate-100 p-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            createReview(item.id);
+                          }}
+                        >
+                          <button type="button">여행 리뷰 쓰기</button>
+                        </li>
+                      </ul>
+                    )}
+                  </>
+                )}
+              </div>
+            </li>
           ))}
         </ul>
       ) : (
-        <p>등록된 게시물이 없습니다.</p>
+        plans !== null && plans.length === 0 && <p>등록된 게시물이 없습니다.</p>
       )}
     </>
   );

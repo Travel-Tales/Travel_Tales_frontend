@@ -20,7 +20,7 @@ export default function Mypage() {
   const access = useStore((state) => state.accessToken);
   const setAccessToken = useStore((state) => state.setAccessToken);
   const setPlanId = useStore((state) => state.setPlanId);
-  const [list, setList] = useState<any>([]);
+  const [list, setList] = useState<any>(null);
   const [isEdit, setIsEdit] = useState(false);
   const [tab, setTab] = useState("나의 여행 계획서");
 
@@ -215,10 +215,8 @@ export default function Mypage() {
           ))}
         </article>
         <article className="my-5">
-          {list.length ? (
+          {list !== null && list.length !== 0 && (
             <TripCard list={list} page={"mypage"} />
-          ) : (
-            <div>작성한 게시물이 없습니다.</div>
           )}
         </article>
       </section>

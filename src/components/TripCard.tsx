@@ -68,7 +68,7 @@ export default function TripCard({
       if (tab === "나의 여행 계획서") {
         router.push(`/travel/plans/detail/${id}?page=my`);
       } else {
-        router.push(`/travel/reviews/detail/${id}`);
+        router.push(`/travel/reviews/detail/${id}?page=my`);
       }
     } else {
       router.push(`/travel/${page}/detail/${id}`);
@@ -159,6 +159,8 @@ export default function TripCard({
   //     </div>
   //   </li>
   // );
+
+  console.log(plans);
 
   return (
     <>

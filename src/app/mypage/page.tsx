@@ -44,6 +44,14 @@ export default function Mypage() {
     { id: 1, tabName: "나의 여행 리뷰" },
   ];
 
+  useEffect(() => {
+    if (tab === "나의 여행 계획서") {
+      getMyPlans();
+    } else {
+      getMyReviews();
+    }
+  }, [tab]);
+
   async function getMyPlans() {
     // 서버 컴포넌트에서 패치를 실행한다면 패치된 url을 캐싱시켜준다.
     // 하지만 최신 데이터가 필요한 순간들이 있기 때문에 그 부분은 따로 공부하자.
@@ -54,6 +62,22 @@ export default function Mypage() {
     const options = {};
     const { data, accessToken } = await apiClient.get(
       `/api/post/my-post`,
+      options,
+      headers
+    );
+    setList(data.data);
+    if (accessToken !== "null") {
+      setAccessToken(accessToken);
+    }
+  }
+
+  async function getMyReviews() {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const options = {};
+    const { data, accessToken } = await apiClient.get(
+      `/api/review/myReview`,
       options,
       headers
     );
@@ -80,36 +104,10 @@ export default function Mypage() {
     }
   }
 
-  async function getMyReviews() {
-    // const headers = {
-    //   "Content-Type": "application/json",
-    // };
-    // const options = {};
-    // const { data, accessToken } = await apiClient.get(
-    //   `/api/post/my-post`,
-    //   options,
-    //   headers
-    // );
-    // setList(data.data);
-    // if (accessToken !== "null") {
-    //   setAccessToken(accessToken);
-    // }
-
-    setList([]);
-  }
-
   useEffect(() => {
     getMyPlans();
     myProfile();
   }, []);
-
-  useEffect(() => {
-    if (tab === "나의 여행 계획서") {
-      getMyPlans();
-    } else {
-      getMyReviews();
-    }
-  }, [tab]);
 
   const onChangeUserProfile = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -216,7 +214,7 @@ export default function Mypage() {
         </article>
         <article className="my-5">
           {list !== null && list.length !== 0 && (
-            <TripCard list={list} page={"mypage"} />
+            <TripCard list={list} page={"mypage"} tab={tab} />
           )}
         </article>
       </section>

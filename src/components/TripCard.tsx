@@ -27,9 +27,15 @@ type TripCardProps = {
   list: List[];
   accessToken?: string;
   page: string;
+  tab?: string;
 };
 
-export default function TripCard({ list, accessToken, page }: TripCardProps) {
+export default function TripCard({
+  list,
+  accessToken,
+  page,
+  tab,
+}: TripCardProps) {
   const path = usePathname();
   const router = useRouter();
   const setAccessToken = useStore((state) => state.setAccessToken);
@@ -37,7 +43,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   const setPlans = plansStore((state) => state.setPlans);
   const selectedCategory = plansStore((state) => state.selectedCategory);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenId, setIsOpenId] = useState<boolean | number>(false);
 
   // Access token 설정
   useEffect(() => {
@@ -54,12 +60,16 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
     } else if (page === "mypage") {
       setPlans(list);
     }
-  }, []);
+  }, [list]);
 
   // 상세 페이지로 이동하는 함수
   const handleDetailNavigation = (id: number) => {
     if (page === "mypage") {
-      router.push(`/travel/plans/detail/${id}?page=my`);
+      if (tab === "나의 여행 계획서") {
+        router.push(`/travel/plans/detail/${id}?page=my`);
+      } else {
+        router.push(`/travel/reviews/detail/${id}?page=my`);
+      }
     } else {
       router.push(`/travel/${page}/detail/${id}`);
     }
@@ -150,6 +160,8 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
   //   </li>
   // );
 
+  console.log(plans);
+
   return (
     <>
       {plans !== null && plans.length !== 0 ? (
@@ -162,10 +174,7 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
             // <TripCardItem key={item.id} item={item} />
             <li
               key={item.id}
-              // className="rounded shadow-md text-left hover:cursor-pointer"
-              // onClick={(e) => handleDetailNavigation(e, item.id)}
-              className="rounded overflow-hidden shadow-md text-left hover:cursor-pointer
-            transition-all duration-200 hover:-translate-y-2"
+              className="rounded shadow-md text-left hover:cursor-pointer transition-all duration-200 hover:-translate-y-2"
               onClick={() => handleDetailNavigation(item.id)}
             >
               <div className="relative card">
@@ -189,16 +198,16 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
                 <p className="font-semibold text-xs sm:text-sm">
                   {item.travelArea || "지역없음"}
                 </p>
-                {page === "mypage" && (
+                {tab === "나의 여행 계획서" && (
                   <>
                     <nav
                       aria-label="additional options"
                       className={`additional-menu absolute top-0 right-0 p-4 ${
-                        isOpen ? "z-1" : ""
+                        isOpenId ? "z-1" : ""
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setIsOpen((prev: boolean) => !prev);
+                        setIsOpenId(item.id);
                       }}
                     >
                       <button
@@ -211,12 +220,12 @@ export default function TripCard({ list, accessToken, page }: TripCardProps) {
                         <span></span>
                       </button>
                     </nav>
-                    {isOpen && (
+                    {isOpenId === item.id && (
                       <ul
                         id="menu-options"
                         role="menu"
                         className={`additional-menu-options absolute top-9 right-0 bg-white 
-                    rounded-md px-3 py-2 text-sm ${isOpen ? "z-10" : ""}`}
+                    rounded-md px-3 py-2 text-sm ${isOpenId ? "z-10" : ""}`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <li

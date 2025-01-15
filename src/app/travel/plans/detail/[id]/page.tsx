@@ -75,7 +75,8 @@ export default function TravelPlansDetailPage({
         socketInstance.emit("setInit");
         socketInstance.emit("joinRoom", { postId: id });
         socketInstance.on("postUpdate", (post) => {
-          setInfo(post[0]);
+          const formatedData = formatData(post[0]);
+          setInfo(formatedData);
         });
 
         socketInstance.on("error", async (error) => {
@@ -107,7 +108,8 @@ export default function TravelPlansDetailPage({
               newSocketInstance.emit("setInit");
               newSocketInstance.emit("joinRoom", { postId: id });
               newSocketInstance.on("postUpdate", (post) => {
-                setInfo(post[0]);
+                const formatedData = formatData(post[0]);
+                setInfo(formatedData);
               });
             } catch (err) {
               console.error("Failed to refresh token:", err);
@@ -134,6 +136,40 @@ export default function TravelPlansDetailPage({
     fetchData();
   }, [access, id]);
 
+  const formatData = (data: any) => {
+    if (data.content) {
+      const parseContent = JSON.parse(data.content);
+      const resultTapList = parseContent.map((value: any) => {
+        const dateId = value.id.toString();
+        const year = dateId.substr(0, 4);
+        const month = dateId.substr(4, 2);
+        const day = dateId.substr(6, 2);
+        const date = `${year}-${month}-${day}`;
+        return { tabName: date, id: value.id };
+      });
+      setTabList(resultTapList);
+      setSelectedTab(resultTapList[0].id);
+
+      return {
+        ...data,
+        title: data.title || "제목없음",
+        content: parseContent,
+        travelArea: data.travelArea || "지역없음",
+        travelerCount: data.travelerCount || 0,
+        thumbnail: data.thumbnail || thumbnail,
+      };
+    } else {
+      return {
+        ...data,
+        title: data.title || "제목없음",
+        content: "",
+        travelArea: data.travelArea || "지역없음",
+        travelerCount: data.travelerCount || 0,
+        thumbnail: data.thumbnail || thumbnail,
+      };
+    }
+  };
+
   async function getDetailInfo() {
     try {
       const response = await fetch(
@@ -144,37 +180,7 @@ export default function TravelPlansDetailPage({
       );
       const json = await response.json();
       const data = json.data[0];
-      if (data.content) {
-        const parseContent = JSON.parse(data.content);
-        const resultTapList = parseContent.map((value: any) => {
-          const dateId = value.id.toString();
-          const year = dateId.substr(0, 4);
-          const month = dateId.substr(4, 2);
-          const day = dateId.substr(6, 2);
-          const date = `${year}-${month}-${day}`;
-          return { tabName: date, id: value.id };
-        });
-        setTabList(resultTapList);
-        setSelectedTab(resultTapList[0].id);
-
-        return {
-          ...data,
-          title: data.title || "제목없음",
-          content: parseContent,
-          travelArea: data.travelArea || "지역없음",
-          travelerCount: data.travelerCount || 0,
-          thumbnail: data.thumbnail || thumbnail,
-        };
-      } else {
-        return {
-          ...data,
-          title: data.title || "제목없음",
-          content: "",
-          travelArea: data.travelArea || "지역없음",
-          travelerCount: data.travelerCount || 0,
-          thumbnail: data.thumbnail || thumbnail,
-        };
-      }
+      return formatData(data);
     } catch (error) {
       console.log(error);
     }

@@ -147,7 +147,7 @@ export default function TravelReviewDetailPage({
       };
       const options = {};
       const { data, accessToken } = await apiClient.delete(
-        `/api/post/${id}`,
+        `/api/review/${id}`,
         options,
         headers
       );
@@ -164,7 +164,7 @@ export default function TravelReviewDetailPage({
   };
 
   const editPost = async () => {
-    router.push(`/travel/plans/edit/${id}`);
+    router.push(`/travel/reviews/edit/${id}`);
   };
 
   useEffect(() => {

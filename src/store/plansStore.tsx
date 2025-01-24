@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import type {} from "@redux-devtools/extension"; // required for devtools typing
 
 type List = {
@@ -29,18 +29,20 @@ interface plansState {
 
 const plansStore = create<plansState>()(
   devtools(
-    (set) => ({
-      plans: null,
-      setPlans: (plans) => set(() => ({ plans: plans })),
-      selectedCategory: "전체",
-      setSelectedCategory: (category) =>
-        set(() => ({ selectedCategory: category })),
-      searchKeyword: "",
-      setSearchKeyword: (keyword) => set(() => ({ searchKeyword: keyword })),
-    }),
-    {
-      name: "plan-storage",
-    }
+    persist(
+      (set) => ({
+        plans: null,
+        setPlans: (plans) => set(() => ({ plans: plans })),
+        selectedCategory: "전체",
+        setSelectedCategory: (category) =>
+          set(() => ({ selectedCategory: category })),
+        searchKeyword: "",
+        setSearchKeyword: (keyword) => set(() => ({ searchKeyword: keyword })),
+      }),
+      {
+        name: "plan-storage",
+      }
+    )
   )
 );
 

@@ -6,7 +6,6 @@ import React, {
   useRef,
   useEffect,
   useMemo,
-  useCallback,
 } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,8 +15,11 @@ import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
 import ReactQuill from "react-quill";
 import QuillNoSSRWrapper from "@/components/quillMarkdown";
+import { useSearchParams } from "next/navigation";
+import reviewStore from "@/store/reviewStore";
 
 interface DefaultData {
+  id?: number;
   title: string;
   content: string;
   travelArea: string;
@@ -25,7 +27,6 @@ interface DefaultData {
   budget: string;
   startDate: Date;
   endDate: Date;
-  imageUrl: string[];
   thumbnail: string;
   visibilityStatus: string;
 }
@@ -47,20 +48,6 @@ export default function TravelReviewCreatePage({
 }: {
   params: { id: number };
 }) {
-  const locationList = [
-    { id: 1, location: "전체" },
-    { id: 2, location: "국내" },
-    { id: 3, location: "동남아" },
-    { id: 4, location: "일본" },
-    { id: 5, location: "중국" },
-    { id: 6, location: "유럽" },
-    { id: 7, location: "미주" },
-    { id: 8, location: "대양주" },
-    { id: 9, location: "중동" },
-    { id: 10, location: "중남미" },
-    { id: 11, location: "아프리카" },
-  ];
-
   const accommodations = [
     "호텔",
     "게스트하우스",
@@ -71,33 +58,33 @@ export default function TravelReviewCreatePage({
     "민박",
   ];
 
-  const initialEditer = (id: number) => {
-    //* 만약 새로 작성하는 게시물이거나 작성된 게시물에 마크다운이 비었다면, 기본적으로 나타나게 될 내용
-    return `<h1 class="ql-align-justify">
-    <span style="color: blue;">여행 리뷰 작성${id}</span>
-    </h1>
-    <p class="ql-align-justify"><br></p>
-    <p class="ql-align-justify">자유로운 여행 리뷰를 작성해보세요!</p>
-    <p class="ql-align-justify"><br></p>
-    <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
-    </p>
-    <p class="ql-align-justify"><br></p>
-    <p class="ql-align-justify">
-    <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
-    </p>`;
-  };
+  // const initialEditer = (id: number) => {
+  //   //* 만약 새로 작성하는 게시물이거나 작성된 게시물에 마크다운이 비었다면, 기본적으로 나타나게 될 내용
+  //   return `<h1 class="ql-align-justify">
+  //   <span style="color: blue;">여행 리뷰 작성${id}</span>
+  //   </h1>
+  //   <p class="ql-align-justify"><br></p>
+  //   <p class="ql-align-justify">자유로운 여행 리뷰를 작성해보세요!</p>
+  //   <p class="ql-align-justify"><br></p>
+  //   <strong style="color:black;">교통수단 : </strong><span style="color:black;">대중교통/자차</span>
+  //   </p>
+  //   <p class="ql-align-justify"><br></p>
+  //   <p class="ql-align-justify">
+  //   <img src="https://traveltales.s3.ap-northeast-2.amazonaws.com/images/e7f82805aeaa91fbc6de073f313a9c78bbad955b6054931de28ca2990c138ede.jpg" alt="예시 사진" style="max-width: 400px; width: auto;">
+  //   </p>`;
+  // };
 
   const [data, setData] = useState<DefaultData>({
+    id: 0,
     title: "",
     content: "",
     travelArea: "",
+    thumbnail: "",
     travelerCount: 1,
     budget: "1",
+    visibilityStatus: "Public",
     startDate: new Date(),
     endDate: new Date(),
-    imageUrl: [],
-    thumbnail: "",
-    visibilityStatus: "Public",
   });
 
   const [fileObj, setFileObj] = useState<File | null>(null);
@@ -107,7 +94,6 @@ export default function TravelReviewCreatePage({
   const [tabList, setTabList] = useState<TabList[] | []>([]);
 
   const imageRef = useRef(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const quillInstance = useRef<ReactQuill>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -115,66 +101,24 @@ export default function TravelReviewCreatePage({
   //* 탭별 콘텐트
   const [tabContent, setTabContent] = useState<TabContent[] | []>([]);
   const selectedTabRef = useRef<number | null>(null);
-
-  //* 시작날짜 종료날짜 들어있는 객체
-  const [dateObj, setDateObj] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
-
-  //* 마크다운에서 이미지를 추출하여 배열로 저장할 함수
-  const markdownImageExtraction = (content: string[]) => {
-    if (content) {
-      let matchUrlArray: string[] = [];
-      //* 정규식을 통해 공통 패턴의 문자열 추출
-      // const regex =
-      //   /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?.jpeg/g;
-      const regex =
-        /https:\/\/traveltales\.s3\.ap-northeast-2\.amazonaws\.com\/images\/[^\s]+?\.(jpeg|jpg|png|webp|gif)/g;
-      //* 해당 패턴을 모두 찾기
-
-      content.map((value) => {
-        const matches = value.match(regex);
-        if (matches) {
-          matches.forEach((match) => {
-            matchUrlArray = [...matchUrlArray, match];
-          });
-          return matchUrlArray;
-        } else {
-          console.log("No matches found");
-        }
-      });
-    }
-  };
+  const searchParams = useSearchParams();
+  const typeClass = searchParams.get("type");
+  const review = reviewStore((state) => state.review);
 
   //* 게시물 내용 변경하는 함수
   const saveChanges = async () => {
     //* 마크다운에서 이미지 Array 추출해는 함수
 
-    /**
-     * [{ id: 1, budget: '', traffic: '', lodging: '', markdown: '<h1>...</h1>'}, ...]
-     */
-    const imagesArray = tabContent.map((value) => {
-      return value.markdown;
-    });
-    const matchUrlArray = markdownImageExtraction(imagesArray);
     const body = {
-      travelPostId: id,
+      [typeClass === "new" ? "travelPostId" : "postId"]: id,
       title: data.title,
       content: JSON.stringify(tabContent),
-      travelArea: data.travelArea,
-      travelerCount: Number(data.travelerCount),
-      budget: data.budget.replace(/,/g, ""),
       thumbnailFile: data.thumbnail,
-      imageUrl: JSON.stringify(matchUrlArray) || JSON.stringify([]),
-      startDate: data.startDate,
-      endDate: data.endDate,
-      visibilityStatus: data.visibilityStatus,
     };
 
     const formData = new FormData();
     Object.entries(body).forEach(([key, value]) => {
-      if (typeof value === "number" || value instanceof Date) {
+      if (typeof value === "number") {
         formData.append(key, value.toString());
       } else if (key === "thumbnailFile") {
         fileObj && formData.append(key, fileObj);
@@ -185,11 +129,23 @@ export default function TravelReviewCreatePage({
     });
 
     try {
-      if (id) {
-        const headers = {};
-        const options = {
-          body: formData,
-        };
+      const headers = {};
+      const options = {
+        body: formData,
+      };
+      if (typeClass !== "new") {
+        const { data, accessToken } = await apiClient.patch(
+          `/api/review/${id}`,
+          options,
+          headers
+        );
+        if (data.success) {
+          alert("저장되었습니다.");
+        }
+        if (accessToken !== "null") {
+          setAccessToken(accessToken);
+        }
+      } else {
         const { data, accessToken } = await apiClient.post(
           `/api/review`,
           options,
@@ -229,105 +185,22 @@ export default function TravelReviewCreatePage({
     };
   }, [id, data, tabContent]);
 
-  const editTabContent = (dates: TabList[]) => {
-    if (dates.length) {
-      const resultTabContent = dates.map((date) => {
-        let found = false;
-        // tabContent 배열을 순회하면서 일치하는 id를 찾음
-        for (let i = 0; i < tabContent.length; i++) {
-          if (date.id === tabContent[i].id) {
-            found = true;
-            return tabContent[i]; // 일치하는 요소를 찾았을 경우 바로 반환
-          }
-        }
-
-        // 일치하는 요소가 없을 경우 새로운 객체 반환
-        if (!found) {
-          return {
-            id: date.id,
-            budget: "1",
-            lodging: "",
-            markdown: initialEditer(date.id),
-          };
-        }
-      });
-
-      if (resultTabContent[0]) {
-        setSelectedTab(resultTabContent[0].id);
-        selectedTabRef.current = resultTabContent[0].id;
-      }
-      setTabContent(resultTabContent as TabContent[]);
-    }
+  const formatingReview = (content: any) => {
+    const parseContent = JSON.parse(content);
+    const markdownReset = parseContent.map((value: any) => {
+      return { ...value, markdown: "" };
+    });
+    setTabContent(markdownReset);
+    const tabLength = parseContent.map((value: any) => {
+      const date = `${value.id}`;
+      const year = date.slice(0, 4);
+      const month = date.slice(4, 6);
+      const day = date.slice(6, 8);
+      return { id: value.id, tabName: `${year}-${month}-${day}` };
+    });
+    setTabList(tabLength);
+    setSelectedTab(tabLength[0].id);
   };
-
-  //* 탭 날짜 길이만큼 만들기
-  //* 여기서 dateObj 변경될 때 마다 내용은 그대로 두고 날짜만 추가하기
-  useEffect(() => {
-    const firstDate = dateObj.startDate;
-    const lastDate = dateObj.endDate;
-
-    const getAllDatesBetween = () => {
-      //: 두 날짜가 같으면 해당 날짜만 배열로 반환
-      if (firstDate.toDateString() === lastDate.toDateString()) {
-        const year = firstDate.getFullYear(); // 년도 추출
-        const month = String(firstDate.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
-        const day = String(firstDate.getDate()).padStart(2, "0"); // 일 추출
-        const dateArray = [
-          { id: +`${year}${month}${day}`, tabName: `${year}-${month}-${day}` },
-        ];
-        setTabList(dateArray); // 'YYYY-MM-DD' 형식으로 반환
-        editTabContent(dateArray);
-      } else {
-        let dates: any[] = [];
-        let currentDate = new Date(firstDate);
-        //: startDate와 endDate 사이의 모든 날짜를 배열에 추가
-        const isSameDate = (date: Date) => {
-          const year = date.getFullYear(); // 년도 추출
-          const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
-          const day = String(date.getDate()).padStart(2, "0"); // 일 추출
-          const resultDate = `${year}-${month}-${day}`;
-          return resultDate;
-        };
-        while (isSameDate(currentDate) <= isSameDate(lastDate)) {
-          const year = currentDate.getFullYear(); // 년도 추출
-          const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
-          const day = String(currentDate.getDate()).padStart(2, "0"); // 일 추출
-          const resultDate = `${year}-${month}-${day}`;
-          dates = [
-            ...dates,
-            { id: +`${year}${month}${day}`, tabName: resultDate },
-          ];
-          currentDate.setDate(currentDate.getDate() + 1); // 하루를 더함
-        }
-        if (dates.length) {
-          setTabList(dates);
-          editTabContent(dates);
-        } else {
-          alert("시작날짜가 종료날짜보다 더 뒤에 있습니다.");
-        }
-      }
-    };
-    //: tabList length가 0이 아닐때
-    if (tabList.length) {
-      getAllDatesBetween();
-    } else {
-      //: tabList length가 0일때
-      const year = firstDate.getFullYear(); // 년도 추출
-      const month = String(firstDate.getMonth() + 1).padStart(2, "0"); // 월 추출 (0부터 시작하므로 +1)
-      const day = String(firstDate.getDate()).padStart(2, "0"); // 일 추출
-      setTabList([
-        { id: +`${year}${month}${day}`, tabName: `${year}-${month}-${day}` },
-      ]); // 'YYYY-MM-DD' 형식으로 반환
-      setTabContent([
-        {
-          id: +`${year}${month}${day}`,
-          budget: "1",
-          lodging: "",
-          markdown: initialEditer(+`${year}${month}${day}`),
-        },
-      ]);
-    }
-  }, [dateObj]);
 
   useEffect(() => {
     //* 페이지에 처음 들어온 후, 게시물 정보 가져오기
@@ -337,52 +210,52 @@ export default function TravelReviewCreatePage({
       };
       const options = {};
       const { data, accessToken } = await apiClient.get(
-        `/api/post/${id}`,
+        `/api/review/${id}`,
         options,
         headers
       );
-      const fetchedData = data.data[0];
+      const travelPost = data.data.travelPost;
+      const fetchedData = data.data;
       setData({
-        ...fetchedData,
-        thumbnail: "",
-        imageUrl: fetchedData.imageUrl || "",
-        content: "",
-        title: "",
-        travelArea: fetchedData.travelArea || "",
-        travelerCount: fetchedData.travelerCount || 1,
-        startDate: fetchedData.startDate
-          ? new Date(fetchedData.startDate)
+        ...travelPost,
+        title: fetchedData.title || "",
+        content: fetchedData.content || "",
+        thumbnail: fetchedData.thumbnail || "",
+        travelArea: travelPost.travelArea || "",
+        travelerCount: travelPost.travelerCount || 1,
+        startDate: travelPost.startDate
+          ? new Date(travelPost.startDate)
           : new Date(),
-        endDate: fetchedData.endDate
-          ? new Date(fetchedData.endDate)
-          : new Date(),
-        visibilityStatus: fetchedData.visibilityStatus || "Public",
+        endDate: travelPost.endDate ? new Date(travelPost.endDate) : new Date(),
+        visibilityStatus: travelPost.visibilityStatus || "Public",
       });
-      setDateObj({
-        startDate: fetchedData.startDate
-          ? new Date(fetchedData.startDate)
-          : new Date(),
-        endDate: fetchedData.endDate
-          ? new Date(fetchedData.endDate)
-          : new Date(),
-      });
-      if (fetchedData.content) {
-        const parseContent = JSON.parse(fetchedData.content);
-        const markdownReset = parseContent.map((value: any) => {
-          return { ...value, markdown: "" };
-        });
-        setTabContent(markdownReset);
-        const tabLength = parseContent.map((value: any) => {
-          return { id: value.id, tabName: `test${value.id}` };
-        });
-        setTabList(tabLength);
+      if (travelPost.content) {
+        formatingReview(travelPost.content);
       }
       if (accessToken !== "null") {
         setAccessToken(accessToken);
       }
     };
-    getPostInfo();
-  }, []);
+    if (typeClass === "new") {
+      if (review) {
+        review && formatingReview(review.content);
+        setData({
+          id: review.id,
+          title: "",
+          content: "",
+          thumbnail: "",
+          travelArea: review.travelArea || "",
+          travelerCount: review.travelerCount || 1,
+          visibilityStatus: review.visibilityStatus || "Public",
+          budget: review.budget || "",
+          startDate: review.startDate ? new Date(review.startDate) : new Date(),
+          endDate: review.endDate ? new Date(review.endDate) : new Date(),
+        });
+      }
+    } else {
+      getPostInfo();
+    }
+  }, [review]);
 
   //* 이미지 변경하는 함수
   const handleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -485,9 +358,9 @@ export default function TravelReviewCreatePage({
   };
 
   //* 여행 지역 선택하는 함수
-  const selectOption = (e: any) => {
-    setData({ ...data, travelArea: e.target.value });
-  };
+  // const selectOption = (e: any) => {
+  //   setData({ ...data, travelArea: e.target.value });
+  // };
 
   //* 탭 콘텐트 선택하는 함수
   const selectTab = (
@@ -565,19 +438,10 @@ export default function TravelReviewCreatePage({
     []
   );
 
-  const deleteThumbnail = () => {
-    setData({ ...data, thumbnail: "" });
-    setFileObj(null);
-  };
-
   //* form 데이터 동작안하게 막기
   const handleSubmit = (e: any) => {
     e.preventDefault();
   };
-
-  // useEffect(() => {
-  //   selectedTabRef.current = selectedTab;
-  // }, [selectedTab]);
 
   //! 여기서 에러남
   //* 마크다운 컨트롤
@@ -604,18 +468,16 @@ export default function TravelReviewCreatePage({
           <div className="toggle-switch mb-6">
             <label className="inline-flex items-center cursor-pointer">
               <span>공개 여부</span>
-              <input
-                role="switch"
-                type="checkbox"
-                checked={data.visibilityStatus === "Public" ? false : true}
-                onChange={() => {
-                  setData({
-                    ...data,
-                    visibilityStatus:
-                      data.visibilityStatus === "Public" ? "Private" : "Public",
-                  });
-                }}
-              />
+              <span
+                className={`ml-2  text-xs
+              rounded-full px-3 py-1 font-bold ${
+                data.visibilityStatus === "Public"
+                  ? "bg-gray-100 text-gray-500"
+                  : "bg-red-100 text-red-500"
+              }`}
+              >
+                {data.visibilityStatus}
+              </span>
             </label>
           </div>
           <div className="mb-2 flex flex-col">
@@ -638,14 +500,9 @@ export default function TravelReviewCreatePage({
               name="location"
               id="lo"
               className="input-border py-1 px-3 s:max-w-52 w-full"
-              onChange={selectOption}
-              value={data.travelArea}
+              disabled
             >
-              {locationList.map((value) => (
-                <option key={value.id} value={value.location}>
-                  {value.location}
-                </option>
-              ))}
+              <option value={data.travelArea}>{data.travelArea}</option>
             </select>
           </div>
           <div className="flex flex-row flex-wrap justify-start items-center">
@@ -656,48 +513,39 @@ export default function TravelReviewCreatePage({
                 id="members"
                 value={data.travelerCount.toString()}
                 required
-                onChange={(e) =>
-                  setData({ ...data, travelerCount: +e.target.value })
-                }
-                min={1}
+                disabled
                 className="input-border py-1 px-3"
               />
             </div>
           </div>
 
           <div className="flex flex-col my-6 border-y py-6">
-            {dateObj.startDate && dateObj.endDate && (
+            {data.startDate && data.endDate && (
               <div className="s:flex s:flex-row items-center mb-2">
                 <p className="mr-2 xs-max:mb-1">여행 시작일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
-                  selected={dateObj.startDate}
-                  onChange={(date) => {
-                    date && setData({ ...data, startDate: date });
-                    date && setDateObj({ ...dateObj, startDate: date });
-                  }}
+                  selected={data.startDate}
                   selectsStart
-                  startDate={dateObj.startDate}
-                  endDate={dateObj.endDate}
+                  startDate={data.startDate}
+                  endDate={data.endDate}
                   className="input-border px-2 py-1"
+                  disabled
                 />
               </div>
             )}
-            {dateObj.startDate && dateObj.endDate && (
+            {data.startDate && data.endDate && (
               <div className="s:flex s:flex-row items-center">
                 <p className="mr-2 xs-max:mb-1">여행 종료일: </p>
                 <DatePicker
                   dateFormat="yyyy년 MM월 dd일"
-                  selected={dateObj.endDate}
-                  onChange={(date) => {
-                    date && setData({ ...data, endDate: date });
-                    date && setDateObj({ ...dateObj, endDate: date });
-                  }}
+                  selected={data.endDate}
                   selectsEnd
-                  startDate={dateObj.startDate}
-                  endDate={dateObj.endDate}
-                  minDate={dateObj.startDate}
+                  startDate={data.startDate}
+                  endDate={data.endDate}
+                  minDate={data.startDate}
                   className="input-border px-2 py-1"
+                  disabled
                 />
               </div>
             )}
@@ -799,12 +647,6 @@ export default function TravelReviewCreatePage({
                         ?.markdown || ""
                     }
                     onChange={(e) => {
-                      // const currentTabContent = tabContent.find(
-                      //   (tab) => tab.id === selectedTab
-                      // );
-                      // if (currentTabContent) {
-                      // handleMarkdown(e, selectedTabRef.current);
-                      // }
                       if (
                         selectedTab !== null &&
                         selectedTab === selectedTabRef.current

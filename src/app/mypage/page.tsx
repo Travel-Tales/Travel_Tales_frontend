@@ -213,9 +213,9 @@ export default function Mypage() {
           ))}
         </article>
         <article className="my-5">
-          {list !== null && list.length !== 0 && (
-            <TripCard list={list} page={"mypage"} tab={tab} />
-          )}
+          {/* {list !== null && list.length !== 0 && ( */}
+          <TripCard list={list} page={"mypage"} tab={tab} />
+          {/* )} */}
         </article>
       </section>
     </main>

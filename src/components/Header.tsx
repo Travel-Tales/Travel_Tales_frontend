@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "./../../public/main-logo.png";
+import whiteLogo from "./../../public/logo-white.png";
 import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,11 @@ export default function Header() {
   const setAccessToken = useStore((state) => state.setAccessToken);
   const setIsLogin = useStore((state) => state.setIsLogin);
   const router = useRouter();
+
+  // const headerRef = useRef<HTMLDivElement | null>(null);
+
+  let throttle = false;
+  const [isThrottle, setIsThrottle] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -59,19 +65,48 @@ export default function Header() {
     }
   };
 
+  const handlerScroll = () => {
+    if (!throttle) {
+      throttle = true;
+      setTimeout(() => {
+        if (100 < window.scrollY) {
+          // headerRef.current !== null &&
+          //   headerRef.current.style.setProperty("background-color", "white");
+          setIsThrottle(true);
+        } else {
+          // headerRef.current !== null &&
+          //   headerRef.current.style.setProperty(
+          //     "background-color",
+          //     "transparent"
+          //   );
+          setIsThrottle(false);
+        }
+        throttle = false;
+      }, 300);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handlerScroll);
+    return () => {
+      window.removeEventListener("scroll", handlerScroll);
+    };
+  }, []);
+
   return (
     <>
       <header
         className="w-full fixed top-0 left-0 
-      custom-flex px-6 py-4 border-b border-gray-200 bg-white z-10
+      custom-flex px-6 py-4 bg-transparent z-10
       xs:px-3
       "
         style={{ height: "70.84px" }}
+        // ref={headerRef}
       >
         <h1 className="main-logo xs:mr-6">
           <Link href="/">
             <Image
-              src={mainLogo}
+              src={isThrottle ? mainLogo : whiteLogo}
               alt="Website Logo"
               width={180}
               height={38}
@@ -83,26 +118,34 @@ export default function Header() {
         <div className="custom-flex relative">
           <nav className="pc-menu hidden md:block">
             <ul className="nav">
-              <li className="menu">
-                <Link href={"/travel/plans"}>여행 계획</Link>
+              <li>
+                <Link href={"/travel/plans"} className="menu">
+                  여행 계획
+                </Link>
               </li>
-              <li className="menu">
-                <Link href={"/travel/reviews"}>여행 리뷰</Link>
+              <li>
+                <Link href={"/travel/reviews"} className="menu">
+                  여행 리뷰
+                </Link>
               </li>
               {isClient && access ? (
                 <>
-                  <li className="menu">
-                    <Link href={"/mypage"}>마이페이지</Link>
+                  <li>
+                    <Link href={"/mypage"} className="menu">
+                      마이페이지
+                    </Link>
                   </li>
-                  <li className="menu">
-                    <Link href={"#"} onClick={logout}>
+                  <li>
+                    <Link href={"#"} onClick={logout} className="menu">
                       로그아웃
                     </Link>
                   </li>
                 </>
               ) : (
-                <li className="menu">
-                  <Link href={"/login"}>로그인</Link>
+                <li className="border-white border rounded-md ml-3">
+                  <Link href={"/login"} className="menu">
+                    로그인
+                  </Link>
                 </li>
               )}
             </ul>

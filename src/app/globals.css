@@ -240,13 +240,16 @@ input[type="number"] {
   margin-bottom: 5px;
   position: relative;
 
-  background: rgb(2 6 23);
   border-radius: 3px;
-
+  background: #fff;
   transform-origin: 4px 0px;
 
-  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
-    background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+  transition: transform 0.2s cubic-bezier(0.77, 0.2, 0.05, 1),
+    background 0.2s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.2s ease;
+}
+
+.mb-menu-bar.is-open {
+  background: rgb(2 6 23);
 }
 
 @media all and (max-width: 350px) {
@@ -268,7 +271,7 @@ input[type="number"] {
 
 .menu-wrapper {
   position: absolute;
-  width: 250px;
+  width: 80vw;
   height: 100vh;
   left: 200%;
   top: 47px;
@@ -518,4 +521,17 @@ input[type="number"] {
   -webkit-transform: translateX(50px);
   -moz-transform: translateX(50px);
   transform: translateX(50px);
+}
+
+.additional-menu button span {
+  width: 4px;
+  height: 4px;
+  display: inline-block;
+  background-color: black;
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+
+.additional-menu-options {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 15px -2px rgb(0 0 0 / 0.1);
 }

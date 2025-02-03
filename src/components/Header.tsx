@@ -96,17 +96,19 @@ export default function Header() {
   return (
     <>
       <header
-        className="w-full fixed top-0 left-0 
-      custom-flex px-6 py-4 bg-transparent z-10
-      xs:px-3
-      "
+        className={`w-full fixed top-0 left-0 
+      custom-flex px-6 py-4 transition-all duration-200 ${
+        isThrottle || isToggle ? " bg-white shadow-md" : "bg-transparent"
+      } z-10
+      xs:px-3`}
         style={{ height: "70.84px" }}
         // ref={headerRef}
       >
         <h1 className="main-logo xs:mr-6">
           <Link href="/">
             <Image
-              src={isThrottle ? mainLogo : whiteLogo}
+              src={isThrottle || isToggle ? mainLogo : whiteLogo}
+              // src={whiteLogo}
               alt="Website Logo"
               width={180}
               height={38}
@@ -117,7 +119,7 @@ export default function Header() {
         </h1>
         <div className="custom-flex relative">
           <nav className="pc-menu hidden md:block">
-            <ul className="nav">
+            <ul className={`${isThrottle ? "nav-throttle" : "nav"} `}>
               <li>
                 <Link href={"/travel/plans"} className="menu">
                   여행 계획
@@ -135,14 +137,22 @@ export default function Header() {
                       마이페이지
                     </Link>
                   </li>
-                  <li>
+                  <li
+                    className={`${
+                      isThrottle ? "border-black" : "border-white"
+                    } border rounded-md ml-3`}
+                  >
                     <Link href={"#"} onClick={logout} className="menu">
                       로그아웃
                     </Link>
                   </li>
                 </>
               ) : (
-                <li className="border-white border rounded-md ml-3">
+                <li
+                  className={`${
+                    isThrottle ? "border-black" : "border-white"
+                  } border rounded-md ml-3`}
+                >
                   <Link href={"/login"} className="menu">
                     로그인
                   </Link>
@@ -154,9 +164,21 @@ export default function Header() {
             <div className="menuToggle">
               <input type="checkbox" onChange={toggleMenu} ref={checkboxRef} />
 
-              <span className="mb-menu-bar"></span>
-              <span className="mb-menu-bar"></span>
-              <span className="mb-menu-bar"></span>
+              <span
+                className={`mb-menu-bar ${
+                  isThrottle || isToggle ? "is-open" : ""
+                }`}
+              ></span>
+              <span
+                className={`mb-menu-bar ${
+                  isThrottle || isToggle ? "is-open" : ""
+                }`}
+              ></span>
+              <span
+                className={`mb-menu-bar ${
+                  isThrottle || isToggle ? "is-open" : ""
+                }`}
+              ></span>
 
               <ul className="menu-wrapper">
                 <li className="menu" onClick={closedMenu}>

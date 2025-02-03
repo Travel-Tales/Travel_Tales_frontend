@@ -48,6 +48,7 @@ const config: Config = {
         "border-color": "#e5e7eb",
         "black-54": "rgba(0, 0, 0, 0.54)",
         "black-85": "rgba(0, 0, 0, 0.85)",
+        "throttle-header": "rgba(107, 107, 107, 0.54)",
       },
       top: {
         "-7": "-7px",

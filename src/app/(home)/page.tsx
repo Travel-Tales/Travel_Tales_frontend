@@ -50,7 +50,7 @@ export default async function Home() {
         <section className="page-section py-10 sm:py-20">
           <h2 className="h2 a11y-hidden">메인페이지</h2>
           <article>
-            <h3 className="text-h3 sm:text-h2 font-semibold text-center">
+            {/* <h3 className="text-h3 sm:text-h2 font-semibold text-center">
               Top values for you
             </h3>
             <p
@@ -58,14 +58,20 @@ export default async function Home() {
 "
             >
               다양한 서비스를 이용해 보세요!
-            </p>
+            </p> */}
             <ul className="flex-none sm:flex sm:flex-row sm:justify-between sm:items-top">
               {introduction.map((value) => (
                 <li
                   key={value.id}
                   className="introduce last:mb-0 mb-10 sm:mb-0"
                 >
-                  <Image src={value.icon} width={300} height={300} alt="" />
+                  <Image
+                    src={value.icon}
+                    width={50}
+                    height={50}
+                    alt=""
+                    className="mb-4"
+                  />
                   <strong className="block mb-2">{value.title}</strong>
                   <p>{value.discription}</p>
                 </li>

@@ -23,11 +23,11 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "main-banner": "url('../../public/main-thumbnail.webp')",
+        "main-banner": "url('../../public/main-thumbnail-1.webp')",
       },
       backgroundPosition: {
         // "bottom-1": "center top -5rem",
-        "bottom-1": "center top -3rem",
+        "bottom-1": "center center",
       },
       fontSize: {
         h1: ["60px", { lineHeight: "1.2" }],

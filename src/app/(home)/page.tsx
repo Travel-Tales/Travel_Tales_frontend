@@ -47,7 +47,7 @@ export default async function Home() {
       <AccessToken />
       <main className="pt-0">
         <Banner />
-        <section className="page-section py-10 sm:py-20">
+        <section className="page-section py-10 sm:py-20 s:mt-[-150px] mt-[-80px]">
           <h2 className="h2 a11y-hidden">메인페이지</h2>
           <article>
             {/* <h3 className="text-h3 sm:text-h2 font-semibold text-center">
@@ -59,11 +59,15 @@ export default async function Home() {
             >
               다양한 서비스를 이용해 보세요!
             </p> */}
-            <ul className="flex-none sm:flex sm:flex-row sm:justify-between sm:items-top">
+            <ul
+              className="flex-none sm:flex sm:flex-row sm:justify-between 
+            sm:items-top"
+            >
               {introduction.map((value) => (
                 <li
                   key={value.id}
-                  className="introduce last:mb-0 mb-10 sm:mb-0"
+                  className="introduce last:mb-0 mb-10 sm:mb-0
+                  bg-white p-6 rounded-md shadow-lg"
                 >
                   <Image
                     src={value.icon}

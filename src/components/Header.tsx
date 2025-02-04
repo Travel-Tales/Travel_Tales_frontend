@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import mainLogo from "./../../public/main-logo.png";
@@ -8,6 +8,7 @@ import whiteLogo from "./../../public/logo-white.png";
 import LocalStorage from "@/service/localstorage";
 import useStore from "@/store/store";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
@@ -17,15 +18,23 @@ export default function Header() {
   const setAccessToken = useStore((state) => state.setAccessToken);
   const setIsLogin = useStore((state) => state.setIsLogin);
   const router = useRouter();
-
+  const segment = usePathname();
   // const headerRef = useRef<HTMLDivElement | null>(null);
 
   let throttle = false;
-  const [isThrottle, setIsThrottle] = useState(false);
+  const [isThrottle, setIsThrottle] = useState<boolean | null>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (segment === "/") {
+      setIsThrottle(false);
+    } else {
+      setIsThrottle(true);
+    }
+  }, [segment]);
 
   const logout = async () => {
     if (confirm("로그아웃 하시겠습니까?") === true) {
@@ -66,19 +75,12 @@ export default function Header() {
   };
 
   const handlerScroll = () => {
-    if (!throttle) {
+    if (throttle === false && window.location.pathname === "/") {
       throttle = true;
       setTimeout(() => {
         if (100 < window.scrollY) {
-          // headerRef.current !== null &&
-          //   headerRef.current.style.setProperty("background-color", "white");
           setIsThrottle(true);
         } else {
-          // headerRef.current !== null &&
-          //   headerRef.current.style.setProperty(
-          //     "background-color",
-          //     "transparent"
-          //   );
           setIsThrottle(false);
         }
         throttle = false;
@@ -98,8 +100,8 @@ export default function Header() {
       <header
         className={`w-full fixed top-0 left-0 
       custom-flex px-6 py-4 transition-all duration-200 ${
-        isThrottle || isToggle ? " bg-white shadow-md" : "bg-transparent"
-      } z-10
+        isThrottle || isToggle ? " bg-white" : "bg-transparent"
+      } z-10 ${isThrottle && segment === "/" ? "shadow-md" : ""}
       xs:px-3`}
         style={{ height: "70.84px" }}
         // ref={headerRef}

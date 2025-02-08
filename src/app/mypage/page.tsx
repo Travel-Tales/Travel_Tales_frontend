@@ -5,6 +5,7 @@ import ProfileImg from "@/components/ProfileImg";
 import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
 import TripCard from "@/components/TripCard";
+import reviewStore from "@/store/reviewStore";
 
 export interface Profile {
   id: number;
@@ -22,7 +23,9 @@ export default function Mypage() {
   const setPlanId = useStore((state) => state.setPlanId);
   const [list, setList] = useState<any>(null);
   const [isEdit, setIsEdit] = useState(false);
-  const [tab, setTab] = useState("나의 여행 계획서");
+  const [tab, setTab] = useState("");
+  const setActiveReviewTab = reviewStore((state) => state.setActiveReviewTab);
+  const activeReviewTab = reviewStore((state) => state.activeReviewTab);
 
   //: 파일을 append하기 위한 obj
   const [fileObj, setFileObj] = useState<File | null>(null);
@@ -45,9 +48,17 @@ export default function Mypage() {
   ];
 
   useEffect(() => {
+    if (activeReviewTab) {
+      setTab("나의 여행 리뷰");
+    } else {
+      setTab("나의 여행 계획서");
+    }
+  }, []);
+
+  useEffect(() => {
     if (tab === "나의 여행 계획서") {
       getMyPlans();
-    } else {
+    } else if (tab === "나의 여행 리뷰") {
       getMyReviews();
     }
   }, [tab]);
@@ -105,7 +116,6 @@ export default function Mypage() {
   }
 
   useEffect(() => {
-    getMyPlans();
     myProfile();
   }, []);
 

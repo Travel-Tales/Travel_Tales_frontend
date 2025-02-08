@@ -15,7 +15,7 @@ import useStore from "@/store/store";
 import { apiClient } from "@/service/interceptor";
 import ReactQuill from "react-quill";
 import QuillNoSSRWrapper from "@/components/quillMarkdown";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import reviewStore from "@/store/reviewStore";
 
 interface DefaultData {
@@ -104,6 +104,8 @@ export default function TravelReviewCreatePage({
   const searchParams = useSearchParams();
   const typeClass = searchParams.get("type");
   const review = reviewStore((state) => state.review);
+  const setActiveReviewTab = reviewStore((state) => state.setActiveReviewTab);
+  const router = useRouter();
 
   //* 게시물 내용 변경하는 함수
   const saveChanges = async () => {
@@ -157,6 +159,8 @@ export default function TravelReviewCreatePage({
         if (accessToken !== "null") {
           setAccessToken(accessToken);
         }
+        setActiveReviewTab(true);
+        router.push(`/mypage`);
       }
     } catch (error) {
       console.error("Error saving changes:", error);
@@ -188,7 +192,7 @@ export default function TravelReviewCreatePage({
   const formatingReview = (content: any) => {
     const parseContent = JSON.parse(content);
     const markdownReset = parseContent.map((value: any) => {
-      return { ...value, markdown: "" };
+      return { ...value, markdown: typeClass === "new" ? "" : value.markdown };
     });
     setTabContent(markdownReset);
     const tabLength = parseContent.map((value: any) => {
@@ -230,7 +234,7 @@ export default function TravelReviewCreatePage({
         visibilityStatus: travelPost.visibilityStatus || "Public",
       });
       if (travelPost.content) {
-        formatingReview(travelPost.content);
+        formatingReview(fetchedData.content);
       }
       if (accessToken !== "null") {
         setAccessToken(accessToken);

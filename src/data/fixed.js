@@ -4,17 +4,20 @@ export const introduction = [
     title: "Travel Tales와 함께 계획을 작성해보세요.",
     discription:
       "원하는 여행 일정과 활동을 쉽게 계획하여 공유해보세요! 친구들과 함께 여행 일정을 계획할 수 있습니다.",
+    icon: "../../plan_icon.svg",
   },
   {
     id: 2,
     title: "실시간 후기 공유 및 생생한 경험을 나눠보세요.",
     discription:
       "여행 후기를 실시간으로 공유하고 다른 사용자의 생생한 경험을 통해, 새로운 여행지를 발견하고 알찬 여행 정보를 얻어보세요.",
+    icon: "../../plane_icon.svg",
   },
   {
     id: 3,
     title: "다양한 여행지 정보와 유용한 정보를 제공합니다.",
     discription:
       "다양한 여행지에 대한 상세한 정보와 팁을 제공하여 더 나은 여행 계획을 세울 수 있도록 도와줍니다.",
+    icon: "../../tourism_icon.svg",
   },
 ];

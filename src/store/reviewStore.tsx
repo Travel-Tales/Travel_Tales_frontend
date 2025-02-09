@@ -18,6 +18,8 @@ type List = {
 interface reviewState {
   review: List | null;
   setReview: (review: any) => void;
+  activeReviewTab: boolean;
+  setActiveReviewTab: (activeReviewTab: any) => void;
 }
 
 const reviewStore = create<reviewState>()(
@@ -26,6 +28,9 @@ const reviewStore = create<reviewState>()(
       (set) => ({
         review: null,
         setReview: (review) => set(() => ({ review: review })),
+        activeReviewTab: false,
+        setActiveReviewTab: (activeReviewTab) =>
+          set(() => ({ activeReviewTab: activeReviewTab })),
       }),
       { name: "review-storage" }
     )
